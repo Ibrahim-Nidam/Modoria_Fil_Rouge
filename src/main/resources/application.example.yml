@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: Modoria E-commerce
+
+  profiles:
+    active: dev
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 6000ms
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.springframework.web: info
+  file:
+    name: logs/modoria.log
+
+server:
+  port: 8080
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  packages-to-scan: com.modoria.controller
+  paths-to-match: /api/**
+
+# WebSocket configuration
+websocket:
+  endpoint: /ws
+  allowed-origins: "*"
+
+# AI configuration
+ai:
+  enabled: true
+  provider: gemini
+  optimizer:
+    type: RECOMMENDATION_ENGINE
