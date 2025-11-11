@@ -1,0 +1,77 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_NAME:modoriadb}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+      show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      timeout: 10000ms
+
+  ai:
+    vertex:
+      ai:
+        gemini:
+          api-key: ${GEMINI_API_KEY}
+          project-id: ${VERTEX_PROJECT_ID:}
+          location: ${VERTEX_LOCATION:us-central1}
+          model: gemini-2.5-flash
+
+server:
+  port: ${SERVER_PORT:8081}
+  # No context-path here to avoid /api/api duplication
+
+logging:
+  level:
+    root: info
+    org.hibernate.SQL: warn
+    org.springframework.web: info
+  file:
+    name: /app/logs/modoria-prod.log
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: false  # Disabled in production
+
+ai:
+  enabled: true
+  provider: gemini
+  optimizer:
+    type: RECOMMENDATION_ENGINE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
