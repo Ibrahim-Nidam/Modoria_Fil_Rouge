@@ -22,8 +22,8 @@ It enables **secure shopping**, **order management**, **customer support**, and 
 
 ## 🔗 Useful Links
 
-* 📂 **[GitHub Repository](https://github.com/Ibrahim-Nidam/Modoria.git)** – Full source code for Modoria
-* 📝 **[Jira Board](https://ibrahimnidam-22.atlassian.net/jira/software/projects/MOD/boards/1)** – Project backlog and sprint management
+* 📂 **[GitHub Repository](https://github.com/Ibrahim-Nidam/Modoria_Fil_Rouge.git)** – Full source code for Modoria
+* 📝 **[Jira Board](https://ibrahimnidam-22.atlassian.net/jira/software/projects/MFR/summary?atlOrigin=eyJpIjoiNTMyNjUyOTYwOGNhNDg1YTljNzdmMWNiNmFmN2UwYjMiLCJwIjoiaiJ9)** – Project backlog and sprint management
 * 🗂️ **[Cahier de Charges](https://www.overleaf.com/read/brggjhctrgtn#add734)** – Detailed project requirements and specifications
 * 📊 **[UML Use Case Diagram](https://lucid.app/lucidchart/845c7e1a-e9f4-4f45-a128-f287f0e1cef2/edit?viewport_loc=-11%2C-11%2C2217%2C1052%2C0_0&invitationId=inv_c87ba5fe-2fd8-422c-b0b9-448f1cc19287)** – Visual representation of system actors and interactions
 * 🧩 **[UML Class Diagram](https://lucid.app/lucidchart/fe62cdba-65e5-4a14-80b7-e57cedb2b1d5/edit?viewport_loc=-11%2C-11%2C2217%2C1052%2C0_0&invitationId=inv_54dda570-4a93-4dd5-94b9-252b3b58d541)** – Full class relationships and entities
