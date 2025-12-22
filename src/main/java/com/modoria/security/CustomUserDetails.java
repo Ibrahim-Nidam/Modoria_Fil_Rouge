@@ -1,6 +1,6 @@
 package com.modoria.security;
 
-import com.modoria.model.User;
+import com.modoria.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

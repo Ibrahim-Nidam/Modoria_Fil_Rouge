@@ -1,8 +1,8 @@
 package com.modoria.service.impl;
 
-import com.modoria.dto.UserDTO;
+import com.modoria.dto.user.UserDTO;
 import com.modoria.mapper.UserMapper;
-import com.modoria.model.User;
+import com.modoria.entity.User;
 import com.modoria.repository.UserRepository;
 import com.modoria.service.interfaces.UserService;
 import jakarta.transaction.Transactional;

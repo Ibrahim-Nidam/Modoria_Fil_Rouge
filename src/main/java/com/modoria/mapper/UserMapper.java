@@ -1,7 +1,7 @@
 package com.modoria.mapper;
 
-import com.modoria.dto.UserDTO;
-import com.modoria.model.User;
+import com.modoria.dto.user.UserDTO;
+import com.modoria.entity.User;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", uses = {RoleMapper.class})

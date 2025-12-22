@@ -1,4 +1,4 @@
-package com.modoria.model;
+package com.modoria.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

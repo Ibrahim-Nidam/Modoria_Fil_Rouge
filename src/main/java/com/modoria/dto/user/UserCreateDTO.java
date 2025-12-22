@@ -1,4 +1,4 @@
-package com.modoria.dto;
+package com.modoria.dto.user;
 
 import lombok.Builder;
 import lombok.Data;

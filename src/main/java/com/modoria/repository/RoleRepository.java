@@ -1,6 +1,6 @@
 package com.modoria.repository;
 
-import com.modoria.model.Role;
+import com.modoria.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

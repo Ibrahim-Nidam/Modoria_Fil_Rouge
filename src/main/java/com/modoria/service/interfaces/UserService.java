@@ -1,6 +1,6 @@
 package com.modoria.service.interfaces;
 
-import com.modoria.dto.UserDTO;
+import com.modoria.dto.user.UserDTO;
 
 import java.util.List;
 
