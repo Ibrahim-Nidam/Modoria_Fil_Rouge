@@ -1,11 +1,20 @@
 package com.modoria.dto.auth;
 
-import lombok.Data;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-@Data
-public class RegisterRequestDTO {
-    private String fullName;
-    private String email;
-    private String password;
-    private String role;
-}
+public record RegisterRequestDTO(
+        @NotBlank(message = "Full name is required")
+        String fullName,
+
+        @NotBlank(message = "Email is required")
+        @Email(message = "Invalid email format")
+        String email,
+
+        @NotBlank(message = "Password is required")
+        @Size(min = 8, message = "Password must be at least 8 characters")
+        String password,
+
+        String role
+) {}

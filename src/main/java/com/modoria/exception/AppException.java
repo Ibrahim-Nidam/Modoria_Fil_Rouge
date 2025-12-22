@@ -1,7 +1,9 @@
 package com.modoria.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public abstract class AppException extends RuntimeException{
     private final HttpStatus status;
 
@@ -10,7 +12,4 @@ public abstract class AppException extends RuntimeException{
         this.status = status;
     }
 
-    public HttpStatus getStatus(){
-        return status;
-    }
 }

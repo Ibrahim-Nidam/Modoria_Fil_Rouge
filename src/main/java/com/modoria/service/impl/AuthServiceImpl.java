@@ -14,9 +14,9 @@ import com.modoria.security.JwtTokenProvider;
 import com.modoria.security.RefreshTokenProvider;
 import com.modoria.service.interfaces.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +26,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -34,73 +35,70 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public AuthResponseDTO register(RegisterRequestDTO requestDTO){
-        if(userRepository.findByEmail(requestDTO.getEmail()).isPresent()){
-            throw new DuplicateResourceException("Email already Exists");
-        }
+    public AuthResponseDTO register(RegisterRequestDTO requestDTO) {
+        userRepository.findByEmail(requestDTO.email())
+                .ifPresent(u -> {
+                    throw new DuplicateResourceException("Email already exists");
+                });
 
-        Set<Role> roles;
-        if (requestDTO.getRole() != null && !requestDTO.getRole().isBlank()) {
-            Role specifiedRole = roleRepository.findByName(requestDTO.getRole().toUpperCase())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Role '" + requestDTO.getRole() + "' not found"
-                    ));
-            roles = Set.of(specifiedRole);
-        } else {
-            Role customerRole = roleRepository.findByName("CUSTOMER")
-                    .orElseThrow(() -> new ResourceNotFoundException("Default role 'CUSTOMER' not found"));
-            roles = Set.of(customerRole);
-        }
+        Set<Role> roles = determineRoles(requestDTO.role());
 
         User user = User.builder()
-                .fullName(requestDTO.getFullName())
-                .email(requestDTO.getEmail())
-                .password(passwordEncoder.encode(requestDTO.getPassword()))
+                .fullName(requestDTO.fullName())
+                .email(requestDTO.email())
+                .password(passwordEncoder.encode(requestDTO.password()))
                 .enabled(true)
                 .roles(roles)
                 .build();
 
         userRepository.save(user);
 
-        String access = jwtTokenProvider.generateToken(user.getEmail());
-        String refresh = refreshTokenProvider.generateRefreshToken(user.getEmail());
-
-        return AuthResponseDTO.builder()
-                .accessToken(access)
-                .refreshToken(refresh)
-                .tokenType("Bearer")
-                .build();
+        return new AuthResponseDTO(
+                jwtTokenProvider.generateToken(user.getEmail()),
+                refreshTokenProvider.generateRefreshToken(user.getEmail()),
+                "Bearer"
+        );
     }
 
     @Override
-    public AuthResponseDTO login(LoginRequestDTO requestDTO){
-        try{
+    public AuthResponseDTO login(LoginRequestDTO requestDTO) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            requestDTO.email(),
+                            requestDTO.password()
+                    )
+            );
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        requestDTO.getEmail(), requestDTO.getPassword()
-                )
-        );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String access = jwtTokenProvider.generateToken(requestDTO.getEmail());
-        String refresh = refreshTokenProvider.generateRefreshToken(requestDTO.getEmail());
-
-        return AuthResponseDTO.builder()
-                .accessToken(access)
-                .refreshToken(refresh)
-                .tokenType("Bearer")
-                .build();
-
-        }catch (Exception ex){
+            return new AuthResponseDTO(
+                    jwtTokenProvider.generateToken(requestDTO.email()),
+                    refreshTokenProvider.generateRefreshToken(requestDTO.email()),
+                    "Bearer"
+            );
+        } catch (Exception e) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
     }
 
     @Override
-    public String logout(String token){
+    public String logout(String token) {
         return "logged out";
     }
 
+    private Set<Role> determineRoles(String requestedRole) {
+        if (requestedRole != null && !requestedRole.isBlank()) {
+            Role role = roleRepository.findByName(requestedRole.toUpperCase())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Role '" + requestedRole + "' not found"
+                    ));
+            return Set.of(role);
+        }
+
+        Role customerRole = roleRepository.findByName("CUSTOMER")
+                .orElseThrow(() -> new ResourceNotFoundException("Default role 'CUSTOMER' not found"));
+
+        return Set.of(customerRole);
+    }
 }
