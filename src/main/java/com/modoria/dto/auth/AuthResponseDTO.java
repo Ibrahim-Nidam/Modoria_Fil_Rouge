@@ -1,12 +1,9 @@
 package com.modoria.dto.auth;
 
-import lombok.Builder;
-import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
 
-@Data
-@Builder
-public class AuthResponseDTO {
-    private String accessToken;
-    private String refreshToken;
-    private String tokenType;
-}
+public record AuthResponseDTO(
+        @NotBlank String accessToken,
+        @NotBlank String refreshToken,
+        @NotBlank String tokenType
+) {}
