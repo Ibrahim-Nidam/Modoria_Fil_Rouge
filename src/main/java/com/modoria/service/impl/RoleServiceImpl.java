@@ -1,8 +1,8 @@
 package com.modoria.service.impl;
 
-import com.modoria.dto.RoleDTO;
+import com.modoria.dto.role.RoleDTO;
 import com.modoria.mapper.RoleMapper;
-import com.modoria.model.Role;
+import com.modoria.entity.Role;
 import com.modoria.repository.RoleRepository;
 import com.modoria.service.interfaces.RoleService;
 import lombok.RequiredArgsConstructor;

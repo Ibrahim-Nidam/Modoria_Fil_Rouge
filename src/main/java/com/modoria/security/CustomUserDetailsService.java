@@ -1,6 +1,6 @@
 package com.modoria.security;
 
-import com.modoria.model.User;
+import com.modoria.entity.User;
 import com.modoria.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
