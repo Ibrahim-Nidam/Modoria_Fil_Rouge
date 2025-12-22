@@ -5,6 +5,9 @@ import com.modoria.dto.auth.LoginRequestDTO;
 import com.modoria.dto.auth.RegisterRequestDTO;
 import com.modoria.entity.Role;
 import com.modoria.entity.User;
+import com.modoria.exception.DuplicateResourceException;
+import com.modoria.exception.InvalidCredentialsException;
+import com.modoria.exception.ResourceNotFoundException;
 import com.modoria.repository.RoleRepository;
 import com.modoria.repository.UserRepository;
 import com.modoria.security.JwtTokenProvider;
@@ -14,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,18 +36,28 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponseDTO register(RegisterRequestDTO requestDTO){
         if(userRepository.findByEmail(requestDTO.getEmail()).isPresent()){
-            throw new RuntimeException("Email already Exists");
+            throw new DuplicateResourceException("Email already Exists");
         }
 
-        Role defaultRole = roleRepository.findByName("CUSTOMER")
-                .orElseThrow(() -> new RuntimeException("Default role not Found"));
+        Set<Role> roles;
+        if (requestDTO.getRole() != null && !requestDTO.getRole().isBlank()) {
+            Role specifiedRole = roleRepository.findByName(requestDTO.getRole().toUpperCase())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Role '" + requestDTO.getRole() + "' not found"
+                    ));
+            roles = Set.of(specifiedRole);
+        } else {
+            Role customerRole = roleRepository.findByName("CUSTOMER")
+                    .orElseThrow(() -> new ResourceNotFoundException("Default role 'CUSTOMER' not found"));
+            roles = Set.of(customerRole);
+        }
 
         User user = User.builder()
                 .fullName(requestDTO.getFullName())
                 .email(requestDTO.getEmail())
-                .password(requestDTO.getPassword())
+                .password(passwordEncoder.encode(requestDTO.getPassword()))
                 .enabled(true)
-                .roles(Set.of(defaultRole))
+                .roles(roles)
                 .build();
 
         userRepository.save(user);
@@ -60,11 +74,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDTO login(LoginRequestDTO requestDTO){
+        try{
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         requestDTO.getEmail(), requestDTO.getPassword()
                 )
         );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         String access = jwtTokenProvider.generateToken(requestDTO.getEmail());
         String refresh = refreshTokenProvider.generateRefreshToken(requestDTO.getEmail());
 
@@ -74,6 +93,9 @@ public class AuthServiceImpl implements AuthService {
                 .tokenType("Bearer")
                 .build();
 
+        }catch (Exception ex){
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
     }
 
     @Override
