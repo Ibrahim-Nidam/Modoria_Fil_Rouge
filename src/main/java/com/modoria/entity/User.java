@@ -35,7 +35,6 @@ public class User {
     @Column(nullable = false, length = 255)
     private String password;
 
-    @NotBlank(message = "Enabled field can't be null")
     @Column(nullable = false)
     private Boolean enabled = true;
 
