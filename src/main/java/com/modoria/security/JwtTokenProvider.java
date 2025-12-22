@@ -3,7 +3,6 @@ package com.modoria.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,48 +11,48 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
-    @Value("${jwt.secret}")
-    private String jwtSecret;
 
-    @Value("${jwt.expiration-ms}")
-    private long jwtExpirationMs;
+    private final SecretKey key;
+    private final long expirationMs;
 
-    private SecretKey getSigningKey(){
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
-        return Keys.hmacShaKeyFor(keyBytes);
+    public JwtTokenProvider(
+            @Value("${jwt.secret}") String jwtSecret,
+            @Value("${jwt.expiration-ms}") long jwtExpirationMs) {
+
+        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+        this.expirationMs = jwtExpirationMs;
     }
 
-    public String generateToken(String email){
+    public String generateToken(String email) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
-
+        Date expiry = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(getSigningKey(), Jwts.SIG.HS512)
+                .expiration(expiry)
+                .signWith(key, Jwts.SIG.HS512)
                 .compact();
     }
 
-    public String getEmailFromToken(String token){
-        Claims claims = Jwts.parser()
-                .verifyWith(getSigningKey())
+    public String getEmailFromToken(String token) {
+        return parseClaims(token).getSubject();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            parseClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private Claims parseClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-        return claims.getSubject();
-    }
-
-    public boolean validateToken(String token){
-        try {
-            Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token);
-            return true;
-        } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException e){
-            return false;
-        }
     }
 }
