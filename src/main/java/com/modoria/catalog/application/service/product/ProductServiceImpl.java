@@ -3,10 +3,13 @@ package com.modoria.catalog.application.service.product;
 import com.modoria.catalog.application.dto.product.ProductRequestDTO;
 import com.modoria.catalog.application.dto.product.ProductResponseDTO;
 import com.modoria.catalog.application.mapper.product.ProductMapper;
+import com.modoria.catalog.application.service.season.SeasonService;
 import com.modoria.catalog.domain.model.Category;
 import com.modoria.catalog.domain.model.Product;
+import com.modoria.catalog.domain.model.Season;
 import com.modoria.catalog.domain.repository.CategoryRepository;
 import com.modoria.catalog.domain.repository.ProductRepository;
+import com.modoria.shared.exception.BadRequestException;
 import com.modoria.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
     private final FileStorageService fileStorageService;
+    private final SeasonService seasonService;
 
     @Override
     @Transactional
@@ -89,6 +93,26 @@ public class ProductServiceImpl implements ProductService {
         Product updatedProduct = productRepository.save(product);
         log.info("Uploaded image for product ID: {}", productId);
         return productMapper.toResponseDTO(updatedProduct);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductResponseDTO> getProductsBySeason(String seasonStr) {
+        Season season;
+        if ("current".equalsIgnoreCase(seasonStr)) {
+            season = seasonService.getCurrentSeason();
+        } else {
+            try {
+                season = Season.valueOf(seasonStr.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new BadRequestException("Invalid season: " + seasonStr);
+            }
+        }
+
+        return productRepository.findBySeason(season)
+                .stream()
+                .map(productMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
     private Product getProductOrThrow(Long id) {

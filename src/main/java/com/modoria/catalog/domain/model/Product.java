@@ -30,8 +30,9 @@ public class Product {
     @Column(nullable = false)
     private Integer stock;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 50)
-    private String season;
+    private Season season;
 
     @Column(length = 500)
     private String imagePath;

@@ -18,4 +18,6 @@ public interface ProductService {
     void deleteProduct(Long id);
 
     ProductResponseDTO uploadProductImage(Long productId, MultipartFile file);
+
+    List<ProductResponseDTO> getProductsBySeason(String season);
 }

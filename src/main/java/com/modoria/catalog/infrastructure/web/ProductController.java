@@ -60,4 +60,9 @@ public class ProductController {
             @RequestParam("file") MultipartFile file) {
         return ResponseEntity.ok(productService.uploadProductImage(id, file));
     }
+
+    @GetMapping("/season/{season}")
+    public ResponseEntity<List<ProductResponseDTO>> getProductsBySeason(@PathVariable String season) {
+        return ResponseEntity.ok(productService.getProductsBySeason(season));
+    }
 }
