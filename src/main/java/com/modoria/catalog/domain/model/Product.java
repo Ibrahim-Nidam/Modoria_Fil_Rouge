@@ -33,6 +33,9 @@ public class Product {
     @Column(length = 50)
     private String season;
 
+    @Column(length = 500)
+    private String imagePath;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
