@@ -11,7 +11,7 @@ import com.modoria.identity.domain.repository.RoleRepository;
 import com.modoria.identity.domain.repository.UserRepository;
 import com.modoria.identity.infrastructure.security.JwtTokenProvider;
 import com.modoria.identity.infrastructure.security.RefreshTokenProvider;
-
+import com.modoria.shared.email.EmailService;
 import com.modoria.shared.exception.DuplicateResourceException;
 import com.modoria.shared.exception.InvalidCredentialsException;
 import com.modoria.shared.exception.ResourceNotFoundException;
@@ -40,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenProvider refreshTokenProvider;
     private final AuthenticationManager authenticationManager;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final EmailService emailService;
 
     @Override
     public AuthResponseDTO register(RegisterRequestDTO requestDTO) {
@@ -103,12 +104,7 @@ public class AuthServiceImpl implements AuthService {
         PasswordResetToken resetToken = new PasswordResetToken(rawToken, user, 30);
         passwordResetTokenRepository.save(resetToken);
 
-        // Mock email: print the reset link to the console (simulator)
-        log.info("=== [MOCK EMAIL] Password Reset ===");
-        log.info("To: {}", email);
-        log.info("Reset token: {}", rawToken);
-        log.info("Use this token at POST /api/v1/auth/reset-password");
-        log.info("===================================");
+        emailService.sendPasswordResetEmail(email, rawToken);
     }
 
     @Override
