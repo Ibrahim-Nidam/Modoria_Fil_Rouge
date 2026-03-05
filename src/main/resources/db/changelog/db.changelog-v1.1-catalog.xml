@@ -46,4 +46,10 @@
                                  onDelete="CASCADE"/>
     </changeSet>
 
+    <changeSet id="3" author="modoria">
+        <addColumn tableName="products">
+            <column name="image_path" type="VARCHAR(500)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
