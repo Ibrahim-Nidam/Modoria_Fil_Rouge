@@ -10,4 +10,8 @@ public interface AuthService {
     AuthResponseDTO login(LoginRequestDTO requestDTO);
 
     String logout(String token);
+
+    void initiatePasswordReset(String email);
+
+    void resetPassword(String token, String newPassword);
 }
