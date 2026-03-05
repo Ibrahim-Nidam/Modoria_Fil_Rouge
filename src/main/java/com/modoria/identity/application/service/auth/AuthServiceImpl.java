@@ -3,16 +3,21 @@ package com.modoria.identity.application.service.auth;
 import com.modoria.identity.application.dto.auth.AuthResponseDTO;
 import com.modoria.identity.application.dto.auth.LoginRequestDTO;
 import com.modoria.identity.application.dto.auth.RegisterRequestDTO;
+import com.modoria.identity.domain.model.PasswordResetToken;
 import com.modoria.identity.domain.model.Role;
 import com.modoria.identity.domain.model.User;
+import com.modoria.identity.domain.repository.PasswordResetTokenRepository;
 import com.modoria.identity.domain.repository.RoleRepository;
 import com.modoria.identity.domain.repository.UserRepository;
 import com.modoria.identity.infrastructure.security.JwtTokenProvider;
 import com.modoria.identity.infrastructure.security.RefreshTokenProvider;
+
 import com.modoria.shared.exception.DuplicateResourceException;
 import com.modoria.shared.exception.InvalidCredentialsException;
 import com.modoria.shared.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,7 +26,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -32,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenProvider refreshTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Override
     public AuthResponseDTO register(RegisterRequestDTO requestDTO) {
@@ -80,6 +88,46 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String logout(String token) {
         return "logged out";
+    }
+
+    @Override
+    @Transactional
+    public void initiatePasswordReset(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("No account found with email: " + email));
+
+        // Remove any existing token for this user (one active reset at a time)
+        passwordResetTokenRepository.deleteByUser(user);
+
+        String rawToken = UUID.randomUUID().toString();
+        PasswordResetToken resetToken = new PasswordResetToken(rawToken, user, 30);
+        passwordResetTokenRepository.save(resetToken);
+
+        // Mock email: print the reset link to the console (simulator)
+        log.info("=== [MOCK EMAIL] Password Reset ===");
+        log.info("To: {}", email);
+        log.info("Reset token: {}", rawToken);
+        log.info("Use this token at POST /api/v1/auth/reset-password");
+        log.info("===================================");
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(String token, String newPassword) {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid or expired password reset token"));
+
+        if (resetToken.isExpired()) {
+            passwordResetTokenRepository.delete(resetToken);
+            throw new ResourceNotFoundException("Password reset token has expired. Please request a new one.");
+        }
+
+        User user = resetToken.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        passwordResetTokenRepository.delete(resetToken);
+        log.info("Password successfully reset for user: {}", user.getEmail());
     }
 
     private Set<Role> determineRoles(String requestedRole) {
