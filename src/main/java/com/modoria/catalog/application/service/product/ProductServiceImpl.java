@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final FileStorageService fileStorageService;
 
     @Override
     @Transactional
@@ -76,6 +78,17 @@ public class ProductServiceImpl implements ProductService {
         Product product = getProductOrThrow(id);
         productRepository.delete(product);
         log.info("Deleted product with ID: {}", id);
+    }
+
+    @Override
+    @Transactional
+    public ProductResponseDTO uploadProductImage(Long productId, MultipartFile file) {
+        Product product = getProductOrThrow(productId);
+        String imagePath = fileStorageService.storeFile(file, productId);
+        product.setImagePath(imagePath);
+        Product updatedProduct = productRepository.save(product);
+        log.info("Uploaded image for product ID: {}", productId);
+        return productMapper.toResponseDTO(updatedProduct);
     }
 
     private Product getProductOrThrow(Long id) {
