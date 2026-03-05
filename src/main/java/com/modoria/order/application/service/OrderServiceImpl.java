@@ -53,7 +53,11 @@ public class OrderServiceImpl implements OrderService {
             Product product = productRepository.findById(cartItemDto.getProduct().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-            // TODO: In a real system we would verify and deduct stock here
+            if (product.getStock() < cartItemDto.getQuantity()) {
+                throw new IllegalStateException("Insufficient stock for product: " + product.getName());
+            }
+            product.setStock(product.getStock() - cartItemDto.getQuantity());
+            productRepository.save(product);
 
             OrderItem orderItem = OrderItem.builder()
                     .product(product)
