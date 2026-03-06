@@ -31,4 +31,39 @@ public class EmailServiceImpl implements EmailService {
         mailSender.send(message);
         log.info("Password reset email successfully sent.");
     }
+
+    @Override
+    public void sendOrderConfirmationEmail(String toEmail, com.modoria.order.domain.model.Order order,
+            byte[] pdfInvoice) {
+        log.info("Sending order confirmation email to {} via Mailtrap for order {}", toEmail, order.getId());
+
+        try {
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(
+                    message, true);
+
+            helper.setFrom("noreply@modoria.com");
+            helper.setTo(toEmail);
+            helper.setSubject("Modoria - Order Confirmation #" + order.getId());
+
+            String text = String.format("Hello,\n\n" +
+                    "Thank you for your purchase!\n" +
+                    "Your order #%d has been confirmed. The total amount is $%.2f.\n\n" +
+                    "Please find your invoice attached as a PDF.\n\n" +
+                    "Regards,\nModoria Team", order.getId(), order.getTotalAmount());
+
+            helper.setText(text);
+
+            // Attach PDF
+            helper.addAttachment("Invoice_" + order.getId() + ".pdf",
+                    new org.springframework.core.io.ByteArrayResource(pdfInvoice));
+
+            mailSender.send(message);
+            log.info("Order confirmation email successfully sent.");
+
+        } catch (jakarta.mail.MessagingException e) {
+            log.error("Failed to send order confirmation email to {}", toEmail, e);
+            throw new RuntimeException("Failed to send order confirmation email", e);
+        }
+    }
 }
