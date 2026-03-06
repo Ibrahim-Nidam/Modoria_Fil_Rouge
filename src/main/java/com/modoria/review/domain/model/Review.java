@@ -2,6 +2,7 @@ package com.modoria.review.domain.model;
 
 import com.modoria.catalog.domain.model.Product;
 import com.modoria.identity.domain.model.User;
+import com.modoria.review.domain.enums.ReviewStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -40,6 +41,14 @@ public class Review {
 
     @Column(columnDefinition = "TEXT")
     private String comment;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private ReviewStatus status = ReviewStatus.PENDING;
+
+    @Column(name = "verified_purchase", nullable = false)
+    private boolean verifiedPurchase;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
