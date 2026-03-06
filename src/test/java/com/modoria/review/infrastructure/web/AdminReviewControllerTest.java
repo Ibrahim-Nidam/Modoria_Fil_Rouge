@@ -27,6 +27,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -86,5 +88,23 @@ class AdminReviewControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(reviewService).updateReviewStatus(eq(1L), eq(ReviewStatus.APPROVED));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void approveReview_Success() throws Exception {
+        mockMvc.perform(put("/api/v1/admin/reviews/1/approve"))
+                .andExpect(status().isNoContent());
+
+        verify(reviewService).updateReviewStatus(eq(1L), eq(ReviewStatus.APPROVED));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteReview_Success() throws Exception {
+        mockMvc.perform(delete("/api/v1/admin/reviews/1"))
+                .andExpect(status().isNoContent());
+
+        verify(reviewService).deleteReview(1L);
     }
 }
