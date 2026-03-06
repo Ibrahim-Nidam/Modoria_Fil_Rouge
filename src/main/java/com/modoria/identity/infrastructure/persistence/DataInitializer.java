@@ -25,8 +25,8 @@ public class DataInitializer {
             UserRepository userRepository) {
         return args -> {
             Role adminRole = createRoleIfNotExists(roleRepository, "ADMIN");
-            Role customerRole = createRoleIfNotExists(roleRepository, "CUSTOMER");
-            Role supportRole = createRoleIfNotExists(roleRepository, "SUPPORT");
+            createRoleIfNotExists(roleRepository, "CUSTOMER");
+            createRoleIfNotExists(roleRepository, "SUPPORT");
 
             if (userRepository.findByEmail("a@a.c").isEmpty()) {
                 User admin = User.builder()
