@@ -10,5 +10,6 @@
     <include file="db/changelog/db.changelog-v1.1-catalog.xml"/>
     <include file="db/changelog/db.changelog-v1.2-cart.xml"/>
     <include file="db/changelog/db.changelog-v1.3-order.xml"/>
+    <include file="db/changelog/db.changelog-v1.4-review.xml"/>
 
 </databaseChangeLog>
