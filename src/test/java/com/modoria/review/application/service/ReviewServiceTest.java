@@ -132,7 +132,8 @@ class ReviewServiceTest {
         ReviewResponseDTO responseDTO = new ReviewResponseDTO(1L, 100L, 1L, "Test", 4, "Good", null);
 
         when(productRepository.existsById(100L)).thenReturn(true);
-        when(reviewRepository.findByProductId(100L, pageable)).thenReturn(reviewPage);
+        when(reviewRepository.findByProductIdAndStatus(100L, com.modoria.review.domain.enums.ReviewStatus.APPROVED,
+                pageable)).thenReturn(reviewPage);
         when(reviewMapper.toDto(review)).thenReturn(responseDTO);
 
         // Act

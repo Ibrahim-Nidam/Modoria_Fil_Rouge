@@ -62,7 +62,8 @@ public class ReviewServiceImpl implements ReviewService {
             throw new ResourceNotFoundException("Product not found with id: " + productId);
         }
 
-        return reviewRepository.findByProductId(productId, pageable)
+        return reviewRepository
+                .findByProductIdAndStatus(productId, com.modoria.review.domain.enums.ReviewStatus.APPROVED, pageable)
                 .map(reviewMapper::toDto);
     }
 }
