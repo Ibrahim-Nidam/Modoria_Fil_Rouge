@@ -19,6 +19,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.modoria.order.domain.repository.OrderRepository;
+import com.modoria.review.domain.enums.ReviewStatus;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,7 +30,17 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
     private final ReviewMapper reviewMapper;
+
+    @Override
+    @Transactional
+    public void deleteReview(Long reviewId) {
+        if (!reviewRepository.existsById(reviewId)) {
+            throw new ResourceNotFoundException("Review not found");
+        }
+        reviewRepository.deleteById(reviewId);
+    }
 
     @Override
     @Transactional
@@ -45,9 +58,13 @@ public class ReviewServiceImpl implements ReviewService {
             throw new DuplicateResourceException("You have already reviewed this product.");
         }
 
+        boolean hasPurchased = orderRepository.hasUserPurchasedProduct(user.getId(), productId);
+
         Review review = reviewMapper.toEntity(dto);
         review.setProduct(product);
         review.setUser(user);
+        review.setVerifiedPurchase(hasPurchased);
+        review.setStatus(hasPurchased ? ReviewStatus.APPROVED : ReviewStatus.PENDING);
 
         review = reviewRepository.save(review);
         log.info("Successfully added review {} for product {}", review.getId(), productId);
@@ -62,7 +79,26 @@ public class ReviewServiceImpl implements ReviewService {
             throw new ResourceNotFoundException("Product not found with id: " + productId);
         }
 
-        return reviewRepository.findByProductId(productId, pageable)
+        return reviewRepository
+                .findByProductIdAndStatus(productId, com.modoria.review.domain.enums.ReviewStatus.APPROVED, pageable)
                 .map(reviewMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReviewResponseDTO> getPendingReviews(Pageable pageable) {
+        return reviewRepository.findByStatus(ReviewStatus.PENDING, pageable)
+                .map(reviewMapper::toDto);
+    }
+
+    @Override
+    @Transactional
+    public void updateReviewStatus(Long reviewId, ReviewStatus status) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found with id: " + reviewId));
+
+        review.setStatus(status);
+        reviewRepository.save(review);
+        log.info("Admin updated review {} status to {}", reviewId, status);
     }
 }

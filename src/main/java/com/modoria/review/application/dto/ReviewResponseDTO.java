@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import com.modoria.review.domain.enums.ReviewStatus;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,5 +20,7 @@ public class ReviewResponseDTO {
     private String userName;
     private Integer rating;
     private String comment;
+    private ReviewStatus status;
+    private boolean verifiedPurchase;
     private LocalDateTime createdAt;
 }

@@ -10,7 +10,6 @@ import com.modoria.review.application.mapper.ReviewMapper;
 import com.modoria.review.domain.model.Review;
 import com.modoria.review.domain.repository.ReviewRepository;
 import com.modoria.shared.exception.DuplicateResourceException;
-import com.modoria.shared.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +32,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import com.modoria.order.domain.repository.OrderRepository;
+import com.modoria.review.domain.enums.ReviewStatus;
 
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
@@ -45,6 +46,9 @@ class ReviewServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private OrderRepository orderRepository;
 
     @Mock
     private ReviewMapper reviewMapper;
@@ -77,8 +81,10 @@ class ReviewServiceTest {
         // Arrange
         ReviewCreateDTO createDTO = new ReviewCreateDTO(5, "Great product!");
         Review mappedReview = Review.builder().rating(5).comment("Great product!").build();
-        Review savedReview = Review.builder().id(1L).rating(5).comment("Great product!").build();
-        ReviewResponseDTO responseDTO = new ReviewResponseDTO(1L, 100L, 1L, "Test User", 5, "Great product!", null);
+        Review savedReview = Review.builder().id(1L).rating(5).comment("Great product!").status(ReviewStatus.APPROVED)
+                .verifiedPurchase(true).build();
+        ReviewResponseDTO responseDTO = new ReviewResponseDTO(1L, 100L, 1L, "Test User", 5, "Great product!",
+                ReviewStatus.APPROVED, true, null);
 
         SecurityContextHolder.setContext(securityContext);
         when(securityContext.getAuthentication()).thenReturn(authentication);
@@ -87,6 +93,7 @@ class ReviewServiceTest {
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
         when(productRepository.findById(100L)).thenReturn(Optional.of(testProduct));
         when(reviewRepository.findByProductIdAndUserId(100L, 1L)).thenReturn(Optional.empty());
+        when(orderRepository.hasUserPurchasedProduct(1L, 100L)).thenReturn(true);
 
         when(reviewMapper.toEntity(createDTO)).thenReturn(mappedReview);
         when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
@@ -99,6 +106,8 @@ class ReviewServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getRating()).isEqualTo(5);
+        assertThat(result.getStatus()).isEqualTo(ReviewStatus.APPROVED);
+        assertThat(result.isVerifiedPurchase()).isTrue();
         verify(reviewRepository).save(any(Review.class));
     }
 
@@ -129,10 +138,12 @@ class ReviewServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         Review review = Review.builder().id(1L).rating(4).comment("Good").build();
         Page<Review> reviewPage = new PageImpl<>(List.of(review));
-        ReviewResponseDTO responseDTO = new ReviewResponseDTO(1L, 100L, 1L, "Test", 4, "Good", null);
+        ReviewResponseDTO responseDTO = new ReviewResponseDTO(1L, 100L, 1L, "Test", 4, "Good", ReviewStatus.APPROVED,
+                true, null);
 
         when(productRepository.existsById(100L)).thenReturn(true);
-        when(reviewRepository.findByProductId(100L, pageable)).thenReturn(reviewPage);
+        when(reviewRepository.findByProductIdAndStatus(100L, com.modoria.review.domain.enums.ReviewStatus.APPROVED,
+                pageable)).thenReturn(reviewPage);
         when(reviewMapper.toDto(review)).thenReturn(responseDTO);
 
         // Act
