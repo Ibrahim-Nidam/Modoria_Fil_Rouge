@@ -15,4 +15,6 @@ public interface ReviewService {
     Page<ReviewResponseDTO> getPendingReviews(Pageable pageable);
 
     void updateReviewStatus(Long reviewId, ReviewStatus status);
+
+    void deleteReview(Long reviewId);
 }
