@@ -35,6 +35,15 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     @Transactional
+    public void deleteReview(Long reviewId) {
+        if (!reviewRepository.existsById(reviewId)) {
+            throw new ResourceNotFoundException("Review not found");
+        }
+        reviewRepository.deleteById(reviewId);
+    }
+
+    @Override
+    @Transactional
     public ReviewResponseDTO addReview(Long productId, ReviewCreateDTO dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         log.info("User {} is adding a review for Product ID {}", email, productId);
