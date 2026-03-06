@@ -34,6 +34,7 @@ class ReviewRepositoryTest {
         private Product product;
         private User user1;
         private User user2;
+        private User user3;
 
         @BeforeEach
         void setUp() {
@@ -65,16 +66,24 @@ class ReviewRepositoryTest {
                                 .fullName("User Two")
                                 .build();
                 user2 = userRepository.save(user2);
+
+                user3 = User.builder()
+                                .email("user3@test.com")
+                                .password("password")
+                                .fullName("User Three")
+                                .build();
+                user3 = userRepository.save(user3);
         }
 
         @Test
-        void shouldCalculateAverageRatingCorrectly() {
+        void shouldCalculateAverageRatingCorrectlyOnlyForApproved() {
                 // Given
                 Review review1 = Review.builder()
                                 .product(product)
                                 .user(user1)
                                 .rating(4)
                                 .comment("Great!")
+                                .status(com.modoria.review.domain.enums.ReviewStatus.APPROVED)
                                 .build();
                 reviewRepository.save(review1);
 
@@ -83,8 +92,18 @@ class ReviewRepositoryTest {
                                 .user(user2)
                                 .rating(5)
                                 .comment("Excellent!")
+                                .status(com.modoria.review.domain.enums.ReviewStatus.APPROVED)
                                 .build();
                 reviewRepository.save(review2);
+
+                Review pendingReview = Review.builder()
+                                .product(product)
+                                .user(user3)
+                                .rating(1)
+                                .comment("Bad, but pending")
+                                .status(com.modoria.review.domain.enums.ReviewStatus.PENDING)
+                                .build();
+                reviewRepository.save(pendingReview);
 
                 // When
                 Double avgRating = reviewRepository.getAverageRatingForProduct(product.getId());

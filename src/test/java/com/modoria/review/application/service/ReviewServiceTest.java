@@ -10,7 +10,6 @@ import com.modoria.review.application.mapper.ReviewMapper;
 import com.modoria.review.domain.model.Review;
 import com.modoria.review.domain.repository.ReviewRepository;
 import com.modoria.shared.exception.DuplicateResourceException;
-import com.modoria.shared.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import com.modoria.order.domain.repository.OrderRepository;
