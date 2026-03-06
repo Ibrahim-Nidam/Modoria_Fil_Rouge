@@ -3,6 +3,7 @@ package com.modoria.review.infrastructure.web;
 import com.modoria.review.application.dto.ReviewResponseDTO;
 import com.modoria.review.application.dto.ReviewStatusUpdateDTO;
 import com.modoria.review.application.service.ReviewService;
+import com.modoria.review.domain.enums.ReviewStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,8 +30,22 @@ public class AdminReviewController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
     public ResponseEntity<Void> updateReviewStatus(
             @PathVariable Long id,
-            @RequestBody @Valid ReviewStatusUpdateDTO dto) {
-        reviewService.updateReviewStatus(id, dto.getStatus());
+            @Valid @RequestBody ReviewStatusUpdateDTO updateDTO) {
+        reviewService.updateReviewStatus(id, updateDTO.getStatus());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
+    public ResponseEntity<Void> approveReview(@PathVariable Long id) {
+        reviewService.updateReviewStatus(id, ReviewStatus.APPROVED);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
+        reviewService.deleteReview(id);
         return ResponseEntity.noContent().build();
     }
 }
