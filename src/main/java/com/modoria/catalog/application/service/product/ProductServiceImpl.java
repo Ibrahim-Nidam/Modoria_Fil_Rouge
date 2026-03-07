@@ -127,10 +127,11 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public Page<ProductResponseDTO> searchProducts(String keyword, BigDecimal minPrice, BigDecimal maxPrice,
             Long categoryId, Season season, Pageable pageable) {
-        Specification<Product> spec = Specification.where(ProductSpecification.withKeyword(keyword))
-                .and(ProductSpecification.withPriceRange(minPrice, maxPrice))
-                .and(ProductSpecification.withCategoryId(categoryId))
-                .and(ProductSpecification.withSeason(season));
+        Specification<Product> spec = Specification.allOf(
+                ProductSpecification.withKeyword(keyword),
+                ProductSpecification.withPriceRange(minPrice, maxPrice),
+                ProductSpecification.withCategoryId(categoryId),
+                ProductSpecification.withSeason(season));
 
         return productRepository.findAll(spec, pageable)
                 .map(productMapper::toResponseDTO);
