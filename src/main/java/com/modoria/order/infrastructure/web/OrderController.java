@@ -1,7 +1,9 @@
 package com.modoria.order.infrastructure.web;
 
+import com.modoria.order.application.dto.CheckoutRequestDTO;
 import com.modoria.order.application.dto.OrderResponseDTO;
 import com.modoria.order.application.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +21,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/checkout")
-    public ResponseEntity<OrderResponseDTO> checkout() {
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.checkoutCart());
+    public ResponseEntity<OrderResponseDTO> checkout(@Valid @RequestBody CheckoutRequestDTO request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.checkoutCart(request.getPaymentMethodId()));
     }
 
     @GetMapping
