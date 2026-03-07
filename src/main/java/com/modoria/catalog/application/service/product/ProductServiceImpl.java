@@ -13,6 +13,8 @@ import com.modoria.shared.exception.BadRequestException;
 import com.modoria.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +35,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public ProductResponseDTO createProduct(ProductRequestDTO requestDTO) {
         Category category = getCategoryOrThrow(requestDTO.getCategoryId());
 
@@ -47,6 +50,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "#id")
     public ProductResponseDTO getProductById(Long id) {
         Product product = getProductOrThrow(id);
         return productMapper.toResponseDTO(product);
@@ -54,6 +58,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "'all'")
     public List<ProductResponseDTO> getAllProducts() {
         return productRepository.findAll()
                 .stream()
@@ -63,6 +68,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO requestDTO) {
         Product product = getProductOrThrow(id);
         Category category = getCategoryOrThrow(requestDTO.getCategoryId());
@@ -78,6 +84,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public void deleteProduct(Long id) {
         Product product = getProductOrThrow(id);
         productRepository.delete(product);
@@ -86,6 +93,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public ProductResponseDTO uploadProductImage(Long productId, MultipartFile file) {
         Product product = getProductOrThrow(productId);
         String imagePath = fileStorageService.storeFile(file, productId);
@@ -97,6 +105,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products", key = "#seasonStr")
     public List<ProductResponseDTO> getProductsBySeason(String seasonStr) {
         Season season;
         if ("current".equalsIgnoreCase(seasonStr)) {
