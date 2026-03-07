@@ -11,11 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -50,12 +49,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "categories", key = "'all'")
-    public List<CategoryResponseDTO> getAllCategories() {
-        return categoryRepository.findAll()
-                .stream()
-                .map(categoryMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    @Cacheable(value = "categories", key = "'all-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
+    public Page<CategoryResponseDTO> getAllCategories(Pageable pageable) {
+        return categoryRepository.findAll(pageable)
+                .map(categoryMapper::toResponseDTO);
     }
 
     @Override
