@@ -19,6 +19,8 @@ public interface UserMapper {
     UserDTO toDTO(User user);
 
     @Mapping(target = "password", ignore = true)
+    @Mapping(target = "address", ignore = true)
+    @Mapping(target = "phoneNumber", ignore = true)
     User toEntity(UserDTO dto);
 
     @Mapping(target = "roles", source = "roles", qualifiedByName = "mapRolesToStrings")
