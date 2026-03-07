@@ -9,6 +9,8 @@ import com.modoria.shared.exception.DuplicateResourceException;
 import com.modoria.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryResponseDTO createCategory(CategoryRequestDTO requestDTO) {
         if (categoryRepository.existsByName(requestDTO.getName())) {
             throw new DuplicateResourceException("Category with name '" + requestDTO.getName() + "' already exists");
@@ -39,6 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "categories", key = "#id")
     public CategoryResponseDTO getCategoryById(Long id) {
         Category category = findCategoryOrThrow(id);
         return categoryMapper.toResponseDTO(category);
@@ -46,6 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "categories", key = "'all'")
     public List<CategoryResponseDTO> getAllCategories() {
         return categoryRepository.findAll()
                 .stream()
@@ -55,6 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO requestDTO) {
         Category category = findCategoryOrThrow(id);
 
@@ -72,6 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public void deleteCategory(Long id) {
         Category category = findCategoryOrThrow(id);
         categoryRepository.delete(category);
