@@ -39,6 +39,14 @@ public class User {
     @Builder.Default
     private Boolean enabled = true;
 
+    @Size(max = 20, message = "Phone number is too long")
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    @Size(max = 255, message = "Address is too long")
+    @Column(length = 255)
+    private String address;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     @Builder.Default
