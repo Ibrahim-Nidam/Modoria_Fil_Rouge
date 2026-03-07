@@ -3,6 +3,7 @@ package com.modoria.catalog.infrastructure.web;
 import com.modoria.catalog.application.dto.product.ProductRequestDTO;
 import com.modoria.catalog.application.dto.product.ProductResponseDTO;
 import com.modoria.catalog.application.service.product.ProductService;
+import com.modoria.catalog.domain.model.Season;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -67,5 +70,17 @@ public class ProductController {
             @PathVariable String season,
             @PageableDefault(size = 20) Pageable pageable) {
         return ResponseEntity.ok(productService.getProductsBySeason(season, pageable));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProductResponseDTO>> searchProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Season season,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity
+                .ok(productService.searchProducts(keyword, minPrice, maxPrice, categoryId, season, pageable));
     }
 }
