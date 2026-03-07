@@ -15,12 +15,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -58,12 +57,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "'all'")
-    public List<ProductResponseDTO> getAllProducts() {
-        return productRepository.findAll()
-                .stream()
-                .map(productMapper::toResponseDTO)
-                .collect(Collectors.toList());
+    @Cacheable(value = "products", key = "'all-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
+    public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(productMapper::toResponseDTO);
     }
 
     @Override
@@ -105,8 +102,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "products", key = "#seasonStr")
-    public List<ProductResponseDTO> getProductsBySeason(String seasonStr) {
+    @Cacheable(value = "products", key = "#seasonStr + '-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
+    public Page<ProductResponseDTO> getProductsBySeason(String seasonStr, Pageable pageable) {
         Season season;
         if ("current".equalsIgnoreCase(seasonStr)) {
             season = seasonService.getCurrentSeason();
@@ -118,10 +115,8 @@ public class ProductServiceImpl implements ProductService {
             }
         }
 
-        return productRepository.findBySeason(season)
-                .stream()
-                .map(productMapper::toResponseDTO)
-                .collect(Collectors.toList());
+        return productRepository.findBySeason(season, pageable)
+                .map(productMapper::toResponseDTO);
     }
 
     private Product getProductOrThrow(Long id) {
