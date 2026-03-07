@@ -9,6 +9,7 @@ import com.modoria.catalog.domain.model.Product;
 import com.modoria.catalog.domain.model.Season;
 import com.modoria.catalog.domain.repository.CategoryRepository;
 import com.modoria.catalog.domain.repository.ProductRepository;
+import com.modoria.catalog.domain.specification.ProductSpecification;
 import com.modoria.shared.exception.BadRequestException;
 import com.modoria.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,12 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.math.BigDecimal;
 
 @Slf4j
 @Service
@@ -116,6 +120,19 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return productRepository.findBySeason(season, pageable)
+                .map(productMapper::toResponseDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDTO> searchProducts(String keyword, BigDecimal minPrice, BigDecimal maxPrice,
+            Long categoryId, Season season, Pageable pageable) {
+        Specification<Product> spec = Specification.where(ProductSpecification.withKeyword(keyword))
+                .and(ProductSpecification.withPriceRange(minPrice, maxPrice))
+                .and(ProductSpecification.withCategoryId(categoryId))
+                .and(ProductSpecification.withSeason(season));
+
+        return productRepository.findAll(spec, pageable)
                 .map(productMapper::toResponseDTO);
     }
 
