@@ -26,4 +26,6 @@ public interface ProductService {
 
     Page<ProductResponseDTO> searchProducts(String keyword, BigDecimal minPrice, BigDecimal maxPrice, Long categoryId,
             Season season, Pageable pageable);
+
+    String getCatalogSummary();
 }
