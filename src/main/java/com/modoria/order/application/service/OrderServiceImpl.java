@@ -13,6 +13,9 @@ import com.modoria.order.domain.model.Order;
 import com.modoria.order.domain.model.OrderItem;
 import com.modoria.order.domain.model.OrderStatus;
 import com.modoria.order.domain.repository.OrderRepository;
+import com.modoria.payment.application.dto.PaymentRequestDTO;
+import com.modoria.payment.application.dto.PaymentResponseDTO;
+import com.modoria.payment.application.service.PaymentService;
 import com.modoria.shared.exception.ResourceNotFoundException;
 import com.modoria.shared.email.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -33,10 +36,11 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final EmailService emailService;
     private final PdfInvoiceService pdfInvoiceService;
+    private final PaymentService paymentService;
 
     @Override
     @Transactional
-    public OrderResponseDTO checkoutCart() {
+    public OrderResponseDTO checkoutCart(String paymentMethodId) {
         User currentUser = getCurrentUser();
         CartResponseDTO cart = cartService.getCartForCurrentUser();
 
@@ -71,11 +75,27 @@ public class OrderServiceImpl implements OrderService {
             order.addItem(orderItem);
         }
 
-        // Save order and clear cart
+        // 2. Process Payment via Stripe
+        PaymentRequestDTO paymentRequest = PaymentRequestDTO.builder()
+                .amount(cart.getTotalPrice())
+                .currency("MAD") // Default currency
+                .orderReference("ORD-" + System.currentTimeMillis())
+                .stripePaymentMethodId(paymentMethodId)
+                .build();
+
+        PaymentResponseDTO paymentResponse = paymentService.processPayment(paymentRequest);
+
+        if (!paymentResponse.isSuccess()) {
+            throw new IllegalStateException("Payment failed: " + paymentResponse.getMessage());
+        }
+
+        // 3. Save order and clear cart
+        order.setStatus(OrderStatus.COMPLETED); // Or PENDING if we want to wait for webhook
         Order savedOrder = orderRepository.save(order);
         cartService.clearCart();
 
-        // Generate PDF and Send Email (asynchronously in a real app, keeping synchronous here for simplicity/Mailtrap)
+        // Generate PDF and Send Email (asynchronously in a real app, keeping
+        // synchronous here for simplicity/Mailtrap)
         try {
             byte[] pdfInvoice = pdfInvoiceService.generateInvoice(savedOrder);
             emailService.sendOrderConfirmationEmail(currentUser.getEmail(), savedOrder, pdfInvoice);
