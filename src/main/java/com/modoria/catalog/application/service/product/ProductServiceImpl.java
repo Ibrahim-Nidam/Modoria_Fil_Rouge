@@ -146,4 +146,13 @@ public class ProductServiceImpl implements ProductService {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getCatalogSummary() {
+        return productRepository.findAll().stream()
+                .map(p -> String.format("ID: %d, Name: %s, Category: %s, Price: %.2f, Description: %s",
+                        p.getId(), p.getName(), p.getCategory().getName(), p.getPrice(), p.getDescription()))
+                .collect(java.util.stream.Collectors.joining("\n"));
+    }
 }
