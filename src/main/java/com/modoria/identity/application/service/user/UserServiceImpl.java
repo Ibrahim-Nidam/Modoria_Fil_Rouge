@@ -1,6 +1,8 @@
 package com.modoria.identity.application.service.user;
 
 import com.modoria.identity.application.dto.user.UserDTO;
+import com.modoria.identity.application.dto.user.UserProfileResponseDTO;
+import com.modoria.identity.application.dto.user.UserProfileUpdateRequestDTO;
 import com.modoria.identity.application.mapper.user.UserMapper;
 import com.modoria.identity.domain.model.User;
 import com.modoria.identity.domain.repository.UserRepository;
@@ -38,5 +40,22 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream()
                 .map(userMapper::toDTO)
                 .toList();
+    }
+
+    @Override
+    public UserProfileResponseDTO getCurrentUserProfile(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        return userMapper.toProfileResponseDTO(user);
+    }
+
+    @Override
+    public UserProfileResponseDTO updateUserProfile(String email, UserProfileUpdateRequestDTO updateRequest) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        userMapper.updateEntityFromDTO(updateRequest, user);
+        User saved = userRepository.save(user);
+        return userMapper.toProfileResponseDTO(saved);
     }
 }
