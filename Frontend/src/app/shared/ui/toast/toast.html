@@ -1,0 +1,15 @@
+@if (visible) {
+<div
+    class="fixed bottom-8 right-8 z-50 flex items-center min-w-[300px] p-4 text-sm font-sans tracking-wide bg-black text-white dark:bg-white dark:text-black border border-transparent shadow-2xl animate-[slideIn_0.5s_ease-out]">
+    <div class="flex-grow">
+        <!-- Icon/Status could be passed via content -->
+        <ng-content></ng-content>
+    </div>
+    <app-button variant="ghost" size="icon" customClass="!p-1 ml-4 opacity-70 hover:opacity-100 transition-opacity"
+        (click)="close()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </app-button>
+</div>
+}

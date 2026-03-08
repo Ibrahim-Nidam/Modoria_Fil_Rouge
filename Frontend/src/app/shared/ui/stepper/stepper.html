@@ -1,0 +1,24 @@
+<div class="inline-flex items-center border border-black/20 dark:border-white/20 h-10 w-32 justify-between"
+    [class.opacity-50]="disabled">
+    <button type="button"
+        class="w-10 h-full flex items-center justify-center text-black hover:bg-black/5 dark:text-white dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="disabled || value <= min" (click)="decrement()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
+        </svg>
+    </button>
+
+    <span class="text-sm font-sans w-12 text-center select-none text-black dark:text-white">
+        {{ value }}
+    </span>
+
+    <button type="button"
+        class="w-10 h-full flex items-center justify-center text-black hover:bg-black/5 dark:text-white dark:hover:bg-white/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="disabled || value >= max" (click)="increment()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+    </button>
+</div>
