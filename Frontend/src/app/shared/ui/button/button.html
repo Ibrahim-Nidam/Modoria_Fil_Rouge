@@ -1,0 +1,21 @@
+<button [type]="type" [disabled]="disabled"
+    class="relative inline-flex items-center justify-center font-sans tracking-widest uppercase transition-all duration-500 ease-out z-0 overflow-hidden"
+    [class]="computedClasses()">
+
+    @if (loading) {
+    <div class="absolute inset-0 flex items-center justify-center bg-inherit z-10">
+        <div class="h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent"></div>
+    </div>
+    }
+
+    <span [class.opacity-0]="loading" class="flex items-center gap-2 relative z-10">
+        <ng-content></ng-content>
+    </span>
+
+    <!-- Micro-animation hover effect (bg slide up) -->
+    @if (variant !== 'ghost' && variant !== 'link') {
+    <div
+        class="absolute inset-0 -z-10 translate-y-[100%] bg-current opacity-10 transition-transform duration-500 ease-out group-hover:translate-y-0">
+    </div>
+    }
+</button>
