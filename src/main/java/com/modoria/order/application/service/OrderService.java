@@ -10,4 +10,6 @@ public interface OrderService {
     List<OrderResponseDTO> getUserOrders();
 
     OrderResponseDTO getOrderById(Long id);
+
+    byte[] getOrderInvoice(Long id);
 }

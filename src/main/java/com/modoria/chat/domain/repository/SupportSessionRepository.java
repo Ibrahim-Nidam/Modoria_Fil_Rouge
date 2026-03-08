@@ -12,4 +12,6 @@ public interface SupportSessionRepository extends JpaRepository<SupportSession, 
     Optional<SupportSession> findByCustomer(User customer);
 
     Optional<SupportSession> findByCustomerId(Long customerId);
+
+    java.util.List<SupportSession> findByStatus(com.modoria.chat.domain.enums.SupportSessionStatus status);
 }

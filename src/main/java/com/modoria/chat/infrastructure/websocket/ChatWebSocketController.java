@@ -97,6 +97,32 @@ public class ChatWebSocketController {
         }
 
         private void handleHumanInteraction(User sender, ChatMessageRequest request) {
+                if (request.getReceiverId() == null) {
+                        boolean isCustomer = sender.getRoles().stream().anyMatch(r -> r.getName().equals("CUSTOMER"));
+                        if (isCustomer) {
+                                com.modoria.chat.domain.model.SupportSession session = supportSessionService
+                                                .getOrCreateSession(sender.getId());
+                                if (session.getAgent() != null) {
+                                        request.setReceiverId(session.getAgent().getId());
+                                } else {
+                                        // Agent not assigned yet, cannot send directly
+                                        messagingTemplate.convertAndSendToUser(
+                                                        sender.getEmail(),
+                                                        "/queue/messages",
+                                                        ChatMessageDTO.builder()
+                                                                        .content("SYSTEM: Please wait, an agent has not been assigned to your session yet.")
+                                                                        .senderName("System")
+                                                                        .timestamp(java.time.LocalDateTime.now())
+                                                                        .build());
+                                        return;
+                                }
+                        }
+                }
+
+                if (request.getReceiverId() == null) {
+                        throw new IllegalArgumentException("Receiver ID is missing");
+                }
+
                 ChatMessageDTO savedMessage = chatService.sendMessage(sender.getId(), request);
 
                 User receiver = userRepository.findById(request.getReceiverId())

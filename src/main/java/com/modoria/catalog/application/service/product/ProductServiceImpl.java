@@ -38,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "products", allEntries = true)
+    @CacheEvict(value = { "products", "products_search" }, allEntries = true)
     public ProductResponseDTO createProduct(ProductRequestDTO requestDTO) {
         Category category = getCategoryOrThrow(requestDTO.getCategoryId());
 
@@ -69,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "products", allEntries = true)
+    @CacheEvict(value = { "products", "products_search" }, allEntries = true)
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO requestDTO) {
         Product product = getProductOrThrow(id);
         Category category = getCategoryOrThrow(requestDTO.getCategoryId());
@@ -85,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "products", allEntries = true)
+    @CacheEvict(value = { "products", "products_search" }, allEntries = true)
     public void deleteProduct(Long id) {
         Product product = getProductOrThrow(id);
         productRepository.delete(product);
@@ -94,7 +94,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "products", allEntries = true)
+    @CacheEvict(value = { "products", "products_search" }, allEntries = true)
     public ProductResponseDTO uploadProductImage(Long productId, MultipartFile file) {
         Product product = getProductOrThrow(productId);
         String imagePath = fileStorageService.storeFile(file, productId);
@@ -125,6 +125,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "products_search", key = "{#keyword, #minPrice, #maxPrice, #categoryId, #season, #pageable.pageNumber, #pageable.pageSize, #pageable.sort}")
     public Page<ProductResponseDTO> searchProducts(String keyword, BigDecimal minPrice, BigDecimal maxPrice,
             Long categoryId, Season season, Pageable pageable) {
         Specification<Product> spec = Specification.allOf(

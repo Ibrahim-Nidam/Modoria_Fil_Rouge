@@ -11,6 +11,7 @@ import com.modoria.identity.domain.repository.RoleRepository;
 import com.modoria.identity.domain.repository.UserRepository;
 import com.modoria.identity.infrastructure.security.JwtTokenProvider;
 import com.modoria.identity.infrastructure.security.RefreshTokenProvider;
+import com.modoria.identity.infrastructure.security.TokenBlacklistService;
 import com.modoria.shared.email.EmailService;
 import com.modoria.shared.exception.DuplicateResourceException;
 import com.modoria.shared.exception.InvalidCredentialsException;
@@ -41,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final EmailService emailService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
     public AuthResponseDTO register(RegisterRequestDTO requestDTO) {
@@ -88,7 +90,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String logout(String token) {
-        return "logged out";
+        if (token != null) {
+            tokenBlacklistService.blacklistToken(token);
+        }
+        return "Logged out successfully";
     }
 
     @Override
