@@ -24,7 +24,7 @@ Modoria is a premium, masculine-editorial e-commerce platform built with a moder
 2. **Backend**: Start the Spring Boot application.
    ```bash
    cd Backend
-   .\mvnw.cmd spring-boot:run
+   mvn spring-boot:run
    ```
 3. **Frontend**: (Work in Progress)
    ```bash
