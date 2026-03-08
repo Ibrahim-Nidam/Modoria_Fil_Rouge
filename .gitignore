@@ -1,46 +1,23 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Root Gitignore for Modoria Monorepo
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+# IDEs
+.idea/
 .vscode/
+*.swp
+*.swo
 
+# OS File
+.DS_Store
+Thumbs.db
+
+# Build Artifacts
+Backend/target/
+Frontend/dist/
+node_modules/
+dist/
+
+# Local Environment
 .env
 .env.local
-.env.*.local
-
-application.yml
-application-dev.yml
-application-qa.yml
-application-prod.yml
-
-files_list.txt
-
-logs
+Backend/.env
+Frontend/.env
