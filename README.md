@@ -33,9 +33,5 @@ Modoria is a premium, masculine-editorial e-commerce platform built with a moder
    npm start
    ```
 
-## 📖 Global Documentation
-- **[AGENTS_GUIDE.md](./AGENTS_GUIDE.md)**: Architecture guidelines and roadmap for developers.
-- **[MODORIA_DESIGN_SYSTEM.md](./MODORIA_DESIGN_SYSTEM.md)**: Visual identity, color palettes, and UX principles.
-
 ---
 © 2026 Modoria Team. All rights reserved.
