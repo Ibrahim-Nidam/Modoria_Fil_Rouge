@@ -132,6 +132,20 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toOrderResponseDTO(order);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public byte[] getOrderInvoice(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        Long currentUserId = getCurrentUser().getId();
+        if (!order.getUser().getId().equals(currentUserId)) {
+            throw new ResourceNotFoundException("Order not found or access denied");
+        }
+
+        return pdfInvoiceService.generateInvoice(order);
+    }
+
     private User getCurrentUser() {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
