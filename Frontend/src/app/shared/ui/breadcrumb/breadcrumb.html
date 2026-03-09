@@ -1,14 +1,14 @@
-<nav aria-label="Breadcrumb" class="font-sans text-xs tracking-widest uppercase text-black/60 dark:text-white/60">
-    <ol class="flex flex-wrap items-center gap-2">
-        @for (item of items; track item.label; let last = $last) {
-        <li class="flex items-center">
-            @if (!last) {
-            <a [href]="item.url" class="hover:text-black dark:hover:text-white transition-colors">{{ item.label }}</a>
-            <span class="ml-2 font-serif opacity-50">/</span>
-            } @else {
-            <span class="text-black dark:text-white font-semibold">{{ item.label }}</span>
-            }
-        </li>
-        }
-    </ol>
+<nav aria-label="Breadcrumb"class="font-sans text-xs tracking-widest uppercase text-foreground/60">
+ <ol class="flex flex-wrap items-center gap-2">
+ @for (item of items; track item.label; let last = $last) {
+ <li class="flex items-center">
+ @if (!last) {
+ <a [href]="item.url"class="hover:text-foreground transition-colors">{{ item.label }}</a>
+ <span class="ml-2 font-serif opacity-50">/</span>
+ } @else {
+ <span class="text-foreground font-semibold">{{ item.label }}</span>
+ }
+ </li>
+ }
+ </ol>
 </nav>
