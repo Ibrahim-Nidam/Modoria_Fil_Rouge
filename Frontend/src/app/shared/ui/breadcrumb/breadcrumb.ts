@@ -1,17 +1,17 @@
 import { Component, Input } from '@angular/core';
 
 export interface BreadcrumbItem {
-  label: string;
-  url?: string;
+ label: string;
+ url?: string;
 }
 
 @Component({
-  selector: 'app-breadcrumb',
-  standalone: true,
-  imports: [],
-  templateUrl: './breadcrumb.html',
-  styleUrl: './breadcrumb.css',
+ selector: 'app-breadcrumb',
+ standalone: true,
+ imports: [],
+ templateUrl: './breadcrumb.html',
+ styleUrl: './breadcrumb.css',
 })
 export class Breadcrumb {
-  @Input() items: BreadcrumbItem[] = [];
+ @Input() items: BreadcrumbItem[] = [];
 }

@@ -1,29 +1,29 @@
 @if (isOpen) {
 <div class="fixed inset-0 z-50 flex items-center justify-center font-sans">
     <!-- Overlay -->
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" (click)="close()"></div>
+    <div class="absolute inset-0 bg-foreground/60 backdrop-blur-sm transition-opacity" (click)="close()"></div>
 
     <!-- Modal Content -->
     <div
-        class="relative w-full max-w-lg bg-white dark:bg-black border border-black/10 dark:border-white/10 shadow-2xl overflow-hidden animate-[slideUp_0.4s_ease-out]">
+        class="relative w-full max-w-lg bg-background border border-foreground/10 shadow-2xl overflow-hidden animate-[slideUp_0.4s_ease-out]">
         <!-- Header -->
-        <div class="flex items-center justify-between p-6 border-b border-black/5 dark:border-white/5">
-            <h3 class="text-sm font-semibold tracking-widest uppercase text-black dark:text-white">{{ title }}</h3>
-            <button type="button" (click)="close()"
-                class="p-2 text-black/50 hover:text-black dark:text-white/50 dark:hover:text-white transition-colors focus:outline-none">
+        <div class="flex items-center justify-between p-6 border-b border-foreground/5">
+            <h3 class="text-sm font-semibold tracking-widest uppercase text-foreground">{{ title }}</h3>
+            <app-button variant="ghost" size="icon" customClass="text-foreground/50 hover:text-foreground/50"
+                (click)="close()">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-            </button>
+            </app-button>
         </div>
 
         <!-- Body -->
-        <div class="p-6 text-sm text-black/80 dark:text-white/80 leading-relaxed max-h-[70vh] overflow-y-auto">
+        <div class="p-6 text-sm text-foreground/80 leading-relaxed max-h-[70vh] overflow-y-auto">
             <ng-content></ng-content>
         </div>
 
         <!-- Footer (optional content projection) -->
-        <div class="p-6 bg-black/5 dark:bg-white/5 border-t border-black/5 dark:border-white/5 flex justify-end gap-4">
+        <div class="p-6 bg-foreground/5 border-t border-foreground/5 flex justify-end gap-4">
             <ng-content select="[modal-footer]"></ng-content>
         </div>
     </div>

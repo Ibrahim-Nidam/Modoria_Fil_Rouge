@@ -1,20 +1,20 @@
-<div class="border-b border-black/10 dark:border-white/10 font-sans">
-    <app-button variant="ghost" size="none" customClass="w-full !justify-between py-4 hover:bg-transparent"
-        (click)="toggle()">
-        <div
-            class="flex items-center justify-between w-full font-semibold tracking-widest uppercase transition-colors hover:text-black/70 dark:hover:text-white/70">
-            <span>{{ title }}</span>
-            <svg class="w-4 h-4 transition-transform duration-300" [class.rotate-180]="isOpen" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="square" stroke-linejoin="miter" stroke-width="1.5" d="M19 9l-7 7-7-7" />
-            </svg>
-        </div>
-    </app-button>
+<div class="border-b border-foreground/10 font-sans">
+ <app-button variant="ghost"size="none"customClass="w-full !justify-between py-4 hover:bg-transparent"
+ (click)="toggle()">
+ <div
+ class="flex items-center justify-between w-full font-semibold tracking-widest uppercase transition-colors hover:text-foreground/70">
+ <span>{{ title }}</span>
+ <svg class="w-4 h-4 transition-transform duration-300"[class.rotate-180]="isOpen"fill="none"
+ stroke="currentColor"viewBox="0 0 24 24">
+ <path stroke-linecap="square"stroke-linejoin="miter"stroke-width="1.5"d="M19 9l-7 7-7-7"/>
+ </svg>
+ </div>
+ </app-button>
 
-    <div class="overflow-hidden transition-all duration-500 ease-in-out" [class.max-h-0]="!isOpen"
-        [class.max-h-[1000px]]="isOpen" [class.opacity-0]="!isOpen" [class.opacity-100]="isOpen">
-        <div class="pb-6 text-sm leading-relaxed text-black/80 dark:text-white/80">
-            <ng-content></ng-content>
-        </div>
-    </div>
+ <div class="overflow-hidden transition-all duration-500 ease-in-out"[class.max-h-0]="!isOpen"
+ [class.max-h-[1000px]]="isOpen"[class.opacity-0]="!isOpen"[class.opacity-100]="isOpen">
+ <div class="pb-6 text-sm leading-relaxed text-foreground/80">
+ <ng-content></ng-content>
+ </div>
+ </div>
 </div>

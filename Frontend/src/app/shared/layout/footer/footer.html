@@ -1,9 +1,15 @@
 <footer
-    class="bg-black dark:bg-black/95 border-t border-black/10 dark:border-white/10 text-white dark:text-white/90 pt-20 pb-10 overflow-hidden relative z-10 transition-colors duration-300">
+    class="bg-background border-t border-primary/20 text-foreground pt-20 pb-10 overflow-hidden relative z-10 transition-all duration-700">
+
+    <!-- Seasonal 'Merge' Hue (The Luxury Glow) -->
     <div
-        class="absolute -bottom-10 left-1/2 -translate-x-1/2 opacity-[0.03] select-none pointer-events-none w-full text-center">
+        class="absolute inset-x-0 top-0 h-64 bg-linear-to-b from-primary/15 via-primary/5 to-transparent pointer-events-none z-0">
+    </div>
+
+    <!-- Background Branding -->
+    <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 select-none pointer-events-none w-full text-center z-0">
         <span
-            class="text-[15vw] font-serif font-black tracking-widest leading-none text-white dark:text-white">MODORIA</span>
+            class="text-[15vw] font-serif font-black tracking-widest leading-none text-foreground/[0.04] transition-colors duration-700">MODORIA</span>
     </div>
 
     <div class="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10">
@@ -11,46 +17,50 @@
 
             <!-- Brand Section -->
             <div class="col-span-1 md:col-span-2">
-                <div class="size-8 text-white mb-6">
+                <div class="size-8 text-primary mb-6 transition-colors duration-700">
                     <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4 44V4H14L24 24L34 4H44V44" stroke="currentColor" stroke-linecap="square"
                             stroke-linejoin="round" stroke-width="3"></path>
                     </svg>
                 </div>
-                <p class="text-white/60 dark:text-white/60 max-w-sm mb-6 font-sans font-light">
+                <p class="text-primary font-serif italic mb-2 tracking-wide transition-colors duration-700">{{
+                    seasonalSlogan }}</p>
+                <p class="text-foreground/60 max-w-sm mb-6 font-sans font-light leading-relaxed">
                     Modoria represents the pinnacle of modern sartorial elegance.
                     Crafted for the discerning gentleman who values heritage,
                     quality, and timeless style.
                 </p>
                 <div class="flex gap-4">
-                    <a class="text-white/60 dark:text-white/60 hover:text-primary transition-colors" href="#"><i
-                            class="text-xl">IG</i></a>
-                    <a class="text-white/60 dark:text-white/60 hover:text-primary transition-colors" href="#"><i
-                            class="text-xl">TW</i></a>
-                    <a class="text-white/60 dark:text-white/60 hover:text-primary transition-colors" href="#"><i
-                            class="text-xl">YT</i></a>
+                    <a class="text-foreground/40 hover:text-primary transition-colors duration-300" href="#"><i
+                            class="text-xl font-serif not-italic">IG</i></a>
+                    <a class="text-foreground/40 hover:text-primary transition-colors duration-300" href="#"><i
+                            class="text-xl font-serif not-italic">TW</i></a>
+                    <a class="text-foreground/40 hover:text-primary transition-colors duration-300" href="#"><i
+                            class="text-xl font-serif not-italic">YT</i></a>
                 </div>
             </div>
 
             <!-- Services -->
             <div>
-                <h4 class="text-white dark:text-white font-bold tracking-widest uppercase mb-6 text-sm">Services</h4>
-                <ul class="flex flex-col gap-4 text-sm text-white/70 dark:text-white/70 font-sans font-light">
-                    <li><a class="hover:text-primary transition-colors" href="#">Personal Styling</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">Made to Measure</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">Corporate Gifting</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">Shipping &amp; Returns</a></li>
+                <h4 class="text-foreground font-bold tracking-widest uppercase mb-6 text-sm">Services</h4>
+                <ul class="flex flex-col gap-4 text-sm text-foreground/70 font-sans font-light">
+                    <li><a class="hover:text-primary transition-colors duration-300" href="#">Personal Styling</a></li>
+                    <li><a class="hover:text-primary transition-colors duration-300" href="#">Made to Measure</a></li>
+                    <li><a class="hover:text-primary transition-colors duration-300" href="#">Corporate Gifting</a></li>
+                    <li><a class="hover:text-primary transition-colors duration-300" href="#">Shipping &amp; Returns</a>
+                    </li>
                 </ul>
             </div>
 
             <!-- Legal -->
             <div>
-                <h4 class="text-white dark:text-white font-bold tracking-widest uppercase mb-6 text-sm">Legal</h4>
-                <ul class="flex flex-col gap-4 text-sm text-white/70 dark:text-white/70 font-sans font-light">
-                    <li><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">Terms of Use</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">Cookie Preferences</a></li>
-                    <li><a class="hover:text-primary transition-colors" href="#">Accessibility</a></li>
+                <h4 class="text-foreground font-bold tracking-widest uppercase mb-6 text-sm">Legal</h4>
+                <ul class="flex flex-col gap-4 text-sm text-foreground/70 font-sans font-light">
+                    <li><a class="hover:text-primary transition-colors duration-300" href="#">Privacy Policy</a></li>
+                    <li><a class="hover:text-primary transition-colors duration-300" href="#">Terms of Use</a></li>
+                    <li><a class="hover:text-primary transition-colors duration-300" href="#">Cookie Preferences</a>
+                    </li>
+                    <li><a class="hover:text-primary transition-colors duration-300" href="#">Accessibility</a></li>
                 </ul>
             </div>
 
@@ -58,13 +68,13 @@
 
         <!-- Bottom Bar -->
         <div
-            class="flex flex-col md:flex-row justify-between items-center border-t border-white/10 dark:border-white/10 pt-8 text-xs text-white/40 dark:text-white/40 uppercase tracking-widest font-sans">
+            class="flex flex-col md:flex-row justify-between items-center border-t border-foreground/10 pt-8 text-xs text-foreground/40 uppercase tracking-widest font-sans">
             <p>© {{ currentYear }} MODORIA Holdings. All rights reserved.</p>
             <div class="flex gap-6 mt-4 md:mt-0">
-                <span>London</span>
-                <span>Milan</span>
-                <span>New York</span>
-                <span>Tokyo</span>
+                <span class="hover:text-foreground/80 transition-colors">London</span>
+                <span class="hover:text-foreground/80 transition-colors">Milan</span>
+                <span class="hover:text-foreground/80 transition-colors">New York</span>
+                <span class="hover:text-foreground/80 transition-colors">Tokyo</span>
             </div>
         </div>
     </div>

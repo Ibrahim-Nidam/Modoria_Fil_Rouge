@@ -1,17 +1,17 @@
-<div class="group flex flex-col bg-transparent overflow-hidden" [class]="paddingClass()">
-    <!-- Image Area -->
-    <div class="relative w-full aspect-[3/4] overflow-hidden bg-black/5 dark:bg-white/5">
-        <ng-content select="[card-image]"></ng-content>
+<div class="group flex flex-col bg-transparent overflow-hidden"[class]="paddingClass()">
+ <!-- Image Area -->
+ <div class="relative w-full aspect-[3/4] overflow-hidden bg-foreground/5">
+ <ng-content select="[card-image]"></ng-content>
 
-        <!-- Hover Overlay (for ADD TO BAG or quick actions) -->
-        <div
-            class="absolute inset-0 bg-black/5 dark:bg-white/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100 flex items-end justify-center pb-8">
-            <ng-content select="[card-overlay]"></ng-content>
-        </div>
-    </div>
+ <!-- Hover Overlay (for ADD TO BAG or quick actions) -->
+ <div
+ class="absolute inset-0 bg-foreground/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100 flex items-end justify-center pb-8">
+ <ng-content select="[card-overlay]"></ng-content>
+ </div>
+ </div>
 
-    <!-- Content Area -->
-    <div class="flex flex-col pt-4 font-sans text-sm">
-        <ng-content></ng-content>
-    </div>
+ <!-- Content Area -->
+ <div class="flex flex-col pt-4 font-sans text-sm">
+ <ng-content></ng-content>
+ </div>
 </div>

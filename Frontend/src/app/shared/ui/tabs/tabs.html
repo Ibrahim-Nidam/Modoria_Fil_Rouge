@@ -1,17 +1,17 @@
-<div class="flex space-x-8 border-b border-black/10 dark:border-white/10 font-sans mb-6">
-    @for (tab of tabs; track tab.id) {
-    <button type="button" class="pb-2 text-sm tracking-widest relative transition-colors focus:outline-none"
-        [class.text-black]="activeTabId === tab.id" [class.dark:text-white]="activeTabId === tab.id"
-        [class.font-medium]="activeTabId === tab.id" [class.text-black/50]="activeTabId !== tab.id"
-        [class.dark:text-white/50]="activeTabId !== tab.id" [class.font-light]="activeTabId !== tab.id"
-        [class.hover:text-black]="activeTabId !== tab.id" [class.dark:hover:text-white]="activeTabId !== tab.id"
-        (click)="selectTab(tab.id)">
-        {{ tab.label | uppercase }}
+<div class="flex space-x-8 border-b border-foreground/10 font-sans mb-6">
+ @for (tab of tabs; track tab.id) {
+ <button type="button"class="pb-2 text-sm tracking-widest relative transition-colors focus:outline-none"
+ [class.text-foreground]="activeTabId === tab.id"[class.]="activeTabId === tab.id"
+ [class.font-medium]="activeTabId === tab.id"[class.text-foreground/50]="activeTabId !== tab.id"
+ [class.]="activeTabId !== tab.id"[class.font-light]="activeTabId !== tab.id"
+ [class.hover:text-foreground]="activeTabId !== tab.id"[class.]="activeTabId !== tab.id"
+ (click)="selectTab(tab.id)">
+ {{ tab.label | uppercase }}
 
-        <!-- Active Underline -->
-        <div class="absolute bottom-[-1px] left-0 right-0 h-[1px] bg-black dark:bg-white transition-opacity duration-300"
-            [class.opacity-100]="activeTabId === tab.id" [class.opacity-0]="activeTabId !== tab.id">
-        </div>
-    </button>
-    }
+ <!-- Active Underline -->
+ <div class="absolute bottom-[-1px] left-0 right-0 h-[1px] bg-foreground transition-opacity duration-300"
+ [class.opacity-100]="activeTabId === tab.id"[class.opacity-0]="activeTabId !== tab.id">
+ </div>
+ </button>
+ }
 </div>
