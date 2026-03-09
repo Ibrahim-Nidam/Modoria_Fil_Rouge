@@ -1,19 +1,19 @@
 <div class="relative inline-flex flex-col items-center group font-sans">
-    <ng-content></ng-content>
+ <ng-content></ng-content>
 
-    <div class="absolute z-50 flex-col items-center hidden mb-2 group-hover:flex"
-        [class.bottom-full]="position === 'top'" [class.top-full]="position === 'bottom'"
-        [class.mt-2]="position === 'bottom'" [class.right-full]="position === 'left'" [class.mr-2]="position === 'left'"
-        [class.left-full]="position === 'right'" [class.ml-2]="position === 'right'">
-        <div
-            class="relative select-none z-50 p-2 text-xs leading-none text-white dark:text-black whitespace-no-wrap bg-black dark:bg-white shadow-lg">
-            {{ text }}
-        </div>
-        @if (position === 'top') {
-        <div class="w-3 h-3 -mt-2 rotate-45 bg-black dark:bg-white"></div>
-        }
-        @if (position === 'bottom') {
-        <div class="w-3 h-3 -mb-2 rotate-45 bg-black dark:bg-white"></div>
-        }
-    </div>
+ <div class="absolute z-50 flex-col items-center hidden mb-2 group-hover:flex"
+ [class.bottom-full]="position === 'top'"[class.top-full]="position === 'bottom'"
+ [class.mt-2]="position === 'bottom'"[class.right-full]="position === 'left'"[class.mr-2]="position === 'left'"
+ [class.left-full]="position === 'right'"[class.ml-2]="position === 'right'">
+ <div
+ class="relative select-none z-50 p-2 text-xs leading-none text-background whitespace-no-wrap bg-foreground shadow-lg">
+ {{ text }}
+ </div>
+ @if (position === 'top') {
+ <div class="w-3 h-3 -mt-2 rotate-45 bg-foreground"></div>
+ }
+ @if (position === 'bottom') {
+ <div class="w-3 h-3 -mb-2 rotate-45 bg-foreground"></div>
+ }
+ </div>
 </div>
