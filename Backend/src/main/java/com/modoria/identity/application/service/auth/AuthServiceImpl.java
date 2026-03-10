@@ -3,6 +3,8 @@ package com.modoria.identity.application.service.auth;
 import com.modoria.identity.application.dto.auth.AuthResponseDTO;
 import com.modoria.identity.application.dto.auth.LoginRequestDTO;
 import com.modoria.identity.application.dto.auth.RegisterRequestDTO;
+import com.modoria.identity.application.dto.role.RoleDTO;
+import com.modoria.identity.application.dto.user.UserDTO;
 import com.modoria.identity.domain.model.PasswordResetToken;
 import com.modoria.identity.domain.model.Role;
 import com.modoria.identity.domain.model.User;
@@ -66,7 +68,8 @@ public class AuthServiceImpl implements AuthService {
         return new AuthResponseDTO(
                 jwtTokenProvider.generateToken(user.getEmail()),
                 refreshTokenProvider.generateRefreshToken(user.getEmail()),
-                "Bearer");
+                "Bearer",
+                mapToUserDTO(user));
     }
 
     @Override
@@ -79,10 +82,14 @@ public class AuthServiceImpl implements AuthService {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            User user = userRepository.findByEmail(requestDTO.email())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
             return new AuthResponseDTO(
                     jwtTokenProvider.generateToken(requestDTO.email()),
                     refreshTokenProvider.generateRefreshToken(requestDTO.email()),
-                    "Bearer");
+                    "Bearer",
+                    mapToUserDTO(user));
         } catch (Exception e) {
             throw new InvalidCredentialsException("Invalid email or password");
         }
@@ -143,5 +150,16 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("Default role 'CUSTOMER' not found"));
 
         return Set.of(customerRole);
+    }
+
+    private UserDTO mapToUserDTO(User user) {
+        return new UserDTO(
+                user.getId(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getEnabled(),
+                user.getRoles().stream()
+                        .map(role -> new RoleDTO(role.getId(), role.getName()))
+                        .collect(java.util.stream.Collectors.toSet()));
     }
 }
