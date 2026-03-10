@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { Button } from '../../ui/button/button';
 import { InputComponent } from '../../ui/input/input';
 import { ThemeService, Season } from '../../../core/theme/theme.service';
+import { AuthService } from '../../../core/auth/auth.service';
 
 @Component({
     selector: 'app-header',
@@ -13,7 +14,12 @@ import { ThemeService, Season } from '../../../core/theme/theme.service';
 })
 export class Header {
     public themeService = inject(ThemeService);
+    public authService = inject(AuthService);
     public availableSeasons: Season[] = ['spring', 'summer', 'autumn', 'winter'];
+
+    logout() {
+        this.authService.logout();
+    }
 
     onSeasonChange(event: Event) {
         const target = event.target as HTMLSelectElement;

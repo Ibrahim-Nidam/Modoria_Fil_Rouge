@@ -3,6 +3,7 @@ package com.modoria.identity.application.service.auth;
 import com.modoria.identity.application.dto.auth.AuthResponseDTO;
 import com.modoria.identity.application.dto.auth.LoginRequestDTO;
 import com.modoria.identity.application.dto.auth.RegisterRequestDTO;
+import com.modoria.identity.application.dto.auth.RefreshTokenRequestDTO;
 import com.modoria.identity.application.dto.role.RoleDTO;
 import com.modoria.identity.application.dto.user.UserDTO;
 import com.modoria.identity.domain.model.PasswordResetToken;
@@ -101,6 +102,24 @@ public class AuthServiceImpl implements AuthService {
             tokenBlacklistService.blacklistToken(token);
         }
         return "Logged out successfully";
+    }
+
+    @Override
+    public AuthResponseDTO refreshToken(RefreshTokenRequestDTO requestDTO) {
+        String token = requestDTO.refreshToken();
+        if (token == null || !refreshTokenProvider.validate(token)) {
+            throw new InvalidCredentialsException("Invalid or expired refresh token");
+        }
+
+        String email = refreshTokenProvider.getEmail(token);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        return new AuthResponseDTO(
+                jwtTokenProvider.generateToken(email),
+                refreshTokenProvider.generateRefreshToken(email),
+                "Bearer",
+                mapToUserDTO(user));
     }
 
     @Override

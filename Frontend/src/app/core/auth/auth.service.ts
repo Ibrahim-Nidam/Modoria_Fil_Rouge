@@ -58,6 +58,10 @@ export class AuthService {
         );
     }
 
+    refreshToken(token: string): Observable<AuthResponse> {
+        return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, { refreshToken: token });
+    }
+
     logout() {
         localStorage.removeItem('modoria_token');
         localStorage.removeItem('modoria_refresh_token');
