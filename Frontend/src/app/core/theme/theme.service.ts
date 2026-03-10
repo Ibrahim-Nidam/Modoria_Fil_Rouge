@@ -34,7 +34,7 @@ export class ThemeService {
         });
 
         // 2. Fetch current season from backend
-        const apiUrl = 'http://localhost:8080/api/v1';
+        const apiUrl = 'http://localhost:8081/api/v1';
         this.http.get<{ season: Season }>(`${apiUrl}/seasons/current`).subscribe({
             next: (res) => {
                 if (res && res.season) {
