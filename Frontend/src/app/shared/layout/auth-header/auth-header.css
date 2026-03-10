@@ -1,0 +1,49 @@
+@reference "../../../../styles.css";
+
+.auth-header {
+    @apply relative w-full z-20 px-8 py-6 flex items-center bg-transparent;
+}
+
+.header-left {
+    @apply flex items-center gap-2 text-foreground flex-1;
+}
+
+.header-center {
+    @apply hidden md:flex gap-12 text-xs tracking-[0.2em] font-medium text-foreground/80 flex-initial;
+}
+
+.nav-link {
+    @apply hover:text-primary transition-colors cursor-pointer;
+}
+
+.header-right {
+    @apply flex gap-6 items-center flex-1 justify-end;
+}
+
+.theme-controls {
+    @apply flex items-center gap-4 bg-foreground/5 py-1 px-3 rounded-none border border-foreground/10;
+}
+
+.season-select {
+    @apply bg-transparent border-none text-[10px] text-foreground uppercase tracking-widest cursor-pointer outline-none font-bold;
+}
+
+.theme-toggle {
+    @apply text-foreground/60 hover:text-primary transition-colors flex items-center;
+}
+
+.theme-toggle .material-symbols-outlined {
+    @apply text-sm font-bold;
+}
+
+.action-icons {
+    @apply flex gap-4 items-center;
+}
+
+.icon {
+    @apply text-xl cursor-pointer hover:text-primary transition-colors text-foreground;
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
