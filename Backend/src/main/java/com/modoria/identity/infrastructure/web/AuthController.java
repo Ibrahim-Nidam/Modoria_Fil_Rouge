@@ -4,6 +4,7 @@ import com.modoria.identity.application.dto.auth.AuthResponseDTO;
 import com.modoria.identity.application.dto.auth.ForgotPasswordRequestDTO;
 import com.modoria.identity.application.dto.auth.LoginRequestDTO;
 import com.modoria.identity.application.dto.auth.RegisterRequestDTO;
+import com.modoria.identity.application.dto.auth.RefreshTokenRequestDTO;
 import com.modoria.identity.application.dto.auth.ResetPasswordRequestDTO;
 import com.modoria.identity.application.service.auth.AuthService;
 import jakarta.validation.Valid;
@@ -31,6 +32,11 @@ public class AuthController {
     @PostMapping("/logout")
     public String logout(@RequestHeader("Authorization") String token) {
         return authService.logout(token);
+    }
+
+    @PostMapping("/refresh")
+    public AuthResponseDTO refresh(@RequestBody RefreshTokenRequestDTO requestDTO) {
+        return authService.refreshToken(requestDTO);
     }
 
     @PostMapping("/forgot-password")
