@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Button } from '../../ui/button/button';
 import { InputComponent } from '../../ui/input/input';
 import { ThemeService, Season } from '../../../core/theme/theme.service';
@@ -6,7 +7,7 @@ import { ThemeService, Season } from '../../../core/theme/theme.service';
 @Component({
     selector: 'app-header',
     standalone: true,
-    imports: [Button, InputComponent],
+    imports: [Button, InputComponent, RouterLink],
     templateUrl: './header.html',
     styleUrl: './header.css',
 })
