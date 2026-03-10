@@ -1,0 +1,25 @@
+<div class="form-container" [style.max-width]="maxWidth">
+    <div class="form-header">
+        <ng-content select="[form-header]">
+            @if (title) {
+            <h2 class="form-title font-display">{{ title }}</h2>
+            }
+            @if (subtitle) {
+            <p class="form-subtitle">{{ subtitle }}</p>
+            }
+        </ng-content>
+
+    </div>
+
+    <div class="form-body">
+        <ng-content></ng-content>
+    </div>
+
+    @if (footerText) {
+    <div class="form-footer">
+        <p class="footer-msg italic font-display">{{ footerText }}</p>
+    </div>
+    }
+
+    <ng-content select="[form-footer]"></ng-content>
+</div>
