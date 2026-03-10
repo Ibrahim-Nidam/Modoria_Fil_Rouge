@@ -62,14 +62,26 @@
                 </svg>
             </div>
 
-            <app-button variant="ghost" size="none" routerLink="/auth/login"
-                customClass="flex flex-row items-center gap-2 text-foreground hover:text-primary dark:hover:text-primary transition-colors border-0">
+            <!-- Profile Icon (Always Visible) -->
+            <app-button variant="ghost" size="none"
+                [routerLink]="authService.currentUser() ? '/profile' : '/auth/login'"
+                customClass="flex flex-row items-center gap-2 text-foreground hover:text-primary dark:hover:text-primary transition-colors border-0"
+                [title]="authService.currentUser() ? 'Profile (' + authService.currentUser()?.fullName + ')' : 'Sign In'">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-5">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
             </app-button>
+
+            <!-- Logout Icon (Only when logged in) -->
+            @if (authService.currentUser()) {
+            <app-button variant="ghost" size="none" (click)="logout()"
+                customClass="flex flex-row items-center gap-2 text-foreground hover:text-primary dark:hover:text-primary transition-colors border-0"
+                title="Logout">
+                <span class="material-symbols-outlined text-xl">logout</span>
+            </app-button>
+            }
 
             <app-button variant="ghost" size="none"
                 customClass="relative flex flex-row items-center gap-2 text-foreground hover:text-primary dark:hover:text-primary transition-colors border-0">
