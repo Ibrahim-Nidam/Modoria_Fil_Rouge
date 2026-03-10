@@ -1,0 +1,56 @@
+<div class="auth-viewport" [ngClass]="'theme-' + activeSeason">
+    <!-- Custom Auth Header with Theme Controls -->
+    <app-auth-header></app-auth-header>
+
+    <div class="botanical-overlay"></div>
+
+    <main class="auth-main">
+        <!-- Reusable Form Component with Replica Styles -->
+        <app-form title="MODORIA" subtitle="Maison de Mode Masculine"
+            footerText="Members enjoy exclusive seasonal access" maxWidth="500px">
+
+            <div form-header class="logo-container">
+                <h1 class="logo-title font-display">MODORIA</h1>
+                <p class="logo-subtitle">Maison de Mode Masculine</p>
+
+                <div class="ornamental-rule">
+                    <div class="diamond"></div>
+                </div>
+
+                <h2 class="welcome-text">Welcome Back</h2>
+            </div>
+
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+                <app-input label="E-Mail Address" type="email" placeholder="Enter your email address"
+                    formControlName="email"
+                    [error]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid ? 'Please enter a valid identity.' : ''"
+                    customClass="replica-input">
+                </app-input>
+
+                <app-input label="Password" type="password" placeholder="Enter your password" formControlName="password"
+                    [error]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid ? 'Password required.' : ''"
+                    customClass="replica-input">
+                </app-input>
+
+                <div class="flex justify-end">
+                    <a href="#" class="forgot-link">Forgot Password?</a>
+                </div>
+
+                <app-button type="submit" variant="primary" size="lg" [disabled]="isFormEmpty" customClass="w-full">
+                    SIGN IN
+                </app-button>
+
+                <div class="divider-container">
+                    <div class="divider-line"></div>
+                    <span class="divider-text">Or</span>
+                    <div class="divider-line"></div>
+                </div>
+
+                <app-button type="button" variant="outline" size="lg" (click)="navigateToRegister()"
+                    customClass="w-full">
+                    CREATE AN ACCOUNT
+                </app-button>
+            </form>
+        </app-form>
+    </main>
+</div>

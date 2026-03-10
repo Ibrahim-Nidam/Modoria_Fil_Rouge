@@ -1,0 +1,42 @@
+@reference "../../../../styles.css";
+
+:host {
+    @apply block w-full;
+}
+
+.form-container {
+    @apply w-full mx-auto bg-background flex flex-col items-center p-12 md:p-16 border border-foreground/5;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.03);
+}
+
+.form-header {
+    @apply flex flex-col items-center mb-10 text-center w-full;
+}
+
+.form-title {
+    @apply text-3xl md:text-4xl font-bold tracking-[0.15em] text-foreground mb-3;
+}
+
+.form-subtitle {
+    @apply text-[10px] tracking-[0.3em] font-sans font-medium text-primary uppercase;
+}
+
+.ornamental-rule {
+    @apply w-full h-px bg-primary/20 mt-8 mb-8 relative flex justify-center;
+}
+
+.diamond {
+    @apply w-2 h-2 rotate-45 border border-primary bg-background absolute -top-1;
+}
+
+.form-body {
+    @apply w-full flex flex-col gap-6;
+}
+
+.form-footer {
+    @apply mt-10 text-center;
+}
+
+.footer-msg {
+    @apply text-xs underline-offset-4 text-foreground/60;
+}

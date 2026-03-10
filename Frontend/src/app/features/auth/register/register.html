@@ -1,0 +1,60 @@
+<div class="auth-viewport" [ngClass]="'theme-' + activeSeason">
+    <app-auth-header></app-auth-header>
+
+    <div class="botanical-overlay"></div>
+
+    <main class="auth-main">
+        <app-form title="MODORIA" subtitle="Maison de Mode Masculine" footerText="Join the exclusive seasonal circle"
+            maxWidth="500px">
+
+            <div form-header class="logo-container">
+                <h1 class="logo-title font-display">MODORIA</h1>
+                <p class="logo-subtitle">Maison de Mode Masculine</p>
+
+                <div class="ornamental-rule">
+                    <div class="diamond"></div>
+                </div>
+
+                <h2 class="welcome-text">Create Account</h2>
+            </div>
+
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+                <app-input label="Full Name" placeholder="Monsieur Modoria" formControlName="fullName"
+                    [error]="registerForm.get('fullName')?.touched && registerForm.get('fullName')?.invalid ? 'Identity required.' : ''"
+                    customClass="replica-input">
+                </app-input>
+
+                <app-input label="E-Mail Address" type="email" placeholder="architect@modoria.com"
+                    formControlName="email"
+                    [error]="registerForm.get('email')?.touched && registerForm.get('email')?.invalid ? 'Identity required.' : ''"
+                    customClass="replica-input">
+                </app-input>
+
+                <app-input label="Security Key" type="password" placeholder="••••••••" formControlName="password"
+                    [error]="registerForm.get('password')?.touched && registerForm.get('password')?.invalid ? 'Verification required.' : ''"
+                    customClass="replica-input">
+                </app-input>
+
+                <app-input label="Confirm Security Key" type="password" placeholder="••••••••"
+                    formControlName="confirmPassword"
+                    [error]="registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.invalid ? 'Verification mismatch.' : ''"
+                    customClass="replica-input">
+                </app-input>
+
+                <app-button type="submit" variant="primary" size="lg" [disabled]="isFormEmpty" customClass="w-full">
+                    JOIN MAISON
+                </app-button>
+
+                <div class="divider-container">
+                    <div class="divider-line"></div>
+                    <span class="divider-text">Or</span>
+                    <div class="divider-line"></div>
+                </div>
+
+                <app-button type="button" variant="outline" size="lg" (click)="navigateToLogin()" customClass="w-full">
+                    SIGN IN INSTEAD
+                </app-button>
+            </form>
+        </app-form>
+    </main>
+</div>

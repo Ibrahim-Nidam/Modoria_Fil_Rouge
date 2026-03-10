@@ -3,6 +3,7 @@ package com.modoria.ai.infrastructure.gemini;
 import com.modoria.ai.application.dto.AiChatResponseDTO;
 import com.modoria.ai.domain.AiProvider;
 import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ public class GeminiProviderImpl implements AiProvider {
 
     private final ChatModel chatModel;
 
-    public GeminiProviderImpl(ChatModel chatModel) {
+    public GeminiProviderImpl(@Qualifier("googleGenAiChatModel") ChatModel chatModel) {
         this.chatModel = chatModel;
     }
 

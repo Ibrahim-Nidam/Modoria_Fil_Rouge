@@ -1,15 +1,26 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { Header } from './shared/layout/header/header';
+import { Component, inject, signal } from '@angular/core';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { filter } from 'rxjs';
 import { Footer } from './shared/layout/footer/footer';
+import { ToastContainer } from './shared/layout/toast-container/toast-container';
 
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [RouterOutlet, Header, Footer],
+    imports: [CommonModule, RouterOutlet, Footer, ToastContainer],
     templateUrl: './app.html',
     styleUrl: './app.css'
 })
 export class App {
-    title = 'modoria-frontend';
+    private router = inject(Router);
+    public isAuthPage = signal(false);
+
+    constructor() {
+        this.router.events.pipe(
+            filter(event => event instanceof NavigationEnd)
+        ).subscribe((event: any) => {
+            this.isAuthPage.set(event.urlAfterRedirects.includes('/auth/'));
+        });
+    }
 }

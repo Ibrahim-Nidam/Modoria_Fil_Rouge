@@ -1,0 +1,113 @@
+@reference "../../../../styles.css";
+
+.auth-viewport {
+    @apply flex flex-col h-screen relative overflow-hidden bg-background text-foreground transition-colors duration-1000;
+}
+
+.botanical-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjAgMjAgQzUgNSAzMCAxMCA1MCA1MCUyMHMtMjAgMjAgNTAgMTAiIHN0cm9rZT0iIzFBNEEyRSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBvcGFjaXR5PSIwLjA1Ii8+PC9zdmc+');
+    background-size: 400px 400px;
+    opacity: 0.4;
+    transition: opacity 1s ease;
+}
+
+/* Seasonal Overlay Adjustments */
+.theme-spring .botanical-overlay {
+    opacity: 0.6;
+}
+
+.theme-summer .botanical-overlay {
+    opacity: 0.3;
+    filter: hue-rotate(180deg);
+}
+
+.theme-autumn .botanical-overlay {
+    opacity: 0.4;
+    filter: sepia(0.5);
+}
+
+.theme-winter .botanical-overlay {
+    opacity: 0.2;
+    filter: contrast(1.5) grayscale(1);
+}
+
+.auth-main {
+    @apply flex-grow flex items-center justify-center relative z-10 px-4 py-4;
+}
+
+/* Custom Overrides for FormComponent within Auth */
+:host ::ng-deep app-form .form-container {
+    @apply py-10 px-12 md:px-14 scale-95 md:scale-100 transition-transform;
+}
+
+.logo-container {
+    @apply flex flex-col items-center mb-6 w-full;
+}
+
+.monogram-logo {
+    @apply w-12 h-12 mb-4;
+}
+
+.logo-title {
+    @apply text-3xl md:text-4xl font-bold tracking-[0.15em] text-foreground mb-2;
+}
+
+.logo-subtitle {
+    @apply text-[9px] tracking-[0.3em] font-sans font-medium text-primary uppercase;
+}
+
+.ornamental-rule {
+    @apply w-full h-px bg-primary/20 mt-6 mb-6 relative flex justify-center;
+}
+
+.diamond {
+    @apply w-2 h-2 rotate-45 border border-primary bg-background absolute -top-1;
+}
+
+.welcome-text {
+    @apply text-xs tracking-[0.25em] font-medium text-foreground uppercase;
+}
+
+.forgot-link {
+    @apply text-[9px] tracking-[0.1em] font-bold text-primary-light uppercase hover:underline;
+}
+
+.divider-container {
+    @apply relative flex py-2 items-center;
+}
+
+.divider-line {
+    @apply flex-grow border-t border-foreground/10;
+}
+
+.divider-text {
+    @apply flex-shrink mx-4 text-foreground/40 text-[9px] tracking-widest font-sans uppercase;
+}
+
+.auth-footer {
+    @apply py-4 text-center z-20;
+}
+
+.legal-text {
+    @apply text-[9px] tracking-widest text-foreground/30 uppercase;
+}
+
+/* Component Overrides to match Replica exactly */
+:host ::ng-deep app-input.replica-input label {
+    @apply text-[9px] tracking-[0.2em] font-bold text-primary;
+}
+
+:host ::ng-deep app-input.replica-input input {
+    @apply border-x-0 border-t-0 border-b border-foreground/30 rounded-none bg-transparent px-0 focus:border-primary transition-colors font-sans;
+}
+
+:host ::ng-deep app-button button {
+    @apply rounded-none font-bold tracking-[0.2em] h-11;
+}
