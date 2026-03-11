@@ -8,8 +8,7 @@ export const routes: Routes = [
     },
     {
         path: 'home',
-        canActivate: [authGuard],
-        loadComponent: () => import('./shared/layout/header/header').then(m => m.Header) // Temporary placeholder
+        loadComponent: () => import('./features/home/home').then(m => m.HomeComponent)
     },
     {
         path: '',
