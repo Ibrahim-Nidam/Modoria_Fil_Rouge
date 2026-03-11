@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/health", "/api/profile", "/favicon.ico").permitAll()
+                        .requestMatchers("/api/health", "/api/profile", "/favicon.ico", "/api/v1/seasons/**").permitAll()
                         .requestMatchers("/h2-console", "/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()

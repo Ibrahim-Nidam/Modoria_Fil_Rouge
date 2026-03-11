@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ThemeService, Season } from '../../../core/theme/theme.service';
 import { AuthHeader } from '../../../shared/layout/auth-header/auth-header';
 import { FormComponent } from '../../../shared/ui/form/form';
@@ -19,7 +19,8 @@ import { ToastService } from '../../../core/toast/toast.service';
         InputComponent,
         AuthHeader,
         FormComponent,
-        Button
+        Button,
+        RouterLink
     ],
     templateUrl: './login.html',
     styleUrl: './login.css'
