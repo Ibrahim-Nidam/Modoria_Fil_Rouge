@@ -1,12 +1,14 @@
 package com.modoria.identity.infrastructure.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenBlacklistService {
@@ -29,11 +31,16 @@ public class TokenBlacklistService {
                 redisTemplate.opsForValue().set(BLACKLIST_PREFIX + token, "revoked", timeToLive, TimeUnit.MILLISECONDS);
             }
         } catch (Exception e) {
-            // If token parsing fails, it's either invalid or expired anyway
+            log.warn("Failed to blacklist token in Redis: {}. Token parsing might have failed or Redis is down.", e.getMessage());
         }
     }
 
     public boolean isBlacklisted(String token) {
-        return Boolean.TRUE.equals(redisTemplate.hasKey(BLACKLIST_PREFIX + token));
+        try {
+            return Boolean.TRUE.equals(redisTemplate.hasKey(BLACKLIST_PREFIX + token));
+        } catch (Exception e) {
+            log.warn("Redis connection failed in TokenBlacklistService: {}. Defaulting to not blacklisted.", e.getMessage());
+            return false;
+        }
     }
 }
