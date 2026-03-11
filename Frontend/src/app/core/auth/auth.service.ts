@@ -62,6 +62,14 @@ export class AuthService {
         return this.http.post<AuthResponse>(`${this.apiUrl}/refresh`, { refreshToken: token });
     }
 
+    forgotPassword(email: string): Observable<any> {
+        return this.http.post(`${this.apiUrl}/forgot-password`, { email }, { responseType: 'text' });
+    }
+
+    resetPassword(token: string, newPassword: string): Observable<any> {
+        return this.http.post(`${this.apiUrl}/reset-password`, { token, newPassword }, { responseType: 'text' });
+    }
+
     logout() {
         localStorage.removeItem('modoria_token');
         localStorage.removeItem('modoria_refresh_token');
