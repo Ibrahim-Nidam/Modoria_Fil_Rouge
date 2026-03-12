@@ -15,12 +15,15 @@ import { ToastContainer } from './shared/layout/toast-container/toast-container'
 export class App {
     private router = inject(Router);
     public isAuthPage = signal(false);
+    public isAdminPage = signal(false);
 
     constructor() {
         this.router.events.pipe(
             filter(event => event instanceof NavigationEnd)
         ).subscribe((event: any) => {
-            this.isAuthPage.set(event.urlAfterRedirects.includes('/auth/'));
+            const url = event.urlAfterRedirects;
+            this.isAuthPage.set(url.includes('/auth/'));
+            this.isAdminPage.set(url.startsWith('/admin'));
         });
     }
 }

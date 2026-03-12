@@ -17,6 +17,10 @@ export class Header {
     public authService = inject(AuthService);
     public availableSeasons: Season[] = ['spring', 'summer', 'autumn', 'winter'];
 
+    get logoLink(): string {
+        return this.authService.isAdmin() ? '/admin' : '/home';
+    }
+
     logout() {
         this.authService.logout();
     }

@@ -83,7 +83,11 @@ export class AuthService {
         localStorage.setItem('modoria_refresh_token', response.refreshToken);
         localStorage.setItem('modoria_user', JSON.stringify(response.user));
         this.currentUser.set(response.user);
-        this.router.navigate(['/home']);
+
+        const isAdmin = response.user.roles?.some(
+            (role: any) => role.name === 'ROLE_ADMIN' || role === 'ROLE_ADMIN'
+        );
+        this.router.navigate([isAdmin ? '/admin' : '/home']);
     }
 
     getToken(): string | null {
@@ -92,5 +96,12 @@ export class AuthService {
 
     isAuthenticated(): boolean {
         return !!this.getToken();
+    }
+
+    isAdmin(): boolean {
+        const user = this.currentUser();
+        return user?.roles?.some(
+            (role: any) => role.name === 'ROLE_ADMIN' || role === 'ROLE_ADMIN'
+        ) ?? false;
     }
 }
