@@ -33,6 +33,7 @@
         <table class="min-w-full text-left text-sm">
           <thead class="border-b border-muted bg-muted/30 text-xs uppercase tracking-[0.2em] text-foreground/50">
             <tr>
+              <th class="px-5 py-4 font-semibold">Image</th>
               <th class="px-5 py-4 font-semibold">Name</th>
               <th class="px-5 py-4 font-semibold">Description</th>
               <th class="px-5 py-4 font-semibold">Products</th>
@@ -42,6 +43,15 @@
           <tbody>
             @for (category of categories(); track category.id) {
               <tr class="border-b border-muted last:border-b-0">
+                <td class="px-5 py-4 align-top">
+                  @if (getImageUrl(category.imagePath); as imageUrl) {
+                    <img [src]="imageUrl" [alt]="category.name" class="h-14 w-14 rounded-xl border border-muted object-cover" />
+                  } @else {
+                    <div class="flex h-14 w-14 items-center justify-center rounded-xl border border-dashed border-muted text-foreground/30">
+                      <span class="material-symbols-outlined text-lg">image</span>
+                    </div>
+                  }
+                </td>
                 <td class="px-5 py-4 align-top">
                   <p class="font-medium text-foreground">{{ category.name }}</p>
                 </td>
