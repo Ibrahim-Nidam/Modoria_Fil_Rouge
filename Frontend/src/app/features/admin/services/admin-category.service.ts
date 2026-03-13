@@ -6,6 +6,7 @@ export interface AdminCategory {
     id: number;
     name: string;
     description: string;
+    imagePath?: string | null;
     productCount: number;
 }
 
@@ -43,6 +44,12 @@ export class AdminCategoryService {
 
     updateCategory(id: number, payload: CategoryPayload): Observable<AdminCategory> {
         return this.http.put<AdminCategory>(`${this.apiUrl}/${id}`, payload);
+    }
+
+    uploadCategoryImage(id: number, file: File): Observable<AdminCategory> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<AdminCategory>(`${this.apiUrl}/${id}/image`, formData);
     }
 
     deleteCategory(id: number): Observable<void> {
