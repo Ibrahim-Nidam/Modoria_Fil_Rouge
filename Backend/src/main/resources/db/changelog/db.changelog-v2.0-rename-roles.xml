@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.17.xsd">
+
+    <changeSet id="1" author="modoria">
+        <comment>Merge CUSTOMER role into CLIENT safely, even if CLIENT already exists.</comment>
+
+        <sql>
+            INSERT INTO roles(name)
+            SELECT 'CLIENT'
+            WHERE EXISTS (SELECT 1 FROM roles WHERE name = 'CUSTOMER')
+              AND NOT EXISTS (SELECT 1 FROM roles WHERE name = 'CLIENT');
+        </sql>
+
+        <sql>
+            UPDATE user_roles
+            SET role_id = (SELECT id FROM roles WHERE name = 'CLIENT')
+            WHERE role_id = (SELECT id FROM roles WHERE name = 'CUSTOMER')
+              AND EXISTS (SELECT 1 FROM roles WHERE name = 'CLIENT')
+              AND EXISTS (SELECT 1 FROM roles WHERE name = 'CUSTOMER');
+        </sql>
+
+        <sql>
+            DELETE FROM roles WHERE name = 'CUSTOMER';
+        </sql>
+    </changeSet>
+
+    <changeSet id="2" author="modoria">
+        <comment>Merge SUPPORT role into AGENT safely, even if AGENT already exists.</comment>
+
+        <sql>
+            INSERT INTO roles(name)
+            SELECT 'AGENT'
+            WHERE EXISTS (SELECT 1 FROM roles WHERE name = 'SUPPORT')
+              AND NOT EXISTS (SELECT 1 FROM roles WHERE name = 'AGENT');
+        </sql>
+
+        <sql>
+            UPDATE user_roles
+            SET role_id = (SELECT id FROM roles WHERE name = 'AGENT')
+            WHERE role_id = (SELECT id FROM roles WHERE name = 'SUPPORT')
+              AND EXISTS (SELECT 1 FROM roles WHERE name = 'AGENT')
+              AND EXISTS (SELECT 1 FROM roles WHERE name = 'SUPPORT');
+        </sql>
+
+        <sql>
+            DELETE FROM roles WHERE name = 'SUPPORT';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

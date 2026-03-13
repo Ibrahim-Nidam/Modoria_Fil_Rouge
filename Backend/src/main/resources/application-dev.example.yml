@@ -25,12 +25,6 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      timeout: 6000ms
-
   ai:
     vertex:
       ai:

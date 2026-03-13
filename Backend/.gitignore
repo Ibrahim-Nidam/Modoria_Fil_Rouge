@@ -50,3 +50,5 @@ mvnw.sh
 .mvn/
 target/
 *.log
+
+storage/

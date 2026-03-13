@@ -1,0 +1,51 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+	<app-input
+		formControlName="fullName"
+		label="Full Name"
+		placeholder="System Administrator"
+		[error]="fullNameError" />
+
+	<app-input
+		formControlName="email"
+		type="email"
+		label="Email"
+		placeholder="admin@modoria.com"
+		[error]="emailError" />
+
+	<app-input
+		formControlName="password"
+		type="password"
+		label="Password"
+		[placeholder]="mode() === 'create' ? 'At least 6 characters' : 'Leave blank to keep current password'"
+		[error]="passwordError" />
+
+	<div class="space-y-4 rounded-xl border border-muted bg-muted/30 p-4">
+		<app-checkbox formControlName="enabled" label="Account enabled" />
+
+		<div class="space-y-3">
+			<p class="text-xs font-semibold tracking-widest uppercase text-foreground/70">Role</p>
+
+			<div class="grid gap-3 md:grid-cols-3">
+				@for (option of roleOptions; track option.value) {
+					<label class="flex items-center gap-3 cursor-pointer">
+						<input
+							type="radio"
+							formControlName="role"
+							[value]="option.value"
+							class="h-4 w-4 accent-foreground cursor-pointer" />
+						<span class="text-sm text-foreground select-none">{{ option.label }}</span>
+					</label>
+				}
+			</div>
+		</div>
+	</div>
+
+	<div class="flex items-center justify-end gap-3 pt-2">
+		<app-button variant="ghost" type="button" (click)="onCancel()">
+			Cancel
+		</app-button>
+		<app-button [loading]="submitting()" type="submit">
+			{{ submitLabel }}
+		</app-button>
+	</div>
+</form>

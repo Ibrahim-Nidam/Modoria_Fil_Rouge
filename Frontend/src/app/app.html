@@ -2,7 +2,7 @@
 <main class="min-h-screen bg-background text-foreground transition-colors duration-300 flex flex-col pt-0 pb-0">
     <router-outlet></router-outlet>
 </main>
-@if (!isAuthPage()) {
+@if (!isAuthPage() && !isAdminPage()) {
 <app-footer></app-footer>
 }
 <app-toast-container></app-toast-container>

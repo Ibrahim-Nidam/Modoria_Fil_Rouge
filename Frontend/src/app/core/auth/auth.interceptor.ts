@@ -23,7 +23,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
 
     return next(authReq).pipe(
         catchError((error: HttpErrorResponse) => {
-            if (error.status === 401 && !authReq.url.includes('/api/auth/')) {
+            if ((error.status === 401 || error.status === 403) && !authReq.url.includes('/api/auth/')) {
                 return handle401Error(authReq, next, authService);
             }
             return throwError(() => error);

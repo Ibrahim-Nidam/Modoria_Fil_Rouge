@@ -1,0 +1,50 @@
+<aside
+  class="h-full bg-background border-r border-muted flex flex-col transition-all duration-300"
+  [class.w-64]="!collapsed()"
+  [class.w-[72px]]="collapsed()">
+
+  <!-- Logo -->
+  <div class="flex items-center gap-3 px-4 h-16 border-b border-muted shrink-0">
+    <a routerLink="/admin" class="flex items-center gap-3 min-w-0" (click)="onNavClick()">
+      <img [src]="logoSource" alt="Modoria" class="h-8 w-8 object-contain shrink-0" />
+      @if (!collapsed()) {
+        <span class="text-lg font-display font-semibold text-foreground truncate">Modoria</span>
+      }
+    </a>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 py-4 overflow-y-auto">
+    <ul class="flex flex-col gap-1 px-2">
+      @for (item of navItems; track item.route) {
+        <li>
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="bg-primary/10 text-primary"
+            [routerLinkActiveOptions]="{ exact: item.route === '/admin' }"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-foreground/70 hover:bg-muted hover:text-foreground transition-colors group"
+            [class.justify-center]="collapsed()"
+            (click)="onNavClick()">
+            <span class="material-symbols-outlined text-xl shrink-0">{{ item.icon }}</span>
+            @if (!collapsed()) {
+              <span class="text-sm font-medium truncate">{{ item.label }}</span>
+            }
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- Back to store -->
+  <div class="border-t border-muted p-2 shrink-0">
+    <a
+      routerLink="/home"
+      class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-foreground/70 hover:bg-muted hover:text-foreground transition-colors"
+      [class.justify-center]="collapsed()">
+      <span class="material-symbols-outlined text-xl shrink-0">storefront</span>
+      @if (!collapsed()) {
+        <span class="text-sm font-medium">Back to Store</span>
+      }
+    </a>
+  </div>
+</aside>

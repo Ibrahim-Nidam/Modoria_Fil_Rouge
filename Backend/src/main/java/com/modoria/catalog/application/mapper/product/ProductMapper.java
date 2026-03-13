@@ -13,13 +13,19 @@ public interface ProductMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "imagePath", ignore = true)
+    @Mapping(target = "imageFolder", ignore = true)
+    @Mapping(target = "images", ignore = true)
     @Mapping(target = "category", ignore = true)
     Product toEntity(ProductRequestDTO dto);
 
+    @Mapping(target = "primaryImagePath", ignore = true)
+    @Mapping(target = "images", ignore = true)
     ProductResponseDTO toResponseDTO(Product entity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "imagePath", ignore = true)
+    @Mapping(target = "imageFolder", ignore = true)
+    @Mapping(target = "images", ignore = true)
     @Mapping(target = "category", ignore = true)
     void updateEntityFromDto(ProductRequestDTO dto, @MappingTarget Product entity);
 }

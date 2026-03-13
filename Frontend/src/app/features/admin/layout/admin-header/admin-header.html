@@ -1,0 +1,35 @@
+<header class="h-16 bg-background border-b border-muted flex items-center justify-between px-4 lg:px-6 shrink-0">
+  <!-- Left: menu toggle -->
+  <button
+    (click)="onToggleSidebar()"
+    class="p-2 rounded-lg text-foreground/70 hover:bg-muted hover:text-foreground transition-colors">
+    <span class="material-symbols-outlined text-xl">menu</span>
+  </button>
+
+  <!-- Right: actions -->
+  <div class="flex items-center gap-2">
+    <!-- Dark mode toggle -->
+    <button
+      (click)="onToggleDarkMode()"
+      class="p-2 rounded-lg text-foreground/70 hover:bg-muted hover:text-foreground transition-colors"
+      [attr.aria-label]="themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
+      <span class="material-symbols-outlined text-xl">
+        {{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}
+      </span>
+    </button>
+
+    <!-- User info -->
+    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50">
+      <span class="material-symbols-outlined text-lg text-foreground/60">person</span>
+      <span class="text-sm font-medium text-foreground/80">{{ userName }}</span>
+    </div>
+
+    <!-- Logout -->
+    <button
+      (click)="logout()"
+      class="p-2 rounded-lg text-foreground/70 hover:bg-red-500/10 hover:text-red-500 transition-colors"
+      aria-label="Logout">
+      <span class="material-symbols-outlined text-xl">logout</span>
+    </button>
+  </div>
+</header>

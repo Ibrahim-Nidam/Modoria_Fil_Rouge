@@ -1,0 +1,56 @@
+<div class="space-y-6">
+  <!-- Page header -->
+  <div>
+    <h1 class="text-2xl font-display font-semibold text-foreground">Dashboard</h1>
+    <p class="text-sm text-foreground/60 mt-1">Welcome back. Here's a live overview of your store.</p>
+  </div>
+
+  @if (loadError) {
+    <div class="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700">
+      Some statistics could not be loaded. Values may be fallback data. Please verify your session and backend availability.
+    </div>
+  }
+
+  <!-- Stats grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+    @for (stat of stats; track stat.title) {
+      <app-stat-card
+        [title]="stat.title"
+        [value]="stat.value"
+        [icon]="stat.icon"
+        [trend]="stat.trend"
+        [trendUp]="stat.trendUp" />
+    }
+  </div>
+
+  <!-- Quick actions -->
+  <div>
+    <h2 class="text-lg font-display font-semibold text-foreground mb-3">Quick Actions</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <a routerLink="/admin/products"
+        class="flex items-center gap-3 p-4 rounded-xl border border-muted bg-background hover:bg-muted/50 transition-colors group">
+        <span class="material-symbols-outlined text-primary text-2xl">add_circle</span>
+        <div>
+          <span class="text-sm font-medium text-foreground group-hover:text-primary transition-colors">Add Product</span>
+          <p class="text-xs text-foreground/50">Create a new product listing</p>
+        </div>
+      </a>
+      <a routerLink="/admin/categories"
+        class="flex items-center gap-3 p-4 rounded-xl border border-muted bg-background hover:bg-muted/50 transition-colors group">
+        <span class="material-symbols-outlined text-primary text-2xl">create_new_folder</span>
+        <div>
+          <span class="text-sm font-medium text-foreground group-hover:text-primary transition-colors">Add Category</span>
+          <p class="text-xs text-foreground/50">Organize your product catalog</p>
+        </div>
+      </a>
+      <a routerLink="/admin/users"
+        class="flex items-center gap-3 p-4 rounded-xl border border-muted bg-background hover:bg-muted/50 transition-colors group">
+        <span class="material-symbols-outlined text-primary text-2xl">person_add</span>
+        <div>
+          <span class="text-sm font-medium text-foreground group-hover:text-primary transition-colors">Manage Users</span>
+          <p class="text-xs text-foreground/50">View and manage user accounts</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+	<app-input
+		formControlName="name"
+		label="Category Name"
+		placeholder="Outerwear"
+		[error]="nameError" />
+
+	<div class="flex flex-col gap-1.5 font-sans">
+		<label class="text-xs font-semibold tracking-widest uppercase text-foreground/70">
+			Description
+		</label>
+		<textarea
+			formControlName="description"
+			rows="4"
+			placeholder="Describe the purpose of this category"
+			class="w-full resize-none rounded-xl border border-muted bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 focus:border-primary focus:outline-none transition-colors"
+			[class.!border-red-500]="descriptionError"></textarea>
+		@if (descriptionError) {
+			<span class="text-xs text-red-500">{{ descriptionError }}</span>
+		}
+	</div>
+
+	<div class="flex flex-col gap-2 font-sans">
+		<label class="text-xs font-semibold tracking-widest uppercase text-foreground/70">
+			Category Image (optional)
+		</label>
+		<input
+			type="file"
+			accept="image/*"
+			(change)="onImageSelection($event)"
+			class="w-full rounded-xl border border-muted bg-background px-4 py-2.5 text-sm text-foreground file:mr-4 file:rounded-lg file:border-0 file:bg-primary/10 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-primary hover:file:bg-primary/20" />
+
+		@if (imagePreviewUrl) {
+			<div class="mt-1 overflow-hidden rounded-xl border border-muted bg-muted/20 p-2">
+				<img [src]="imagePreviewUrl" alt="Category preview" class="h-36 w-full rounded-lg object-cover" />
+			</div>
+		}
+	</div>
+
+	<div class="flex items-center justify-end gap-3 pt-2">
+		<app-button variant="ghost" type="button" (click)="onCancel()">
+			Cancel
+		</app-button>
+		<app-button [loading]="submitting()" type="submit">
+			{{ submitLabel }}
+		</app-button>
+	</div>
+</form>

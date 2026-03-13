@@ -23,4 +23,7 @@ public class Category {
 
     @Column(length = 500)
     private String description;
+
+    @Column(length = 1000)
+    private String imagePath;
 }

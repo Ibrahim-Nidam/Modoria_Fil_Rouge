@@ -40,6 +40,13 @@ public class Product {
     @Column(length = 500)
     private String imagePath;
 
+    @Column(length = 255)
+    private String imageFolder;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private java.util.List<ProductImage> images = new java.util.ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;

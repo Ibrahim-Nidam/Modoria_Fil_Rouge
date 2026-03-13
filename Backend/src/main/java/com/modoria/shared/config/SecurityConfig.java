@@ -33,8 +33,8 @@ public class SecurityConfig {
     @Bean
     public RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy("""
-                ROLE_ADMIN > ROLE_SUPPORT
-                ROLE_ADMIN > ROLE_CUSTOMER
+                ROLE_ADMIN > ROLE_AGENT
+                ROLE_ADMIN > ROLE_CLIENT
                 """);
     }
 
@@ -48,14 +48,15 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/health", "/api/profile", "/favicon.ico", "/api/v1/seasons/**").permitAll()
+                    .requestMatchers("/storage/**").permitAll()
                         .requestMatchers("/h2-console", "/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
 
-                        .requestMatchers("/api/cart/**", "/api/orders/**").hasRole("CUSTOMER")
+                        .requestMatchers("/api/cart/**", "/api/orders/**").hasRole("CLIENT")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/support/**").hasRole("SUPPORT")
+                        .requestMatchers("/api/support/**").hasRole("AGENT")
 
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
