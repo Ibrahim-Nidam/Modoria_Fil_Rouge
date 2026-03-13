@@ -13,16 +13,22 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     @Override
-    @EntityGraph(attributePaths = { "category" })
+    @EntityGraph(attributePaths = { "category", "images" })
     Page<Product> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = { "category" })
+    @EntityGraph(attributePaths = { "category", "images" })
     Page<Product> findBySeason(Season season, Pageable pageable);
+
+    @EntityGraph(attributePaths = { "category", "images" })
+    Optional<Product> findWithCategoryAndImagesById(Long id);
+
+    boolean existsByImageFolder(String imageFolder);
 
     long countByCategoryId(Long categoryId);
 
