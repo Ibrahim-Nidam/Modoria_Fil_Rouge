@@ -1,5 +1,6 @@
 package com.modoria.catalog.infrastructure.web;
 
+import com.modoria.catalog.application.dto.product.ProductImageResponseDTO;
 import com.modoria.catalog.application.dto.product.ProductRequestDTO;
 import com.modoria.catalog.application.dto.product.ProductResponseDTO;
 import com.modoria.catalog.application.service.product.ProductService;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -63,6 +65,32 @@ public class ProductController {
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) {
         return ResponseEntity.ok(productService.uploadProductImage(id, file));
+    }
+
+    @PostMapping(value = "/{id}/images/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ProductImageResponseDTO>> uploadProductImages(
+            @PathVariable Long id,
+            @RequestParam("files") List<MultipartFile> files,
+            @RequestParam(value = "primaryIndex", required = false) Integer primaryIndex) {
+        return ResponseEntity.ok(productService.uploadProductImages(id, files, primaryIndex));
+    }
+
+    @DeleteMapping("/{id}/images/{imageId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteProductImage(
+            @PathVariable Long id,
+            @PathVariable Long imageId) {
+        productService.deleteProductImage(id, imageId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/images/{imageId}/primary")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductResponseDTO> setPrimaryProductImage(
+            @PathVariable Long id,
+            @PathVariable Long imageId) {
+        return ResponseEntity.ok(productService.setPrimaryProductImage(id, imageId));
     }
 
     @GetMapping("/season/{season}")
