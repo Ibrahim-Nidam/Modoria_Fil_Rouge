@@ -11,10 +11,7 @@ export const adminGuard: CanActivateFn = () => {
         return false;
     }
 
-    const user = authService.currentUser();
-    const isAdmin = user?.roles?.some(
-        (role: any) => role.name === 'ROLE_ADMIN' || role === 'ROLE_ADMIN'
-    );
+    const isAdmin = authService.isAdmin();
 
     if (!isAdmin) {
         router.navigate(['/home']);
