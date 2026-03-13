@@ -15,6 +15,6 @@ export class AdminDashboard {
     { title: 'Total Categories', value: '24', icon: 'category', trend: '', trendUp: null },
     { title: 'Total Orders', value: '892', icon: 'shopping_cart', trend: '+8% this week', trendUp: true },
     { title: 'Revenue', value: '$48,290', icon: 'payments', trend: '+15% vs last month', trendUp: true },
-    { title: 'Pending Reviews', value: '37', icon: 'rate_review', trend: '-3 resolved', trendUp: false },
+    { title: 'Active Sessions', value: '112', icon: 'monitoring', trend: '+9 this week', trendUp: true },
   ];
 }
