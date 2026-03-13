@@ -1,6 +1,7 @@
 package com.modoria.identity.application.mapper.user;
 
 import com.modoria.identity.application.dto.user.UserDTO;
+import com.modoria.identity.application.dto.user.AdminUserResponseDTO;
 import com.modoria.identity.application.dto.user.UserProfileResponseDTO;
 import com.modoria.identity.application.dto.user.UserProfileUpdateRequestDTO;
 import com.modoria.identity.application.mapper.role.RoleMapper;
@@ -17,6 +18,9 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", uses = { RoleMapper.class })
 public interface UserMapper {
     UserDTO toDTO(User user);
+
+    @Mapping(target = "roles", source = "roles", qualifiedByName = "mapRolesToStrings")
+    AdminUserResponseDTO toAdminResponseDTO(User user);
 
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "address", ignore = true)
