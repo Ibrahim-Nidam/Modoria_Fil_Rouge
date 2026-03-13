@@ -8,32 +8,37 @@ export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
 })
 export class ThemeService {
     private http = inject(HttpClient);
+    private readonly darkModeStorageKey = 'modoria_dark_mode';
 
-    // Signals for state management
-    public activeSeason = signal<Season>('spring'); // Default fallback
+    public activeSeason = signal<Season>('spring');
     public isDarkMode = signal<boolean>(false);
 
     constructor() {
         this.initializeTheme();
 
-        // Reactively update the <html class="..."> whenever season or dark mode changes
         effect(() => {
             this.applyTheme(this.activeSeason(), this.isDarkMode());
         });
     }
 
     private initializeTheme() {
-        // 1. Check system preference for dark mode
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const savedDarkMode = this.readDarkModePreference();
+
+        // 1. Use persisted user preference if available, otherwise fallback to OS preference.
+        if (savedDarkMode !== null) {
+            this.isDarkMode.set(savedDarkMode);
+        } else if (mediaQuery.matches) {
             this.isDarkMode.set(true);
         }
 
-        // Listen for OS dark mode changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-            this.isDarkMode.set(event.matches);
+        // Keep following OS changes only when user has not explicitly chosen a preference.
+        mediaQuery.addEventListener('change', event => {
+            if (this.readDarkModePreference() === null) {
+                this.isDarkMode.set(event.matches);
+            }
         });
 
-        // 2. Fetch current season from backend
         const apiUrl = 'http://localhost:8081/api/v1';
         this.http.get<{ season: Season }>(`${apiUrl}/seasons/current`).subscribe({
             next: (res) => {
@@ -52,7 +57,26 @@ export class ThemeService {
     }
 
     public toggleDarkMode() {
-        this.isDarkMode.update(dark => !dark);
+        this.isDarkMode.update(dark => {
+            const next = !dark;
+            this.persistDarkModePreference(next);
+            return next;
+        });
+    }
+
+    private readDarkModePreference(): boolean | null {
+        const savedPreference = localStorage.getItem(this.darkModeStorageKey);
+        if (savedPreference === 'true') {
+            return true;
+        }
+        if (savedPreference === 'false') {
+            return false;
+        }
+        return null;
+    }
+
+    private persistDarkModePreference(isDarkMode: boolean) {
+        localStorage.setItem(this.darkModeStorageKey, String(isDarkMode));
     }
 
     private applyTheme(season: Season, isDark: boolean) {
