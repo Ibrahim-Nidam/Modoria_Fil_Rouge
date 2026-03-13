@@ -5,16 +5,19 @@ import com.modoria.catalog.application.dto.category.CategoryResponseDTO;
 import com.modoria.catalog.application.mapper.category.CategoryMapper;
 import com.modoria.catalog.domain.model.Category;
 import com.modoria.catalog.domain.repository.CategoryRepository;
+import com.modoria.catalog.domain.repository.ProductRepository;
 import com.modoria.shared.exception.DuplicateResourceException;
 import com.modoria.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,11 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
     private final CategoryMapper categoryMapper;
 
     @Override
     @Transactional
-    @CacheEvict(value = "categories", allEntries = true)
     public CategoryResponseDTO createCategory(CategoryRequestDTO requestDTO) {
         if (categoryRepository.existsByName(requestDTO.getName())) {
             throw new DuplicateResourceException("Category with name '" + requestDTO.getName() + "' already exists");
@@ -36,28 +39,36 @@ public class CategoryServiceImpl implements CategoryService {
         Category savedCategory = categoryRepository.save(category);
         log.info("Created new category: {}", savedCategory.getName());
 
-        return categoryMapper.toResponseDTO(savedCategory);
+        return toResponseDTO(savedCategory, 0L);
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "categories", key = "#id")
     public CategoryResponseDTO getCategoryById(Long id) {
         Category category = findCategoryOrThrow(id);
-        return categoryMapper.toResponseDTO(category);
+        return toResponseDTO(category, productRepository.countByCategoryId(id));
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "categories", key = "'all-' + #pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
     public Page<CategoryResponseDTO> getAllCategories(Pageable pageable) {
-        return categoryRepository.findAll(pageable)
-                .map(categoryMapper::toResponseDTO);
+        Page<Category> categories = categoryRepository.findAll(pageable);
+        List<Long> categoryIds = categories.getContent().stream()
+            .map(Category::getId)
+            .toList();
+
+        Map<Long, Long> productCounts = categoryIds.isEmpty()
+            ? Map.of()
+            : productRepository.countProductsByCategoryIds(categoryIds).stream()
+                .collect(Collectors.toMap(
+                    projection -> projection.getCategoryId(),
+                    projection -> projection.getProductCount()));
+
+        return categories.map(category -> toResponseDTO(category, productCounts.getOrDefault(category.getId(), 0L)));
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = "categories", allEntries = true)
     public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO requestDTO) {
         Category category = findCategoryOrThrow(id);
 
@@ -70,12 +81,11 @@ public class CategoryServiceImpl implements CategoryService {
         Category updatedCategory = categoryRepository.save(category);
         log.info("Updated category with ID: {}", id);
 
-        return categoryMapper.toResponseDTO(updatedCategory);
+        return toResponseDTO(updatedCategory, productRepository.countByCategoryId(id));
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = "categories", allEntries = true)
     public void deleteCategory(Long id) {
         Category category = findCategoryOrThrow(id);
         categoryRepository.delete(category);
@@ -85,5 +95,11 @@ public class CategoryServiceImpl implements CategoryService {
     private Category findCategoryOrThrow(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
+    }
+
+    private CategoryResponseDTO toResponseDTO(Category category, long productCount) {
+        CategoryResponseDTO responseDTO = categoryMapper.toResponseDTO(category);
+        responseDTO.setProductCount(productCount);
+        return responseDTO;
     }
 }
