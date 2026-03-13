@@ -21,13 +21,13 @@ public class AdminReviewController {
     private final ReviewService reviewService;
 
     @GetMapping("/pending")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('AGENT')")
     public ResponseEntity<Page<ReviewResponseDTO>> getPendingReviews(@PageableDefault(size = 20) Pageable pageable) {
         return ResponseEntity.ok(reviewService.getPendingReviews(pageable));
     }
 
     @PatchMapping("/{id}/status")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('AGENT')")
     public ResponseEntity<Void> updateReviewStatus(
             @PathVariable Long id,
             @Valid @RequestBody ReviewStatusUpdateDTO updateDTO) {
@@ -36,14 +36,14 @@ public class AdminReviewController {
     }
 
     @PutMapping("/{id}/approve")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('AGENT')")
     public ResponseEntity<Void> approveReview(@PathVariable Long id) {
         reviewService.updateReviewStatus(id, ReviewStatus.APPROVED);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('SUPPORT')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('AGENT')")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);
         return ResponseEntity.noContent().build();

@@ -98,7 +98,7 @@ public class ChatWebSocketController {
 
         private void handleHumanInteraction(User sender, ChatMessageRequest request) {
                 if (request.getReceiverId() == null) {
-                        boolean isCustomer = sender.getRoles().stream().anyMatch(r -> r.getName().equals("CUSTOMER"));
+                        boolean isCustomer = sender.getRoles().stream().anyMatch(r -> r.getName().equals("CLIENT"));
                         if (isCustomer) {
                                 com.modoria.chat.domain.model.SupportSession session = supportSessionService
                                                 .getOrCreateSession(sender.getId());
