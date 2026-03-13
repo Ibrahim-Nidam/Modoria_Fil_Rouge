@@ -25,6 +25,7 @@ describe('AdminCategories', () => {
     },
     createCategory: () => of(),
     updateCategory: () => of(),
+    uploadCategoryImage: () => of(),
     deleteCategory: () => of(),
   };
 
