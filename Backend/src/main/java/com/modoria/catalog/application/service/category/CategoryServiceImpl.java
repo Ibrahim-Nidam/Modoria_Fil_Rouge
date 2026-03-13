@@ -3,6 +3,7 @@ package com.modoria.catalog.application.service.category;
 import com.modoria.catalog.application.dto.category.CategoryRequestDTO;
 import com.modoria.catalog.application.dto.category.CategoryResponseDTO;
 import com.modoria.catalog.application.mapper.category.CategoryMapper;
+import com.modoria.catalog.application.service.product.FileStorageService;
 import com.modoria.catalog.domain.model.Category;
 import com.modoria.catalog.domain.repository.CategoryRepository;
 import com.modoria.catalog.domain.repository.ProductRepository;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
     private final CategoryMapper categoryMapper;
+    private final FileStorageService fileStorageService;
 
     @Override
     @Transactional
@@ -86,8 +89,24 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    public CategoryResponseDTO uploadCategoryImage(Long id, MultipartFile file) {
+        Category category = findCategoryOrThrow(id);
+
+        fileStorageService.deleteFile(category.getImagePath());
+        String imagePath = fileStorageService.storeFile(file, "category", "category_" + id);
+
+        category.setImagePath(imagePath);
+        Category savedCategory = categoryRepository.save(category);
+        log.info("Updated image for category with ID: {}", id);
+
+        return toResponseDTO(savedCategory, productRepository.countByCategoryId(id));
+    }
+
+    @Override
+    @Transactional
     public void deleteCategory(Long id) {
         Category category = findCategoryOrThrow(id);
+        fileStorageService.deleteFile(category.getImagePath());
         categoryRepository.delete(category);
         log.info("Deleted category with ID: {}", id);
     }
