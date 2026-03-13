@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { finalize } from 'rxjs';
+import { finalize, of, switchMap } from 'rxjs';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { Button } from '../../../../shared/ui/button/button';
 import { Modal } from '../../../../shared/ui/modal/modal';
@@ -16,6 +16,7 @@ import { AdminCategory, AdminCategoryService } from '../../services/admin-catego
 export class AdminCategories implements OnInit {
   private categoryService = inject(AdminCategoryService);
   private toastService = inject(ToastService);
+  private backendBaseUrl = 'http://localhost:8081';
 
   categories = signal<AdminCategory[]>([]);
   loading = signal(true);
@@ -79,7 +80,16 @@ export class AdminCategories implements OnInit {
     this.submitting.set(true);
 
     request$
-      .pipe(finalize(() => this.submitting.set(false)))
+      .pipe(
+        switchMap((savedCategory) => {
+          if (!payload.imageFile) {
+            return of(savedCategory);
+          }
+
+          return this.categoryService.uploadCategoryImage(savedCategory.id, payload.imageFile);
+        }),
+        finalize(() => this.submitting.set(false))
+      )
       .subscribe({
         next: () => {
           this.toastService.success(
@@ -96,6 +106,18 @@ export class AdminCategories implements OnInit {
           );
         },
       });
+  }
+
+  getImageUrl(imagePath: string | null | undefined): string | null {
+    if (!imagePath) {
+      return null;
+    }
+
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+
+    return `${this.backendBaseUrl}${imagePath.startsWith('/') ? imagePath : `/${imagePath}`}`;
   }
 
   deleteCategory() {
