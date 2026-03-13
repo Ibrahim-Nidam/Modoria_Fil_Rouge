@@ -41,6 +41,7 @@ export interface ProductFormValue {
 
 @Component({
   selector: 'app-product-form',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule, InputComponent, Button],
   templateUrl: './product-form.html',
   styleUrl: './product-form.css',
