@@ -27,6 +27,33 @@ export class AuthService {
     public currentUser = signal<any>(null);
     private apiUrl = 'http://localhost:8081/api/auth';
 
+    private normalizeRoleName(roleName: string): string {
+        const normalized = roleName.trim().toUpperCase();
+        return normalized.startsWith('ROLE_') ? normalized.slice(5) : normalized;
+    }
+
+    private extractRoleName(role: any): string | null {
+        if (typeof role === 'string') {
+            return role;
+        }
+
+        if (role && typeof role === 'object' && typeof role.name === 'string') {
+            return role.name;
+        }
+
+        return null;
+    }
+
+    private hasRole(roles: any[] | undefined, expectedRole: string): boolean {
+        const expected = this.normalizeRoleName(expectedRole);
+        return (
+            roles?.some((role: any) => {
+                const roleName = this.extractRoleName(role);
+                return !!roleName && this.normalizeRoleName(roleName) === expected;
+            }) ?? false
+        );
+    }
+
     private get router(): Router {
         if (!this._router) {
             this._router = this.injector.get(Router);
@@ -84,9 +111,7 @@ export class AuthService {
         localStorage.setItem('modoria_user', JSON.stringify(response.user));
         this.currentUser.set(response.user);
 
-        const isAdmin = response.user.roles?.some(
-            (role: any) => role.name === 'ROLE_ADMIN' || role === 'ROLE_ADMIN'
-        );
+        const isAdmin = this.hasRole(response.user.roles, 'ADMIN');
         this.router.navigate([isAdmin ? '/admin' : '/home']);
     }
 
@@ -100,8 +125,6 @@ export class AuthService {
 
     isAdmin(): boolean {
         const user = this.currentUser();
-        return user?.roles?.some(
-            (role: any) => role.name === 'ROLE_ADMIN' || role === 'ROLE_ADMIN'
-        ) ?? false;
+        return this.hasRole(user?.roles, 'ADMIN');
     }
 }
