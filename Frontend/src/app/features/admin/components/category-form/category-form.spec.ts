@@ -36,6 +36,7 @@ describe('CategoryForm', () => {
     expect(emittedValue).toEqual({
       name: 'Dresses',
       description: 'Seasonal eveningwear',
+      imageFile: null,
     });
   });
 });
