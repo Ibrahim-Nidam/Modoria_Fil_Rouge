@@ -166,7 +166,8 @@ public class AuthServiceImpl implements AuthService {
 
     private Set<Role> determineRoles(String requestedRole) {
         if (requestedRole != null && !requestedRole.isBlank()) {
-            Role role = roleRepository.findByName(requestedRole.toUpperCase())
+            String normalizedRole = normalizeRoleName(requestedRole);
+            Role role = roleRepository.findByName(normalizedRole)
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "Role '" + requestedRole + "' not found"));
             return Set.of(role);
@@ -176,6 +177,13 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("Default role 'CUSTOMER' not found"));
 
         return Set.of(customerRole);
+    }
+
+    private String normalizeRoleName(String roleName) {
+        String normalizedRoleName = roleName == null ? "" : roleName.trim().toUpperCase();
+        return normalizedRoleName.startsWith("ROLE_")
+                ? normalizedRoleName.substring(5)
+                : normalizedRoleName;
     }
 
     private UserDTO mapToUserDTO(User user) {
