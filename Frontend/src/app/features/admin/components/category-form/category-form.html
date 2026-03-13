@@ -1,0 +1,31 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-5">
+	<app-input
+		formControlName="name"
+		label="Category Name"
+		placeholder="Outerwear"
+		[error]="nameError" />
+
+	<div class="flex flex-col gap-1.5 font-sans">
+		<label class="text-xs font-semibold tracking-widest uppercase text-foreground/70">
+			Description
+		</label>
+		<textarea
+			formControlName="description"
+			rows="4"
+			placeholder="Describe the purpose of this category"
+			class="w-full resize-none rounded-xl border border-muted bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 focus:border-primary focus:outline-none transition-colors"
+			[class.!border-red-500]="descriptionError"></textarea>
+		@if (descriptionError) {
+			<span class="text-xs text-red-500">{{ descriptionError }}</span>
+		}
+	</div>
+
+	<div class="flex items-center justify-end gap-3 pt-2">
+		<app-button variant="ghost" type="button" (click)="onCancel()">
+			Cancel
+		</app-button>
+		<app-button [loading]="submitting()" type="submit">
+			{{ submitLabel }}
+		</app-button>
+	</div>
+</form>
