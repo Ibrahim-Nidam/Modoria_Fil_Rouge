@@ -1,8 +1,8 @@
 package com.modoria.payment.application.service;
 
-import com.modoria.payment.application.dto.PaymentRequestDTO;
-import com.modoria.payment.application.dto.PaymentResponseDTO;
+import com.modoria.order.domain.model.Order;
+import com.modoria.payment.application.dto.CheckoutSessionResponseDTO;
 
 public interface PaymentService {
-    PaymentResponseDTO processPayment(PaymentRequestDTO request);
+    CheckoutSessionResponseDTO createCheckoutSession(Order order, String successUrl, String cancelUrl);
 }
