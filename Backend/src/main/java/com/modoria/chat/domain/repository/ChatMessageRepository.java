@@ -13,6 +13,8 @@ import java.util.List;
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 
+        List<ChatMessage> findBySupportSessionIdOrderByTimestampAsc(Long supportSessionId);
+
     @Query("SELECT m FROM ChatMessage m WHERE " +
             "(m.sender.id = :user1Id AND m.receiver.id = :user2Id) OR " +
             "(m.sender.id = :user2Id AND m.receiver.id = :user1Id) " +
