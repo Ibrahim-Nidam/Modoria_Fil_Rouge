@@ -3,6 +3,7 @@ package com.modoria.catalog.infrastructure.web;
 import com.modoria.catalog.application.dto.category.CategoryRequestDTO;
 import com.modoria.catalog.application.dto.category.CategoryResponseDTO;
 import com.modoria.catalog.application.service.category.CategoryService;
+import com.modoria.catalog.domain.model.Season;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,8 +31,10 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CategoryResponseDTO>> getAllCategories(@PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(categoryService.getAllCategories(pageable));
+    public ResponseEntity<Page<CategoryResponseDTO>> getAllCategories(
+            @PageableDefault(size = 20) Pageable pageable,
+            @RequestParam(required = false) Season season) {
+        return ResponseEntity.ok(categoryService.getAllCategories(pageable, season));
     }
 
     @GetMapping("/{id}")
