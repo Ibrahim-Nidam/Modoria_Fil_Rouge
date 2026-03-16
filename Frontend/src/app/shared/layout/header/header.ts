@@ -1,24 +1,35 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Button } from '../../ui/button/button';
-import { InputComponent } from '../../ui/input/input';
 import { ThemeService, Season } from '../../../core/theme/theme.service';
 import { AuthService } from '../../../core/auth/auth.service';
+import { ShopStateService } from '../../../features/shop/services/shop-state.service';
 
 @Component({
     selector: 'app-header',
     standalone: true,
-    imports: [Button, InputComponent, RouterLink],
+    imports: [Button, RouterLink],
     templateUrl: './header.html',
     styleUrl: './header.css',
 })
 export class Header {
     public themeService = inject(ThemeService);
     public authService = inject(AuthService);
+    public shopState = inject(ShopStateService);
+    private router = inject(Router);
     public availableSeasons: Season[] = ['spring', 'summer', 'autumn', 'winter'];
+    public searchQuery = '';
 
     get logoLink(): string {
-        return this.authService.isAdmin() ? '/admin' : '/home';
+        if (this.authService.isAdmin()) {
+            return '/admin';
+        }
+
+        if (this.authService.isAgent()) {
+            return '/agent/tickets';
+        }
+
+        return '/home';
     }
 
     logout() {
@@ -62,5 +73,20 @@ export class Header {
 
     get collectionIcon(): string {
         return this.getCollectionIcon(this.themeService.activeSeason());
+    }
+
+    onSearchInput(event: Event) {
+        this.searchQuery = (event.target as HTMLInputElement).value;
+    }
+
+    onSearchSubmit() {
+        const query = this.searchQuery.trim();
+        this.router.navigate(['/catalog'], {
+            queryParams: {
+                q: query || null,
+                category: null,
+                section: null,
+            }
+        });
     }
 }
