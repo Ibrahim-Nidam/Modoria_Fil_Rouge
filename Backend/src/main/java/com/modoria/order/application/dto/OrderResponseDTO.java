@@ -16,6 +16,9 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderResponseDTO {
     private Long id;
+    private Long customerId;
+    private String customerName;
+    private String customerEmail;
     private BigDecimal totalAmount;
     private OrderStatus status;
     private LocalDateTime createdAt;
