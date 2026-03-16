@@ -4,7 +4,9 @@ import com.modoria.chat.application.dto.ChatMessageDTO;
 import com.modoria.chat.application.dto.ChatMessageRequest;
 import com.modoria.chat.domain.enums.MessageStatus;
 import com.modoria.chat.domain.model.ChatMessage;
+import com.modoria.chat.domain.model.SupportSession;
 import com.modoria.chat.domain.repository.ChatMessageRepository;
+import com.modoria.chat.domain.repository.SupportSessionRepository;
 import com.modoria.identity.domain.model.User;
 import com.modoria.identity.domain.repository.UserRepository;
 import com.modoria.shared.exception.ResourceNotFoundException;
@@ -21,18 +23,31 @@ import java.util.stream.Collectors;
 public class ChatService {
 
     private final ChatMessageRepository chatMessageRepository;
+        private final SupportSessionRepository supportSessionRepository;
     private final UserRepository userRepository;
 
     @Transactional
     public ChatMessageDTO sendMessage(Long senderId, ChatMessageRequest request) {
+                return sendMessage(senderId, request, null);
+        }
+
+        @Transactional
+        public ChatMessageDTO sendMessage(Long senderId, ChatMessageRequest request, Long supportSessionId) {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Sender not found"));
         User receiver = userRepository.findById(request.getReceiverId())
                 .orElseThrow(() -> new ResourceNotFoundException("Receiver not found"));
 
+                SupportSession session = null;
+                if (supportSessionId != null) {
+                        session = supportSessionRepository.findById(supportSessionId)
+                                        .orElseThrow(() -> new ResourceNotFoundException("Support session not found"));
+                }
+
         ChatMessage message = ChatMessage.builder()
                 .sender(sender)
                 .receiver(receiver)
+                                .supportSession(session)
                 .content(request.getContent())
                 .timestamp(LocalDateTime.now())
                 .status(MessageStatus.SENT)
@@ -50,9 +65,18 @@ public class ChatService {
                 .collect(Collectors.toList());
     }
 
+        @Transactional(readOnly = true)
+        public List<ChatMessageDTO> getTicketConversation(Long supportSessionId) {
+                return chatMessageRepository.findBySupportSessionIdOrderByTimestampAsc(supportSessionId)
+                                .stream()
+                                .map(this::mapToDTO)
+                                .collect(Collectors.toList());
+        }
+
     private ChatMessageDTO mapToDTO(ChatMessage message) {
         return ChatMessageDTO.builder()
                 .id(message.getId())
+                                .supportSessionId(message.getSupportSession() != null ? message.getSupportSession().getId() : null)
                 .senderId(message.getSender().getId())
                 .senderName(message.getSender().getFullName())
                 .receiverId(message.getReceiver().getId())
