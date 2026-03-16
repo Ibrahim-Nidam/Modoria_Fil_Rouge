@@ -5,7 +5,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "categories", indexes = {
-        @Index(name = "idx_category_name", columnList = "name")
+    @Index(name = "idx_category_name", columnList = "name"),
+    @Index(name = "idx_category_season", columnList = "season")
 })
 @Getter
 @Setter
@@ -18,8 +19,12 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Season season;
 
     @Column(length = 500)
     private String description;
