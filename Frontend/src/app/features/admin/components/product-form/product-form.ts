@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, effect, inject, input, output } from '@angular/core';
+import { Component, OnDestroy, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from '../../../../shared/ui/button/button';
 import { InputComponent } from '../../../../shared/ui/input/input';
-import { AdminCategory } from '../../services/admin-category.service';
+import { AdminCategory, CategorySeason } from '../../services/admin-category.service';
 import { AdminProductImage, ProductSeason } from '../../services/admin-product.service';
 
 interface ExistingImageItem extends AdminProductImage {
@@ -64,6 +64,15 @@ export class ProductForm implements OnDestroy {
   newImages: NewImageItem[] = [];
   imageError?: string;
 
+  private _selectedSeason = signal<string>('');
+
+  filteredCategories = computed(() => {
+    const season = this._selectedSeason();
+    const all = this.categories();
+    if (!season) return all;
+    return all.filter(c => c.season === (season as CategorySeason));
+  });
+
   form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(120)]],
     description: ['', [Validators.maxLength(1000)]],
@@ -84,7 +93,7 @@ export class ProductForm implements OnDestroy {
         season: initialValue?.season ?? '',
         categoryId: initialValue?.categoryId?.toString() ?? '',
       });
-
+      this._selectedSeason.set(initialValue?.season ?? '');
       this.resetImageState(initialValue?.images ?? []);
     });
   }
@@ -176,6 +185,12 @@ export class ProductForm implements OnDestroy {
 
   get submitLabel(): string {
     return this.mode() === 'create' ? 'Create Product' : 'Save Changes';
+  }
+
+  onSeasonChange(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this._selectedSeason.set(value);
+    this.form.controls.categoryId.setValue('');
   }
 
   get activeExistingImages(): ExistingImageItem[] {
