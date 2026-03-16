@@ -11,7 +11,7 @@
     </app-button>
   </div>
 
-  <section class="overflow-hidden rounded-2xl border border-muted bg-background shadow-sm">
+  <section class="overflow-hidden rounded-none border border-muted bg-background shadow-sm">
     @if (loading()) {
       <div class="flex min-h-[240px] items-center justify-center text-sm text-foreground/50">
         Loading users...
@@ -42,7 +42,7 @@
                 <td class="px-5 py-4 align-top">
                   <div class="flex flex-wrap gap-2">
                     @for (role of user.roles; track role) {
-                      <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                      <span class="inline-flex rounded-none px-3 py-1 text-xs font-semibold"
                         [class]="role === 'ADMIN' ? 'bg-primary/10 text-primary' : role === 'AGENT' ? 'bg-amber-500/10 text-amber-600' : 'bg-emerald-500/10 text-emerald-600'">
                         {{ role }}
                       </span>
@@ -53,7 +53,7 @@
                   <button
                     type="button"
                     (click)="toggleEnabled(user)"
-                    class="inline-flex rounded-full px-3 py-1 text-xs font-semibold cursor-pointer transition-opacity hover:opacity-70"
+                    class="inline-flex rounded-none px-3 py-1 text-xs font-semibold cursor-pointer transition-opacity hover:opacity-70"
                     [class]="user.enabled ? 'bg-emerald-500/10 text-emerald-600' : 'bg-foreground/10 text-foreground/60'">
                     {{ user.enabled ? 'Enabled' : 'Disabled' }}
                   </button>
