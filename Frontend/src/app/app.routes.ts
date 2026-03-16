@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/auth/auth.guard';
 import { adminGuard } from './core/auth/admin.guard';
+import { agentGuard } from './core/auth/agent.guard';
 
 export const routes: Routes = [
     {
@@ -8,17 +8,17 @@ export const routes: Routes = [
         loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
     },
     {
-        path: 'home',
-        loadComponent: () => import('./features/home/home').then(m => m.HomeComponent)
-    },
-    {
         path: 'admin',
         canActivate: [adminGuard],
         loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
     },
     {
+        path: 'agent',
+        canActivate: [agentGuard],
+        loadChildren: () => import('./features/agent/agent.routes').then(m => m.AGENT_ROUTES)
+    },
+    {
         path: '',
-        redirectTo: 'home',
-        pathMatch: 'full'
+        loadChildren: () => import('./features/root/root.routes').then(m => m.ROOT_ROUTES)
     }
 ];
