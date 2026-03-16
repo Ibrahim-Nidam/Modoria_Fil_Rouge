@@ -1,0 +1,123 @@
+<app-header></app-header>
+
+<main class="min-h-screen bg-background pt-24 text-foreground">
+  <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-10">
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold">Agent Ticket Desk</h1>
+      <p class="mt-2 text-sm text-foreground/70">Manage assigned tickets, reply to clients, and update ticket status.</p>
+    </div>
+
+    <div class="grid gap-6 lg:grid-cols-[340px,1fr]">
+      <section class="rounded-2xl border border-muted bg-background p-4">
+        <div class="flex items-center justify-between gap-2">
+          <h2 class="text-lg font-semibold">Assigned Tickets</h2>
+          <button
+            type="button"
+            (click)="loadAssignedTickets()"
+            class="text-xs font-semibold uppercase tracking-[0.12em] text-primary hover:underline">
+            Refresh
+          </button>
+        </div>
+
+        @if (loading()) {
+          <div class="mt-4 space-y-2">
+            <div class="h-16 animate-pulse rounded-xl bg-muted"></div>
+            <div class="h-16 animate-pulse rounded-xl bg-muted"></div>
+          </div>
+        } @else if (tickets().length === 0) {
+          <div class="mt-4 rounded-xl border border-muted p-4 text-sm text-foreground/70">No assigned tickets.</div>
+        } @else {
+          <div class="mt-4 max-h-[34rem] space-y-2 overflow-auto pr-1">
+            @for (ticket of tickets(); track ticket.id) {
+              <button
+                type="button"
+                (click)="selectTicket(ticket)"
+                class="w-full rounded-xl border p-3 text-left"
+                [class.border-primary]="selectedTicketId() === ticket.id"
+                [class.bg-primary/5]="selectedTicketId() === ticket.id"
+                [class.border-muted]="selectedTicketId() !== ticket.id">
+                <p class="text-sm font-semibold">{{ ticket.subject || 'Support ticket' }}</p>
+                <p class="mt-1 text-xs text-foreground/60">{{ ticket.customerName }} • {{ ticket.status }}</p>
+                <p class="mt-1 text-xs text-foreground/60">Order #{{ ticket.orderId || '-' }}</p>
+                <p class="mt-1 text-[11px] text-foreground/50">{{ formatDate(ticket.createdAt) }}</p>
+              </button>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="rounded-2xl border border-muted bg-background p-5">
+        @if (selectedTicket(); as ticket) {
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/60">Ticket #{{ ticket.id }}</p>
+          <h2 class="mt-2 text-xl font-semibold">{{ ticket.subject || 'Support ticket' }}</h2>
+          <p class="mt-1 text-sm text-foreground/70">Client: {{ ticket.customerName }}</p>
+          <p class="mt-1 text-sm text-foreground/70">Order #{{ ticket.orderId || '-' }} • {{ ticket.orderStatus || 'N/A' }}</p>
+          @if (ticket.orderTotal != null) {
+            <p class="mt-1 text-sm font-semibold text-primary">{{ ticket.orderTotal | number:'1.2-2' }} MAD</p>
+          }
+
+          @if (ticket.initialMessage) {
+            <div class="mt-4 rounded-xl border border-muted bg-muted/20 p-3 text-sm text-foreground/80">
+              {{ ticket.initialMessage }}
+            </div>
+          }
+
+          <div class="mt-4 flex flex-wrap items-center gap-2">
+            <select
+              class="rounded-xl border border-muted bg-background px-3 py-2 text-xs"
+              [value]="statusValue()"
+              (change)="setStatus($any($event.target).value)">
+              @for (status of statusOptions; track status) {
+                <option [value]="status">{{ status }}</option>
+              }
+            </select>
+
+            <button
+              type="button"
+              (click)="updateTicketStatus()"
+              [disabled]="updatingStatus()"
+              class="inline-flex items-center rounded-full border border-emerald-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700 disabled:cursor-not-allowed disabled:opacity-60">
+              {{ updatingStatus() ? 'Updating...' : 'Update Status' }}
+            </button>
+          </div>
+
+          <div class="mt-5">
+            <p class="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50">Conversation</p>
+            @if (conversationLoading()) {
+              <div class="mt-2 text-sm text-foreground/60">Loading messages...</div>
+            } @else if (conversation().length === 0) {
+              <div class="mt-2 text-sm text-foreground/60">No conversation messages yet.</div>
+            } @else {
+              <div class="mt-3 max-h-72 space-y-2 overflow-auto rounded-xl border border-muted p-3">
+                @for (message of conversation(); track message.id) {
+                  <div class="rounded-lg border border-muted p-2">
+                    <p class="text-xs font-semibold text-foreground/80">{{ message.senderName }}</p>
+                    <p class="mt-1 text-sm text-foreground/80">{{ message.content }}</p>
+                    <p class="mt-1 text-[11px] text-foreground/50">{{ formatDate(message.timestamp) }}</p>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <form class="mt-4 space-y-2" [formGroup]="replyForm" (ngSubmit)="sendReply()">
+            <textarea
+              formControlName="message"
+              rows="4"
+              placeholder="Reply to client"
+              class="w-full rounded-xl border border-muted bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none"></textarea>
+
+            <button
+              type="submit"
+              [disabled]="replying() || replyForm.invalid"
+              class="inline-flex items-center rounded-full bg-primary px-5 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-background disabled:cursor-not-allowed disabled:opacity-60">
+              {{ replying() ? 'Sending...' : 'Send Reply' }}
+            </button>
+          </form>
+        } @else {
+          <div class="rounded-xl border border-muted p-4 text-sm text-foreground/70">Select an assigned ticket to start.</div>
+        }
+      </section>
+    </div>
+  </section>
+</main>

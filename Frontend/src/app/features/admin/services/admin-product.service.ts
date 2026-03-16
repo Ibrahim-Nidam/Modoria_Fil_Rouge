@@ -61,6 +61,16 @@ export class AdminProductService {
     );
   }
 
+  getProductsByCategory(
+    categoryId: number,
+    page: number = 0,
+    size: number = 100
+  ): Observable<PageResponse<AdminProduct>> {
+    return this.http.get<PageResponse<AdminProduct>>(
+      `${this.apiUrl}/search?categoryId=${categoryId}&page=${page}&size=${size}&sort=name,asc`
+    );
+  }
+
   createProduct(payload: ProductPayload): Observable<AdminProduct> {
     return this.http.post<AdminProduct>(this.apiUrl, payload);
   }

@@ -173,8 +173,8 @@ public class AuthServiceImpl implements AuthService {
             return Set.of(role);
         }
 
-        Role customerRole = roleRepository.findByName("CUSTOMER")
-                .orElseThrow(() -> new ResourceNotFoundException("Default role 'CUSTOMER' not found"));
+        Role customerRole = roleRepository.findByName("CLIENT")
+                .orElseThrow(() -> new ResourceNotFoundException("Default role 'CLIENT' not found"));
 
         return Set.of(customerRole);
     }

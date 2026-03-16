@@ -5,6 +5,7 @@ import com.modoria.catalog.application.dto.category.CategoryResponseDTO;
 import com.modoria.catalog.application.mapper.category.CategoryMapper;
 import com.modoria.catalog.application.service.product.FileStorageService;
 import com.modoria.catalog.domain.model.Category;
+import com.modoria.catalog.domain.model.Season;
 import com.modoria.catalog.domain.repository.CategoryRepository;
 import com.modoria.catalog.domain.repository.ProductRepository;
 import com.modoria.shared.exception.DuplicateResourceException;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -34,8 +36,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryResponseDTO createCategory(CategoryRequestDTO requestDTO) {
-        if (categoryRepository.existsByName(requestDTO.getName())) {
-            throw new DuplicateResourceException("Category with name '" + requestDTO.getName() + "' already exists");
+        if (categoryRepository.existsByNameAndSeason(requestDTO.getName(), requestDTO.getSeason())) {
+            throw new DuplicateResourceException(
+                    "Category with name '" + requestDTO.getName() + "' already exists for season " + requestDTO.getSeason());
         }
 
         Category category = categoryMapper.toEntity(requestDTO);
@@ -54,8 +57,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CategoryResponseDTO> getAllCategories(Pageable pageable) {
-        Page<Category> categories = categoryRepository.findAll(pageable);
+    public Page<CategoryResponseDTO> getAllCategories(Pageable pageable, Season season) {
+        Page<Category> categories = season == null
+                ? categoryRepository.findAll(pageable)
+                : categoryRepository.findBySeason(season, pageable);
         List<Long> categoryIds = categories.getContent().stream()
             .map(Category::getId)
             .toList();
@@ -75,9 +80,9 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO requestDTO) {
         Category category = findCategoryOrThrow(id);
 
-        if (categoryRepository.existsByNameAndIdNot(requestDTO.getName(), id)) {
+        if (categoryRepository.existsByNameAndSeasonAndIdNot(requestDTO.getName(), requestDTO.getSeason(), id)) {
             throw new DuplicateResourceException(
-                    "Another category with name '" + requestDTO.getName() + "' already exists");
+                    "Another category with name '" + requestDTO.getName() + "' already exists for season " + requestDTO.getSeason());
         }
 
         categoryMapper.updateEntityFromDto(requestDTO, category);
@@ -93,7 +98,10 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = findCategoryOrThrow(id);
 
         fileStorageService.deleteFile(category.getImagePath());
-        String imagePath = fileStorageService.storeFile(file, "category", "category_" + id);
+        String imagePath = fileStorageService.storeFile(
+            file,
+            buildCategoryStorageFolder(category),
+            "category_" + id);
 
         category.setImagePath(imagePath);
         Category savedCategory = categoryRepository.save(category);
@@ -120,5 +128,20 @@ public class CategoryServiceImpl implements CategoryService {
         CategoryResponseDTO responseDTO = categoryMapper.toResponseDTO(category);
         responseDTO.setProductCount(productCount);
         return responseDTO;
+    }
+
+    private String buildCategoryStorageFolder(Category category) {
+        String seasonFolder = category.getSeason() == null
+                ? "unassigned"
+                : slugify(category.getSeason().name());
+        String categoryFolder = slugify(category.getName()) + "-" + category.getId();
+        return "category/" + seasonFolder + "/" + categoryFolder;
+    }
+
+    private String slugify(String value) {
+        String normalized = value == null ? "category" : value.trim().toLowerCase(Locale.ROOT);
+        normalized = normalized.replaceAll("[^a-z0-9]+", "-");
+        normalized = normalized.replaceAll("^-|-$", "");
+        return normalized.isBlank() ? "category" : normalized;
     }
 }

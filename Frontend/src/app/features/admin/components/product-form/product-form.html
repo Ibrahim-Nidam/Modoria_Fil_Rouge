@@ -13,7 +13,7 @@
       formControlName="description"
       rows="4"
       placeholder="Describe the product details"
-      class="w-full resize-none rounded-xl border border-muted bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 focus:border-primary focus:outline-none transition-colors"
+      class="w-full resize-none rounded-none border border-muted bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 focus:border-primary focus:outline-none transition-colors"
       [class.!border-red-500]="descriptionError"></textarea>
     @if (descriptionError) {
       <span class="text-xs text-red-500">{{ descriptionError }}</span>
@@ -43,7 +43,8 @@
       </label>
       <select
         formControlName="season"
-        class="w-full rounded-xl border border-muted bg-background px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors">
+        (change)="onSeasonChange($event)"
+        class="w-full rounded-none border border-muted bg-background px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors">
         <option value="">All Seasons</option>
         @for (season of seasonOptions; track season) {
           <option [value]="season">{{ season }}</option>
@@ -57,10 +58,10 @@
       </label>
       <select
         formControlName="categoryId"
-        class="w-full rounded-xl border border-muted bg-background px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
+        class="w-full rounded-none border border-muted bg-background px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors"
         [class.!border-red-500]="categoryError">
         <option value="">Select category</option>
-        @for (category of categories(); track category.id) {
+        @for (category of filteredCategories(); track category.id) {
           <option [value]="category.id">{{ category.name }}</option>
         }
       </select>
@@ -70,13 +71,13 @@
     </div>
   </div>
 
-  <div class="space-y-3 rounded-xl border border-muted p-4">
+  <div class="space-y-3 rounded-none border border-muted p-4">
     <div class="flex items-center justify-between gap-3">
       <div>
         <p class="text-xs font-semibold uppercase tracking-widest text-foreground/70">Product Images</p>
         <p class="text-xs text-foreground/50">Upload multiple images and choose the primary one.</p>
       </div>
-      <label class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-foreground/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-foreground/80 hover:bg-foreground/5">
+      <label class="inline-flex cursor-pointer items-center gap-2 rounded-none border border-foreground/20 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-foreground/80 hover:bg-foreground/5">
         <span class="material-symbols-outlined text-sm">upload</span>
         Add Images
         <input type="file" class="hidden" multiple accept="image/*" (change)="onFileSelection($event)">
@@ -84,7 +85,7 @@
     </div>
 
     @if (activeExistingImages.length === 0 && newImages.length === 0) {
-      <div class="rounded-lg border border-dashed border-muted px-4 py-6 text-center text-sm text-foreground/50">
+      <div class="rounded-none border border-dashed border-muted px-4 py-6 text-center text-sm text-foreground/50">
         No images selected yet.
       </div>
     }
@@ -94,12 +95,12 @@
         <p class="text-xs font-semibold uppercase tracking-wider text-foreground/60">Existing Images</p>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           @for (image of existingImages; track image.id) {
-            <article class="rounded-lg border p-2"
+            <article class="rounded-none border p-2"
               [class.border-red-300]="image.markedForRemoval"
               [class.border-primary]="image.primary && !image.markedForRemoval"
               [class.border-muted]="!image.primary && !image.markedForRemoval">
               <img [src]="resolveImageUrl(image.imagePath)" alt="Product image"
-                class="h-32 w-full rounded-md object-cover" />
+                class="h-32 w-full rounded-none object-cover" />
 
               <div class="mt-2 flex items-center justify-between gap-2">
                 <button
@@ -131,11 +132,11 @@
         <p class="text-xs font-semibold uppercase tracking-wider text-foreground/60">New Images</p>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           @for (image of newImages; track image.previewUrl; let i = $index) {
-            <article class="rounded-lg border p-2"
+            <article class="rounded-none border p-2"
               [class.border-primary]="image.primary"
               [class.border-muted]="!image.primary">
               <img [src]="image.previewUrl" alt="New product image"
-                class="h-32 w-full rounded-md object-cover" />
+                class="h-32 w-full rounded-none object-cover" />
 
               <div class="mt-2 flex items-center justify-between gap-2">
                 <button

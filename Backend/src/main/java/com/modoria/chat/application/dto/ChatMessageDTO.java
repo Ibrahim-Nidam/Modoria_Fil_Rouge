@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ChatMessageDTO {
     private Long id;
+    private Long supportSessionId;
     private Long senderId;
     private String senderName;
     private Long receiverId;

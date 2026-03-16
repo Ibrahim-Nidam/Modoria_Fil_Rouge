@@ -1,0 +1,42 @@
+<app-header></app-header>
+
+<main class="min-h-screen bg-background pt-24 text-foreground">
+  <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-10">
+    <div class="mb-6 flex items-end justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Saved</p>
+        <h1 class="mt-2 text-3xl font-bold">Wishlist</h1>
+      </div>
+      <a routerLink="/cart" class="text-xs font-semibold uppercase tracking-[0.14em] text-primary hover:underline">Go to Cart</a>
+    </div>
+
+    @if (shopState.wishlistItems().length === 0) {
+      <div class="rounded-2xl border border-muted p-10 text-center">
+        <p class="text-sm text-foreground/60">No items in wishlist.</p>
+        <a routerLink="/catalog" class="mt-4 inline-flex rounded-full bg-primary px-6 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-background">Discover Products</a>
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+        @for (product of shopState.wishlistItems(); track product.id) {
+          <article class="rounded-2xl border border-muted bg-background p-3">
+            <a [routerLink]="['/product', product.id]" class="mb-3 block aspect-[3/4] overflow-hidden rounded-xl bg-muted">
+              @if (getImageUrl(product.primaryImagePath); as imageUrl) {
+                <img [src]="imageUrl" [alt]="product.name" class="h-full w-full object-cover" />
+              }
+            </a>
+            <a [routerLink]="['/product', product.id]" class="block truncate text-sm font-semibold hover:text-primary">{{ product.name }}</a>
+            <p class="mt-1 text-sm font-semibold text-primary">{{ formatPrice(product.price) }}</p>
+            <div class="mt-3 flex gap-2">
+              <button type="button" class="flex-1 rounded-full bg-primary px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-background" (click)="addToCartFromWishlist(product)">
+                Add to Cart
+              </button>
+              <button type="button" class="rounded-full border border-muted px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.12em]" (click)="removeFromWishlist(product)">
+                Remove
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</main>

@@ -1,0 +1,94 @@
+<app-header></app-header>
+
+<main class="min-h-screen bg-background pt-24 text-foreground">
+  <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10">
+    <a routerLink="/catalog" class="mb-6 inline-flex items-center text-xs font-semibold uppercase tracking-[0.14em] text-primary hover:underline">
+      ← Back to Catalog
+    </a>
+
+    @if (loading()) {
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div class="aspect-square animate-pulse rounded-2xl bg-muted"></div>
+        <div class="space-y-3">
+          <div class="h-6 w-2/3 animate-pulse rounded bg-muted"></div>
+          <div class="h-4 w-full animate-pulse rounded bg-muted"></div>
+          <div class="h-4 w-5/6 animate-pulse rounded bg-muted"></div>
+        </div>
+      </div>
+    } @else if (!product()) {
+      <div class="rounded-2xl border border-muted p-10 text-center">
+        <p class="text-sm text-foreground/60">Product not found.</p>
+      </div>
+    } @else {
+      <div class="grid gap-8 lg:grid-cols-2">
+        <div>
+          <div class="mb-4 aspect-square overflow-hidden rounded-2xl bg-muted">
+            @if (selectedImage()) {
+              <img [src]="selectedImage()!" [alt]="product()!.name" class="h-full w-full object-cover" />
+            } @else {
+              <div class="h-full w-full botanical-overlay"></div>
+            }
+          </div>
+
+          @if (product()!.images.length > 0) {
+            <div class="grid grid-cols-4 gap-2">
+              @for (image of product()!.images; track image.id) {
+                <button
+                  type="button"
+                  (click)="selectImage(image.imagePath)"
+                  class="aspect-square overflow-hidden rounded-xl border border-muted transition hover:border-primary">
+                  <img [src]="getImageUrl(image.imagePath)" [alt]="product()!.name" class="h-full w-full object-cover" />
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="space-y-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{{ product()!.season ?? 'ALL SEASONS' }}</p>
+          <h1 class="text-3xl font-bold md:text-4xl">{{ product()!.name }}</h1>
+          <p class="text-sm uppercase tracking-[0.14em] text-foreground/60">{{ product()!.category.name }}</p>
+          <p class="text-2xl font-semibold text-primary">{{ formatPrice(product()!.price) }}</p>
+
+          <div class="rounded-2xl border border-muted bg-background p-4">
+            <p class="text-sm leading-relaxed text-foreground/80">
+              {{ product()!.description || 'No description available for this product yet.' }}
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            <button type="button" (click)="addToCart()" class="inline-flex items-center rounded-full bg-primary px-6 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-background transition hover:opacity-90">
+              Add to Cart
+            </button>
+            <button type="button" (click)="toggleWishlist()" class="inline-flex items-center gap-2 rounded-full border border-primary px-6 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-primary transition hover:bg-primary hover:text-background">
+              <span
+                class="material-symbols-outlined"
+                [class.text-red-500]="inWishlist()"
+                [style.font-variation-settings]="inWishlist() ? '\'FILL\' 1' : '\'FILL\' 0'">
+                {{ inWishlist() ? 'favorite' : 'favorite_border' }}
+              </span>
+              {{ inWishlist() ? 'Saved in Wishlist' : 'Save to Wishlist' }}
+            </button>
+          </div>
+
+          <p class="text-xs uppercase tracking-[0.12em] text-foreground/60">Stock: {{ product()!.stock }}</p>
+
+          <div class="grid gap-3 sm:grid-cols-3">
+            <article class="rounded-2xl border border-muted p-3">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">Shipping</p>
+              <p class="mt-2 text-xs leading-relaxed text-foreground/70">Free standard delivery in 3-5 days for orders above 800 MAD.</p>
+            </article>
+            <article class="rounded-2xl border border-muted p-3">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">Returns</p>
+              <p class="mt-2 text-xs leading-relaxed text-foreground/70">30-day return policy. Items must be unworn with original packaging.</p>
+            </article>
+            <article class="rounded-2xl border border-muted p-3">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">Care</p>
+              <p class="mt-2 text-xs leading-relaxed text-foreground/70">Recommended dry clean or delicate cold wash depending on fabric.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    }
+  </section>
+</main>

@@ -1,0 +1,48 @@
+<app-header></app-header>
+
+<main class="min-h-screen bg-background pt-24 text-foreground">
+  <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+    <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Checkout</p>
+    <h1 class="mt-2 text-3xl font-bold">Payment Success</h1>
+
+    @if (loading()) {
+      <div class="mt-6 rounded-2xl border border-muted p-6">
+        <p class="text-sm text-foreground/70">Confirming your payment and finalizing your order...</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="mt-6 rounded-2xl border border-red-300 bg-red-50 p-6 text-red-700">
+        <p class="text-sm font-medium">{{ errorMessage() }}</p>
+        <a routerLink="/cart" class="mt-4 inline-flex text-xs font-semibold uppercase tracking-[0.14em] text-primary hover:underline">
+          Return to Cart
+        </a>
+      </div>
+    } @else if (order()) {
+      <div class="mt-6 rounded-2xl border border-muted p-6">
+        <p class="text-sm text-foreground/70">Your payment was successful and your order has been confirmed.</p>
+        <dl class="mt-5 grid gap-3 text-sm">
+          <div class="flex items-center justify-between">
+            <dt class="text-foreground/60">Order ID</dt>
+            <dd class="font-semibold">#{{ order()!.id }}</dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt class="text-foreground/60">Status</dt>
+            <dd class="font-semibold">{{ order()!.status }}</dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt class="text-foreground/60">Total</dt>
+            <dd class="font-semibold text-primary">{{ formatPrice(order()!.totalAmount) }}</dd>
+          </div>
+        </dl>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a routerLink="/profile" class="rounded-full bg-primary px-5 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-background">
+            View Profile
+          </a>
+          <a routerLink="/catalog" class="rounded-full border border-muted px-5 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-foreground">
+            Continue Shopping
+          </a>
+        </div>
+      </div>
+    }
+  </section>
+</main>

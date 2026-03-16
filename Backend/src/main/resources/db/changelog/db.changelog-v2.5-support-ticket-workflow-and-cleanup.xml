@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.17.xsd">
+
+    <changeSet id="v2.5-1-support-sessions-multi-ticket" author="modoria">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="support_sessions"/>
+            <columnExists tableName="support_sessions" columnName="customer_id"/>
+        </preConditions>
+
+        <addColumn tableName="support_sessions">
+            <column name="customer_id_tmp" type="BIGINT"/>
+        </addColumn>
+
+        <sql>UPDATE support_sessions SET customer_id_tmp = customer_id</sql>
+
+        <dropForeignKeyConstraint baseTableName="support_sessions" constraintName="fk_session_customer"/>
+        <dropColumn tableName="support_sessions" columnName="customer_id"/>
+
+        <addColumn tableName="support_sessions">
+            <column name="customer_id" type="BIGINT"/>
+        </addColumn>
+
+        <sql>UPDATE support_sessions SET customer_id = customer_id_tmp</sql>
+
+        <addNotNullConstraint tableName="support_sessions" columnName="customer_id" columnDataType="BIGINT"/>
+
+        <addForeignKeyConstraint
+                baseTableName="support_sessions"
+                baseColumnNames="customer_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_session_customer"/>
+
+        <dropColumn tableName="support_sessions" columnName="customer_id_tmp"/>
+
+        <createIndex tableName="support_sessions" indexName="idx_support_sessions_customer_created">
+            <column name="customer_id"/>
+            <column name="created_at"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="v2.5-2-support-sessions-order-resolution" author="modoria">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="support_sessions"/>
+        </preConditions>
+
+        <addColumn tableName="support_sessions">
+            <column name="order_id" type="BIGINT"/>
+            <column name="resolved_by" type="BIGINT"/>
+            <column name="closed_at" type="TIMESTAMP"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+                baseTableName="support_sessions"
+                baseColumnNames="order_id"
+                referencedTableName="orders"
+                referencedColumnNames="id"
+                constraintName="fk_support_session_order"/>
+
+        <addForeignKeyConstraint
+                baseTableName="support_sessions"
+                baseColumnNames="resolved_by"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_support_session_resolved_by"/>
+
+        <createIndex tableName="support_sessions" indexName="idx_support_sessions_order">
+            <column name="order_id"/>
+        </createIndex>
+
+        <createIndex tableName="support_sessions" indexName="idx_support_sessions_agent_status">
+            <column name="agent_id"/>
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="v2.5-3-chat-messages-support-session" author="modoria">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="chat_messages"/>
+        </preConditions>
+
+        <addColumn tableName="chat_messages">
+            <column name="support_session_id" type="BIGINT"/>
+        </addColumn>
+
+        <addForeignKeyConstraint
+                baseTableName="chat_messages"
+                baseColumnNames="support_session_id"
+                referencedTableName="support_sessions"
+                referencedColumnNames="id"
+                constraintName="fk_chat_support_session"/>
+
+        <createIndex tableName="chat_messages" indexName="idx_chat_support_session_timestamp">
+            <column name="support_session_id"/>
+            <column name="timestamp"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="v2.5-4-drop-cart-items" author="modoria">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="cart_items"/>
+        </preConditions>
+        <dropTable tableName="cart_items"/>
+    </changeSet>
+
+    <changeSet id="v2.5-5-drop-carts" author="modoria">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="carts"/>
+        </preConditions>
+        <dropTable tableName="carts"/>
+    </changeSet>
+
+    <changeSet id="v2.5-6-drop-reviews" author="modoria">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="reviews"/>
+        </preConditions>
+        <dropTable tableName="reviews"/>
+    </changeSet>
+
+    <changeSet id="v2.5-7-drop-review-moderation" author="modoria">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="review_moderation"/>
+        </preConditions>
+        <dropTable tableName="review_moderation"/>
+    </changeSet>
+
+</databaseChangeLog>

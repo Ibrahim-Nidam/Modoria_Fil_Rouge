@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.17.xsd">
+
+    <changeSet id="1" author="modoria">
+        <addColumn tableName="categories">
+            <column name="season" type="VARCHAR(20)" defaultValue="SPRING"/>
+        </addColumn>
+
+        <update tableName="categories">
+            <column name="season" value="SPRING"/>
+            <where>season IS NULL</where>
+        </update>
+
+        <addNotNullConstraint tableName="categories" columnName="season" columnDataType="VARCHAR(20)"/>
+        <createIndex tableName="categories" indexName="idx_category_season">
+            <column name="season"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="2" author="modoria">
+        <preConditions onFail="MARK_RAN">
+            <uniqueConstraintExists tableName="categories" constraintName="categories_name_key"/>
+        </preConditions>
+        <dropUniqueConstraint tableName="categories" constraintName="categories_name_key"/>
+    </changeSet>
+
+    <changeSet id="3" author="modoria">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists tableName="categories" constraintName="uk_category_name_season"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint
+                tableName="categories"
+                columnNames="name,season"
+                constraintName="uk_category_name_season"/>
+    </changeSet>
+
+</databaseChangeLog>

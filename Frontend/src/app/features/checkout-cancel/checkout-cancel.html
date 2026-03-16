@@ -1,0 +1,19 @@
+<app-header></app-header>
+
+<main class="min-h-screen bg-background pt-24 text-foreground">
+  <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+    <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Checkout</p>
+    <h1 class="mt-2 text-3xl font-bold">Checkout Cancelled</h1>
+    <div class="mt-6 rounded-2xl border border-muted p-6">
+      <p class="text-sm text-foreground/70">Your payment was not completed. Your cart is still saved locally.</p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a routerLink="/cart" class="rounded-full bg-primary px-5 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-background">
+          Return to Cart
+        </a>
+        <a routerLink="/catalog" class="rounded-full border border-muted px-5 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-foreground">
+          Continue Shopping
+        </a>
+      </div>
+    </div>
+  </section>
+</main>

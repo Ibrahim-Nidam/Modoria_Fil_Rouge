@@ -1,5 +1,5 @@
 <button [type]="type()" [disabled]="disabled()"
-    class="relative inline-flex items-center justify-center font-sans tracking-widest uppercase transition-all duration-500 ease-out z-0 overflow-hidden"
+    class="relative inline-flex cursor-pointer items-center justify-center font-sans tracking-widest uppercase transition-all duration-500 ease-out z-0 overflow-hidden disabled:cursor-not-allowed"
     [class]="computedClasses()">
 
     @if (loading()) {

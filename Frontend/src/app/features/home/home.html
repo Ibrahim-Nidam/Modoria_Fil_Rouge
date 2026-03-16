@@ -1,0 +1,193 @@
+<app-header></app-header>
+
+<main class="home-main">
+
+  <!-- ═══════════════════════════════════════════════════
+       HERO — editorial image + product stack
+  ════════════════════════════════════════════════════ -->
+  <section class="hero-section">
+    <div class="hero-grid">
+
+      <!-- Left: editorial hero -->
+      <div class="hero-editorial">
+        @if (heroProduct() && getImageUrl(heroProduct()!.primaryImagePath); as imgUrl) {
+          <img [src]="imgUrl" [alt]="heroProduct()!.name" class="hero-bg-img" />
+        } @else {
+          <div class="hero-bg-placeholder botanical-overlay"></div>
+        }
+
+        <div class="hero-overlay-content">
+          <p class="hero-season-label">{{ activeSeason() | uppercase }} MMXXVI</p>
+          <h1 class="hero-headline">
+            @if (heroProduct()) {
+              {{ heroProduct()!.name }}
+            } @else {
+              The New<br />Collection
+            }
+          </h1>
+          @if (heroProduct()) {
+            <p class="hero-subtitle">{{ heroProduct()!.category.name }}</p>
+          }
+          <a routerLink="/catalog" class="hero-cta">
+            Explore Collection
+            <span class="hero-cta-arrow">→</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: product stack -->
+      <div class="hero-stack">
+        @if (loading()) {
+          @for (i of [1,2,3]; track i) {
+            <div class="stack-card stack-card-skeleton"></div>
+          }
+        } @else {
+          @for (product of heroStack(); track product.id) {
+            <a [routerLink]="['/product', product.id]" class="stack-card">
+              @if (getImageUrl(product.primaryImagePath); as imgUrl) {
+                <img [src]="imgUrl" [alt]="product.name" class="stack-card-img" />
+              } @else {
+                <div class="stack-card-img stack-card-img-placeholder botanical-overlay"></div>
+              }
+              <div class="stack-card-info">
+                <span class="stack-card-name">{{ product.name }}</span>
+                <span class="stack-card-price">{{ formatPrice(product.price) }}</span>
+              </div>
+            </a>
+          }
+        }
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       CATEGORY STRIP
+  ════════════════════════════════════════════════════ -->
+  @if (categories().length > 0) {
+    <nav class="category-strip">
+      <div class="category-strip-inner">
+        @for (cat of categories(); track cat.id; let last = $last) {
+          <a routerLink="/catalog" [queryParams]="{ category: cat.id }" class="category-strip-link">
+            {{ cat.name }}
+          </a>
+          @if (!last) {
+            <span class="category-strip-divider">✦</span>
+          }
+        }
+      </div>
+    </nav>
+  }
+
+  <!-- ═══════════════════════════════════════════════════
+       DROPS GRID
+  ════════════════════════════════════════════════════ -->
+  <section class="drops-section">
+    <div class="section-header">
+      <span class="section-label">THIS {{ activeSeason() | uppercase }}</span>
+      <h2 class="section-title">Featured Drops</h2>
+    </div>
+
+    @if (loading()) {
+      <div class="drops-grid">
+        @for (i of [1,2,3,4]; track i) {
+          <div class="drop-card-skeleton"></div>
+        }
+      </div>
+    } @else if (productGrid().length === 0) {
+      <div class="drops-empty">
+        <p>No products available for this season yet.</p>
+        <a routerLink="/catalog" class="hero-cta">Browse All</a>
+      </div>
+    } @else {
+      <div class="drops-grid">
+        @for (product of productGrid(); track product.id) {
+          <a [routerLink]="['/product', product.id]" class="drop-card">
+            <div class="drop-card-image-wrap">
+              @if (getImageUrl(product.primaryImagePath); as imgUrl) {
+                <img [src]="imgUrl" [alt]="product.name" class="drop-card-img" />
+              } @else {
+                <div class="drop-card-img drop-card-img-placeholder botanical-overlay"></div>
+              }
+              <div class="drop-card-hover">
+                <button class="quick-add-btn" (click)="addToCart(product, $event)">
+                  Quick Add
+                </button>
+              </div>
+              <button class="wishlist-btn" (click)="toggleWishlist(product, $event)">
+                <span
+                  class="material-symbols-outlined"
+                  [class.text-red-500]="isInWishlist(product.id)"
+                  [style.font-variation-settings]="isInWishlist(product.id) ? '\'FILL\' 1' : '\'FILL\' 0'">
+                  {{ isInWishlist(product.id) ? 'favorite' : 'favorite_border' }}
+                </span>
+              </button>
+            </div>
+            <div class="drop-card-info">
+              <p class="drop-card-name">{{ product.name }}</p>
+              <p class="drop-card-category">{{ product.category.name }}</p>
+              <p class="drop-card-price">{{ formatPrice(product.price) }}</p>
+            </div>
+          </a>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       EDITORIAL BANNER
+  ════════════════════════════════════════════════════ -->
+  <section class="editorial-banner">
+    <div class="botanical-overlay"></div>
+    <div class="editorial-banner-content">
+      <p class="editorial-banner-eyebrow">CURATED FOR THE SEASON</p>
+      <h2 class="editorial-banner-title">
+        THE {{ activeSeason() | uppercase }} EDIT
+      </h2>
+      <a routerLink="/catalog" class="editorial-banner-cta">
+        Shop the Edit
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════
+       BOTTOM SPLIT — AI Stylist + Newsletter
+  ════════════════════════════════════════════════════ -->
+  <section class="split-section">
+
+    <!-- AI Stylist card -->
+    <div class="stylist-card">
+      <div class="stylist-card-inner">
+        <span class="stylist-icon material-symbols-outlined">auto_awesome</span>
+        <h3 class="stylist-title">AI Stylist</h3>
+        <p class="stylist-subtitle">
+          Get personalised outfit ideas powered by our AI—curated for your body, season, and style.
+        </p>
+        <a routerLink="/stylist" class="stylist-cta">
+          Try AI Stylist
+        </a>
+      </div>
+    </div>
+
+    <!-- Newsletter card -->
+    <div class="newsletter-card">
+      <div class="newsletter-card-inner">
+        <p class="newsletter-eyebrow">STAY IN THE KNOW</p>
+        <h3 class="newsletter-title">Join the Inner Circle</h3>
+        <p class="newsletter-subtitle">
+          New drops, exclusive access, and seasonal edits — straight to your inbox.
+        </p>
+        <form class="newsletter-form" (ngSubmit)="$event.preventDefault()">
+          <input
+            type="email"
+            placeholder="your@email.com"
+            class="newsletter-input"
+            required />
+          <button type="submit" class="newsletter-btn">Subscribe</button>
+        </form>
+      </div>
+    </div>
+
+  </section>
+
+</main>

@@ -1,14 +1,16 @@
 <header class="auth-header">
     <div class="header-left">
-        <img [src]="logoSource" alt="Modoria"
-                    class="h-11 w-auto object-contain transition-transform group-hover:scale-105" />
+        <a routerLink="/home" class="group inline-flex items-center">
+            <img [src]="logoSource" alt="Modoria"
+                class="h-11 w-auto object-contain transition-transform group-hover:scale-105" />
+        </a>
     </div>
 
     <nav class="header-center">
-        <a class="nav-link" href="#">SHOP</a>
-        <a class="nav-link" href="#">COLLECTIONS</a>
-        <a class="nav-link" href="#">MAISON</a>
-        <a class="nav-link" href="#">JOURNAL</a>
+        <a class="nav-link" routerLink="/">SHOP</a>
+        <a class="nav-link" routerLink="/catalog" [queryParams]="{ section: 'new-arrivals' }">COLLECTIONS</a>
+        <a class="nav-link" routerLink="/about">MAISON</a>
+        <a class="nav-link" routerLink="/journal">JOURNAL</a>
     </nav>
 
     <div class="header-right">
@@ -27,8 +29,29 @@
         </div>
 
         <div class="action-icons">
-            <span class="material-symbols-outlined icon">search</span>
-            <span class="material-symbols-outlined icon">shopping_bag</span>
+            <div class="relative hidden md:block">
+                <input
+                    type="text"
+                    [value]="searchQuery"
+                    (input)="onSearchInput($event)"
+                    (keyup.enter)="onSearchSubmit()"
+                    placeholder="Search..."
+                    class="w-40 border-b border-foreground/20 bg-transparent px-1 py-1 text-xs text-foreground focus:border-primary focus:outline-none" />
+                <button type="button" (click)="onSearchSubmit()" class="icon absolute right-0 top-0">
+                    <span class="material-symbols-outlined">search</span>
+                </button>
+            </div>
+            <a routerLink="/wishlist" class="icon" title="Wishlist">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">favorite</span>
+            </a>
+            <a routerLink="/cart" class="relative icon" title="Cart">
+                <span class="material-symbols-outlined">shopping_bag</span>
+                @if (shopState.cartCount() > 0) {
+                <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center bg-primary text-[10px] font-bold text-background">
+                    {{ shopState.cartCount() }}
+                </span>
+                }
+            </a>
         </div>
     </div>
 </header>

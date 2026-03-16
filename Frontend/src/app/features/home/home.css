@@ -1,0 +1,690 @@
+/* ═══════════════════════════════════════════════════
+   HOME PAGE STYLES
+   All colors use CSS token variables from styles.css
+   ════════════════════════════════════════════════════ */
+
+:host {
+  display: block;
+}
+
+/* ─── Layout ─────────────────────────────────────── */
+
+.home-main {
+  background-color: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  padding-top: 4.5rem; /* header height */
+  font-family: var(--font-sans, sans-serif);
+}
+
+/* ═══════════════════════════════════════════════════
+   HERO SECTION
+════════════════════════════════════════════════════ */
+
+.hero-section {
+  padding: 2rem 1.5rem;
+  max-width: 1400px;
+  margin-inline: auto;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 2fr 1fr;
+    min-height: 75vh;
+  }
+}
+
+/* ── Editorial left panel ── */
+
+.hero-editorial {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  min-height: 420px;
+  background-color: color-mix(in srgb, var(--primary) 15%, var(--background));
+}
+
+.hero-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-bg-placeholder {
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+}
+
+.hero-overlay-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2.5rem;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.18) 60%,
+    transparent 100%
+  );
+}
+
+.hero-season-label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.hero-headline {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display, serif);
+}
+
+.hero-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.06em;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border: 1.5px solid var(--primary);
+  color: var(--primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 999px;
+  transition: background-color 0.2s, color 0.2s;
+  width: fit-content;
+}
+
+.hero-cta:hover {
+  background-color: var(--primary);
+  color: var(--background);
+}
+
+.hero-cta-arrow {
+  transition: transform 0.2s;
+}
+
+.hero-cta:hover .hero-cta-arrow {
+  transform: translateX(4px);
+}
+
+/* ── Product stack right panel ── */
+
+.hero-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.stack-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  text-decoration: none;
+  flex: 1;
+  min-height: 120px;
+  background-color: color-mix(in srgb, var(--primary) 8%, var(--background));
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stack-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.stack-card-skeleton {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--primary) 10%, var(--background)) 25%,
+    color-mix(in srgb, var(--primary) 18%, var(--background)) 50%,
+    color-mix(in srgb, var(--primary) 10%, var(--background)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.stack-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stack-card-img-placeholder {
+  opacity: 0.15;
+}
+
+.stack-card-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.65), transparent);
+}
+
+.stack-card-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.stack-card-price {
+  font-size: 0.8125rem;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════
+   CATEGORY STRIP
+════════════════════════════════════════════════════ */
+
+.category-strip {
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.category-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.category-strip-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 1rem 1.5rem;
+  max-width: 1400px;
+  margin-inline: auto;
+  white-space: nowrap;
+}
+
+.category-strip-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--foreground);
+  opacity: 0.7;
+  padding: 0.25rem 1rem;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.category-strip-link:hover {
+  opacity: 1;
+  color: var(--primary);
+}
+
+.category-strip-divider {
+  font-size: 0.5rem;
+  color: var(--primary);
+  opacity: 0.5;
+  user-select: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   DROPS SECTION
+════════════════════════════════════════════════════ */
+
+.drops-section {
+  padding: 4rem 1.5rem;
+  max-width: 1400px;
+  margin-inline: auto;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.section-label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.section-title {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  font-family: var(--font-display, serif);
+  color: var(--foreground);
+}
+
+.drops-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .drops-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .drops-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.drop-card-skeleton {
+  aspect-ratio: 3 / 4;
+  border-radius: 1rem;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--primary) 10%, var(--background)) 25%,
+    color-mix(in srgb, var(--primary) 18%, var(--background)) 50%,
+    color-mix(in srgb, var(--primary) 10%, var(--background)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.drop-card {
+  display: block;
+  text-decoration: none;
+  color: var(--foreground);
+}
+
+.drop-card-image-wrap {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 1rem;
+  background-color: color-mix(in srgb, var(--primary) 8%, var(--background));
+  margin-bottom: 0.875rem;
+}
+
+.drop-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.drop-card:hover .drop-card-img {
+  transform: scale(1.04);
+}
+
+.drop-card-img-placeholder {
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+}
+
+.drop-card-hover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 1.25rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.45) 0%, transparent 50%);
+}
+
+.drop-card:hover .drop-card-hover {
+  opacity: 1;
+}
+
+.quick-add-btn {
+  padding: 0.5rem 1.25rem;
+  background-color: #fff;
+  color: #111;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.quick-add-btn:hover {
+  background-color: var(--primary);
+  color: var(--background);
+}
+
+.wishlist-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+  font-size: 1rem;
+  color: #111;
+}
+
+.wishlist-btn:hover {
+  background-color: #fff;
+  transform: scale(1.1);
+}
+
+.drop-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.drop-card-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drop-card-category {
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+
+.drop-card-price {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-top: 0.25rem;
+}
+
+.drops-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 4rem 1.5rem;
+  color: color-mix(in srgb, var(--foreground) 55%, transparent);
+}
+
+/* ═══════════════════════════════════════════════════
+   EDITORIAL BANNER
+════════════════════════════════════════════════════ */
+
+.editorial-banner {
+  height: 400px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    color-mix(in srgb, var(--primary) 70%, #000) 100%
+  );
+}
+
+.editorial-banner-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2rem;
+}
+
+.editorial-banner-eyebrow {
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.editorial-banner-title {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+  font-family: var(--font-display, serif);
+  line-height: 1;
+}
+
+.editorial-banner-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.editorial-banner-cta:hover {
+  background-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════════════════
+   SPLIT SECTION — AI Stylist + Newsletter
+════════════════════════════════════════════════════ */
+
+.split-section {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .split-section {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── AI Stylist Card ── */
+
+.stylist-card {
+  background-color: color-mix(in srgb, var(--primary) 10%, var(--background));
+  border-top: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2.5rem;
+}
+
+.stylist-card-inner {
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.stylist-icon {
+  font-size: 2.5rem;
+  color: var(--primary);
+}
+
+.stylist-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--foreground);
+  font-family: var(--font-display, serif);
+}
+
+.stylist-subtitle {
+  font-size: 0.9375rem;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  line-height: 1.65;
+}
+
+.stylist-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border: 1.5px solid var(--primary);
+  color: var(--primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 999px;
+  transition: background-color 0.2s, color 0.2s;
+  width: fit-content;
+  margin-top: 0.5rem;
+}
+
+.stylist-cta:hover {
+  background-color: var(--primary);
+  color: var(--background);
+}
+
+/* ── Newsletter Card ── */
+
+.newsletter-card {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--background));
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2.5rem;
+}
+
+.newsletter-card-inner {
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.newsletter-eyebrow {
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.newsletter-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--foreground);
+  font-family: var(--font-display, serif);
+}
+
+.newsletter-subtitle {
+  font-size: 0.9375rem;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  line-height: 1.65;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.newsletter-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  background-color: var(--background);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.newsletter-input:focus {
+  border-color: var(--primary);
+}
+
+.newsletter-input::placeholder {
+  color: color-mix(in srgb, var(--foreground) 38%, transparent);
+}
+
+.newsletter-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary);
+  color: var(--background);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+.newsletter-btn:hover {
+  opacity: 0.88;
+}
+
+/* ═══════════════════════════════════════════════════
+   ANIMATIONS
+════════════════════════════════════════════════════ */
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

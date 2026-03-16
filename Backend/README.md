@@ -1,52 +1,56 @@
-# ☕ Modoria Backend — Spring Boot 3 & Java 21
 
-Modoria's backend is a high-performance, secure, and scalable REST API designed to power a seasonal luxury e-commerce experience.
+# Modoria Backend — Spring Boot 3 & Java 21
 
-## 🚀 Technical Highlights
+Modoria's backend powers a premium, seasonal e-commerce platform with robust authentication, order management, and real-time support chat.
 
-- **Architecture**: Domain-Driven Design (DDD) inspired structure with clear separation of concerns (Application, Domain, Infrastructure).
-- **Security**: Stateless JWT Authentication with role-based access control (RBAC).
-- **Real-time**: WebSocket integration for live AI chatbot and human human-agent support.
-- **Database**: PostgreSQL with Liquibase for reliable schema versioning and migrations.
-- **Tools**: Lombok, MapStruct, JUnit 5, Mockito.
+## Features
 
-## 📁 Key Modules
+- **Authentication & RBAC**: Secure JWT-based login, registration, and role-based access (ADMIN, CLIENT, AGENT).
+- **Product Catalog**: Category, product, and image management with advanced filtering.
+- **Order Management**: Place, view, and update orders; admin can manage all orders and update statuses.
+- **Support Chat**: REST and WebSocket endpoints for customer support and agent workflows.
+- **Email Notifications**: Branded HTML emails for order confirmation and password reset.
+- **Database**: PostgreSQL with Liquibase migrations.
 
-- `com.modoria.identity`: Authentication, Role management, and Token Blacklisting.
-- `com.modoria.catalog`: Product management with advanced search Specification API.
-- `com.modoria.order`: Shopping cart, order processing, and dynamic PDF invoice generation.
-- `com.modoria.chat`: WebSocket-based support session management with AI-to-Human handover logic.
-- `com.modoria.ai`: Intelligent shopping assistant integration.
+## Technology Stack
 
-## 🛠️ Getting Started
+- Java 21, Spring Boot 3.5
+- Spring Security, Spring Data JPA
+- RESTful APIs for all core features
+- Lombok, MapStruct, JUnit 5, Mockito
+
+## Key Packages
+
+- `com.modoria.identity` — User, role, and authentication logic
+- `com.modoria.catalog` — Product and category management
+- `com.modoria.order` — Order domain, admin order management
+- `com.modoria.chat` — Support sessions, chat messages, WebSocket endpoints
+- `com.modoria.shared.email` — Email service and templates
+
+## Getting Started
 
 ### Prerequisites
 - JDK 21
 - Maven 3.9+
-- PostgreSQL (Dockerized)
+- PostgreSQL
 
 ### Local Development
-1. **Infrastructure**:
+1. Configure your PostgreSQL database and update `src/main/resources/application-dev.yml` as needed.
+2. Run database migrations:
    ```bash
-   docker-compose up -d
+   mvnd liquibase:update
    ```
-2. **Build & Run**:
+3. Build and start the backend:
    ```bash
-   .\mvnw.cmd clean spring-boot:run
+   mvnd clean spring-boot:run
    ```
-3. **API Documentation**:
-   Access Swagger UI at `http://localhost:8080/swagger-ui/index.html`
 
-## 🧪 Testing & Quality
-Run the full test suite (Unit + Integration):
+## Testing
+
+Run all tests:
 ```bash
-.\mvnw.cmd test
+mvnd test
 ```
 
-## 📜 Coding Guidelines (Backend)
-- Use **Conventional Commits**.
-- Strictly adhere to **DTO mapping** via MapStruct (avoid exposing Entities).
-- Handle all edge cases via `GlobalExceptionHandler`.
-
 ---
-© 2026 Modoria Backend Team.
+© 2026 Modoria Backend Team

@@ -33,14 +33,3 @@ springdoc:
   packages-to-scan: com.modoria.controller
   paths-to-match: /api/**
 
-# WebSocket configuration
-websocket:
-  endpoint: /ws
-  allowed-origins: "*"
-
-# AI configuration
-ai:
-  enabled: true
-  provider: gemini
-  optimizer:
-    type: RECOMMENDATION_ENGINE

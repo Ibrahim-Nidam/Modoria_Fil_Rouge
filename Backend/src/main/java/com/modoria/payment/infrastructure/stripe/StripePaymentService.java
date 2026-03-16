@@ -1,64 +1,57 @@
 package com.modoria.payment.infrastructure.stripe;
 
-import com.modoria.payment.application.dto.PaymentRequestDTO;
-import com.modoria.payment.application.dto.PaymentResponseDTO;
+import com.modoria.order.domain.model.Order;
+import com.modoria.order.domain.model.OrderItem;
+import com.modoria.payment.application.dto.CheckoutSessionResponseDTO;
 import com.modoria.payment.application.service.PaymentService;
+import com.modoria.shared.exception.PaymentProcessingException;
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
-import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionCreateParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Slf4j
 @Service
 public class StripePaymentService implements PaymentService {
 
     @Override
-    public PaymentResponseDTO processPayment(PaymentRequestDTO request) {
+    public CheckoutSessionResponseDTO createCheckoutSession(Order order, String successUrl, String cancelUrl) {
         try {
-            // Converting BigDecimal to long (cents) for Stripe
-            long amountInCents = request.getAmount().multiply(new java.math.BigDecimal(100)).longValue();
+            SessionCreateParams.Builder builder = SessionCreateParams.builder()
+                    .setMode(SessionCreateParams.Mode.PAYMENT)
+                    .setSuccessUrl(successUrl)
+                    .setCancelUrl(cancelUrl)
+                    .putMetadata("orderId", String.valueOf(order.getId()))
+                    .putMetadata("userId", String.valueOf(order.getUser().getId()));
 
-            PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                    .setAmount(amountInCents)
-                    .setCurrency(request.getCurrency().toLowerCase())
-                    .setPaymentMethod(request.getStripePaymentMethodId())
-                    .setConfirm(true) // Attempt to confirm immediately
-                    .setReturnUrl("https://modoria.com/checkout/complete") // Placeholder return URL
-                    .putMetadata("order_reference", request.getOrderReference())
-                    .setAutomaticPaymentMethods(
-                            PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
-                                    .setEnabled(true)
-                                    .setAllowRedirects(
-                                            PaymentIntentCreateParams.AutomaticPaymentMethods.AllowRedirects.ALWAYS)
-                                    .build())
-                    .build();
+            for (OrderItem item : order.getItems()) {
+                long unitAmountInCents = item.getPrice().multiply(BigDecimal.valueOf(100)).longValue();
 
-            PaymentIntent paymentIntent = PaymentIntent.create(params);
-
-            if ("succeeded".equals(paymentIntent.getStatus())) {
-                return PaymentResponseDTO.success(
-                        paymentIntent.getId(),
-                        paymentIntent.getStatus(),
-                        "Payment succeeded");
-            } else {
-                return PaymentResponseDTO.builder()
-                        .success(false)
-                        .transactionId(paymentIntent.getId())
-                        .status(paymentIntent.getStatus())
-                        .clientSecret(paymentIntent.getClientSecret())
-                        .message("Payment requires further action: " + paymentIntent.getStatus())
-                        .build();
+                builder.addLineItem(SessionCreateParams.LineItem.builder()
+                        .setQuantity(item.getQuantity().longValue())
+                        .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
+                                .setCurrency("mad")
+                                .setUnitAmount(unitAmountInCents)
+                                .setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                        .setName(item.getProduct().getName())
+                                        .build())
+                                .build())
+                        .build());
             }
 
+            Session session = Session.create(builder.build());
+
+            return CheckoutSessionResponseDTO.builder()
+                    .url(session.getUrl())
+                    .sessionId(session.getId())
+                    .orderId(order.getId())
+                    .build();
         } catch (StripeException e) {
-            log.error("Stripe payment error for order reference: {}", request.getOrderReference(), e);
-            return PaymentResponseDTO.failure(
-                    e.getMessage(),
-                    e.getCode());
-        } catch (Exception e) {
-            log.error("Unexpected payment error", e);
-            return PaymentResponseDTO.failure("Internal payment error", "INTERNAL_ERROR");
+            log.error("Failed to create Stripe checkout session for order {}", order.getId(), e);
+            throw new PaymentProcessingException("Unable to initialize Stripe checkout session");
         }
     }
 }

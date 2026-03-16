@@ -11,6 +11,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = { ProductMapper.class })
 public interface OrderMapper {
 
+    @Mapping(target = "customerId", source = "user.id")
+    @Mapping(target = "customerName", source = "user.fullName")
+    @Mapping(target = "customerEmail", source = "user.email")
     OrderResponseDTO toOrderResponseDTO(Order order);
 
     @Mapping(target = "product", source = "product")

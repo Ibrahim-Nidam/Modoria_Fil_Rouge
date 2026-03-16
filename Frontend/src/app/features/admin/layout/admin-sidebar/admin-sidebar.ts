@@ -24,7 +24,9 @@ export class AdminSidebar {
     { label: 'Dashboard', icon: 'dashboard', route: '/admin' },
     { label: 'Categories', icon: 'category', route: '/admin/categories' },
     { label: 'Products', icon: 'inventory_2', route: '/admin/products' },
+    { label: 'Orders', icon: 'receipt_long', route: '/admin/orders' },
     { label: 'Users', icon: 'group', route: '/admin/users' },
+    { label: 'Tickets', icon: 'confirmation_number', route: '/admin/tickets' },
   ];
 
   get logoSource(): string {

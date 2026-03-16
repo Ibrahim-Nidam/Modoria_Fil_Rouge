@@ -112,7 +112,8 @@ export class AuthService {
         this.currentUser.set(response.user);
 
         const isAdmin = this.hasRole(response.user.roles, 'ADMIN');
-        this.router.navigate([isAdmin ? '/admin' : '/home']);
+        const isAgent = this.hasRole(response.user.roles, 'AGENT');
+        this.router.navigate([isAdmin ? '/admin' : isAgent ? '/agent/tickets' : '/home']);
     }
 
     getToken(): string | null {
@@ -126,5 +127,15 @@ export class AuthService {
     isAdmin(): boolean {
         const user = this.currentUser();
         return this.hasRole(user?.roles, 'ADMIN');
+    }
+
+    isAgent(): boolean {
+        const user = this.currentUser();
+        return this.hasRole(user?.roles, 'AGENT');
+    }
+
+    isClient(): boolean {
+        const user = this.currentUser();
+        return this.hasRole(user?.roles, 'CLIENT');
     }
 }

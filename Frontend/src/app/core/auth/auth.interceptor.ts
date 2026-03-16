@@ -23,6 +23,11 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
 
     return next(authReq).pipe(
         catchError((error: HttpErrorResponse) => {
+            // Guest requests should not trigger refresh/logout flows.
+            if (!token) {
+                return throwError(() => error);
+            }
+
             if ((error.status === 401 || error.status === 403) && !authReq.url.includes('/api/auth/')) {
                 return handle401Error(authReq, next, authService);
             }

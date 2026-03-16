@@ -24,16 +24,3 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
-
-  ai:
-    vertex:
-      ai:
-        gemini:
-          api-key: ${GEMINI_API_KEY}
-          project-id: ${VERTEX_PROJECT_ID:}
-          location: ${VERTEX_LOCATION}
-          model: gemini-2.5-flash
-
-ai:
-  enabled: true
-  provider: gemini

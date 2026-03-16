@@ -1,10 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { catchError, forkJoin, map, of, retry } from 'rxjs';
 import { StatCard } from '../../components/stat-card/stat-card';
 import { AdminCategoryService, AdminCategory, PageResponse as CategoryPageResponse } from '../../services/admin-category.service';
 import { AdminProductService, AdminProduct } from '../../services/admin-product.service';
 import { AdminUser, AdminUserService } from '../../services/admin-user.service';
+import { AdminDashboardService, AdminDashboardStats } from '../../services/admin-dashboard.service';
 
 interface DashboardStat {
   title: string;
@@ -29,17 +30,24 @@ export class AdminDashboard implements OnInit {
   private userService = inject(AdminUserService);
   private productService = inject(AdminProductService);
   private categoryService = inject(AdminCategoryService);
+  private dashboardService = inject(AdminDashboardService);
   private readonly statsStorageKey = 'modoria_admin_dashboard_stats';
+  private readonly currencyFormatter = new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD' });
 
-  loading = true;
-  loadError = false;
-  stats: DashboardStat[] = [
+  readonly loading = signal(true);
+  readonly loadError = signal(false);
+  readonly stats = signal<DashboardStat[]>([
     { title: 'Total Users', value: '-', icon: 'group', trend: '', trendUp: null },
     { title: 'Enabled Users', value: '-', icon: 'verified_user', trend: '', trendUp: null },
     { title: 'Total Products', value: '-', icon: 'inventory_2', trend: '', trendUp: null },
     { title: 'Low Stock (<20)', value: '-', icon: 'warning', trend: '', trendUp: null },
     { title: 'Total Categories', value: '-', icon: 'category', trend: '', trendUp: null },
-  ];
+    { title: 'Completed Sales', value: '-', icon: 'payments', trend: '', trendUp: null },
+    { title: 'Sales This Month', value: '-', icon: 'calendar_month', trend: '', trendUp: null },
+    { title: 'Total Tickets', value: '-', icon: 'confirmation_number', trend: '', trendUp: null },
+    { title: 'In Progress Tickets', value: '-', icon: 'support_agent', trend: '', trendUp: null },
+    { title: 'Resolved Tickets', value: '-', icon: 'verified', trend: '', trendUp: null },
+  ]);
 
   ngOnInit(): void {
     this.hydrateStatsFromStorage();
@@ -47,17 +55,17 @@ export class AdminDashboard implements OnInit {
   }
 
   private loadStats() {
-    this.loading = true;
-    this.loadError = false;
+    this.loading.set(true);
+    this.loadError.set(false);
 
-    const previous = this.stats;
+    const previous = this.stats();
 
     forkJoin({
       users: this.userService.getUsers().pipe(
         retry({ count: 1, delay: 250 }),
         map((data) => ({ ok: true, data }) as LoadResult<AdminUser[]>),
         catchError(() => {
-          this.loadError = true;
+          this.loadError.set(true);
           return of({ ok: false, data: null } as LoadResult<AdminUser[]>);
         })
       ),
@@ -67,7 +75,7 @@ export class AdminDashboard implements OnInit {
           retry({ count: 1, delay: 250 }),
           map((data) => ({ ok: true, data }) as LoadResult<CategoryPageResponse<AdminProduct>>),
           catchError(() => {
-            this.loadError = true;
+            this.loadError.set(true);
             return of({ ok: false, data: null } as LoadResult<CategoryPageResponse<AdminProduct>>);
           })
         ),
@@ -77,15 +85,24 @@ export class AdminDashboard implements OnInit {
           retry({ count: 1, delay: 250 }),
           map((data) => ({ ok: true, data }) as LoadResult<CategoryPageResponse<AdminCategory>>),
           catchError(() => {
-            this.loadError = true;
+            this.loadError.set(true);
             return of({ ok: false, data: null } as LoadResult<CategoryPageResponse<AdminCategory>>);
           })
         ),
+      dashboard: this.dashboardService.getStats().pipe(
+        retry({ count: 1, delay: 250 }),
+        map((data) => ({ ok: true, data }) as LoadResult<AdminDashboardStats>),
+        catchError(() => {
+          this.loadError.set(true);
+          return of({ ok: false, data: null } as LoadResult<AdminDashboardStats>);
+        })
+      ),
     }).subscribe({
-      next: ({ users, products, categories }) => {
+      next: ({ users, products, categories, dashboard }) => {
         const usersData = users.ok && users.data ? users.data : null;
         const productsData = products.ok && products.data ? products.data : null;
         const categoriesData = categories.ok && categories.data ? categories.data : null;
+        const dashboardData = dashboard.ok && dashboard.data ? dashboard.data : null;
 
         const enabledUsers = usersData ? usersData.filter(user => user.enabled).length : null;
         const disabledUsers = usersData ? usersData.length - enabledUsers! : null;
@@ -104,7 +121,7 @@ export class AdminDashboard implements OnInit {
           };
         };
 
-        this.stats = [
+        this.stats.set([
           usersData
             ? {
                 title: 'Total Users',
@@ -150,15 +167,63 @@ export class AdminDashboard implements OnInit {
                 trendUp: null,
               }
             : keepOr('Total Categories', { icon: 'category', trend: 'Unavailable', trendUp: null }),
-        ];
+          dashboardData
+            ? {
+                title: 'Completed Sales',
+                value: this.currencyFormatter.format(dashboardData.completedSalesTotal ?? 0),
+                icon: 'payments',
+                trend: `${dashboardData.completedOrders} completed orders`,
+                trendUp: dashboardData.completedOrders > 0 ? true : null,
+              }
+            : keepOr('Completed Sales', { icon: 'payments', trend: 'Unavailable', trendUp: null }),
+          dashboardData
+            ? {
+                title: 'Sales This Month',
+                value: this.currencyFormatter.format(dashboardData.completedSalesThisMonth ?? 0),
+                icon: 'calendar_month',
+                trend: `${dashboardData.ordersThisMonth} orders created this month`,
+                trendUp: dashboardData.ordersThisMonth > 0 ? true : null,
+              }
+            : keepOr('Sales This Month', { icon: 'calendar_month', trend: 'Unavailable', trendUp: null }),
+          dashboardData
+            ? {
+                title: 'Total Tickets',
+                value: dashboardData.totalTickets.toString(),
+                icon: 'confirmation_number',
+                trend: `${dashboardData.openTickets} open • ${dashboardData.unassignedTickets} unassigned`,
+                trendUp: null,
+              }
+            : keepOr('Total Tickets', { icon: 'confirmation_number', trend: 'Unavailable', trendUp: null }),
+          dashboardData
+            ? {
+                title: 'In Progress Tickets',
+                value: dashboardData.inProgressTickets.toString(),
+                icon: 'support_agent',
+                trend: `${dashboardData.ticketsThisMonth} created this month`,
+                trendUp: dashboardData.inProgressTickets > 0 ? false : true,
+              }
+            : keepOr('In Progress Tickets', { icon: 'support_agent', trend: 'Unavailable', trendUp: null }),
+          dashboardData
+            ? {
+                title: 'Resolved Tickets',
+                value: dashboardData.resolvedTickets.toString(),
+                icon: 'verified',
+                trend:
+                  dashboardData.totalTickets > 0
+                    ? `${Math.round((dashboardData.resolvedTickets / dashboardData.totalTickets) * 100)}% resolution rate`
+                    : 'No tickets yet',
+                trendUp: dashboardData.resolvedTickets > 0 ? true : null,
+              }
+            : keepOr('Resolved Tickets', { icon: 'verified', trend: 'Unavailable', trendUp: null }),
+        ]);
 
         this.persistStats();
 
-        this.loading = false;
+        this.loading.set(false);
       },
       error: () => {
-        this.loadError = true;
-        this.loading = false;
+        this.loadError.set(true);
+        this.loading.set(false);
       },
     });
   }
@@ -172,7 +237,7 @@ export class AdminDashboard implements OnInit {
     try {
       const parsed = JSON.parse(raw) as DashboardStat[];
       if (Array.isArray(parsed) && parsed.length > 0) {
-        this.stats = parsed;
+        this.stats.set(parsed);
       }
     } catch {
       localStorage.removeItem(this.statsStorageKey);
@@ -180,6 +245,6 @@ export class AdminDashboard implements OnInit {
   }
 
   private persistStats() {
-    localStorage.setItem(this.statsStorageKey, JSON.stringify(this.stats));
+    localStorage.setItem(this.statsStorageKey, JSON.stringify(this.stats()));
   }
 }

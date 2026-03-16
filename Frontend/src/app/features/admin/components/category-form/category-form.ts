@@ -3,15 +3,18 @@ import { Component, OnDestroy, effect, inject, input, output } from '@angular/co
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button } from '../../../../shared/ui/button/button';
 import { InputComponent } from '../../../../shared/ui/input/input';
+import { CategorySeason } from '../../services/admin-category.service';
 
 export interface CategoryFormInitialValue {
   name: string;
+  season: CategorySeason;
   description: string;
   imagePath?: string | null;
 }
 
 export interface CategoryFormValue {
   name: string;
+  season: CategorySeason;
   description: string;
   imageFile: File | null;
 }
@@ -25,6 +28,7 @@ export interface CategoryFormValue {
 export class CategoryForm implements OnDestroy {
   private fb = inject(FormBuilder);
   private backendBaseUrl = 'http://localhost:8081';
+  readonly seasonOptions: CategorySeason[] = ['SPRING', 'SUMMER', 'AUTUMN', 'WINTER'];
 
   initialValue = input<CategoryFormInitialValue | null>(null);
   mode = input<'create' | 'edit'>('create');
@@ -39,6 +43,7 @@ export class CategoryForm implements OnDestroy {
 
   form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(100)]],
+    season: ['SPRING' as CategorySeason, [Validators.required]],
     description: ['', [Validators.maxLength(500)]],
   });
 
@@ -47,6 +52,7 @@ export class CategoryForm implements OnDestroy {
       const initialValue = this.initialValue();
       this.form.reset({
         name: initialValue?.name ?? '',
+        season: initialValue?.season ?? 'SPRING',
         description: initialValue?.description ?? '',
       });
       this.resetSelectedImage();
@@ -115,6 +121,7 @@ export class CategoryForm implements OnDestroy {
 
     this.submitted.emit({
       name: this.form.controls.name.value.trim(),
+      season: this.form.controls.season.value,
       description: this.form.controls.description.value.trim(),
       imageFile: this.selectedImageFile,
     });

@@ -2,6 +2,7 @@ package com.modoria.chat.domain.model;
 
 import com.modoria.chat.domain.enums.SupportSessionStatus;
 import com.modoria.identity.domain.model.User;
+import com.modoria.order.domain.model.Order;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,13 +21,27 @@ public class SupportSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agent_id")
     private User agent;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resolved_by")
+    private User resolvedBy;
+
+    @Column(length = 150)
+    private String subject;
+
+    @Column(name = "initial_message", length = 4000)
+    private String initialMessage;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -35,6 +50,8 @@ public class SupportSession {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    private LocalDateTime closedAt;
+
     private LocalDateTime updatedAt;
 
     @PrePersist
@@ -42,7 +59,7 @@ public class SupportSession {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
         if (status == null) {
-            status = SupportSessionStatus.BOT_HANDLING;
+            status = SupportSessionStatus.OPEN;
         }
     }
 
