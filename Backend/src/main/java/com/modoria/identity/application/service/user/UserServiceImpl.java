@@ -120,9 +120,25 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
+        if (userRepository.existsByEmailAndIdNot(updateRequest.getEmail(), user.getId())) {
+            throw new DuplicateResourceException("User with email '" + updateRequest.getEmail() + "' already exists");
+        }
+
         userMapper.updateEntityFromDTO(updateRequest, user);
+
+        if (StringUtils.hasText(updateRequest.getPassword())) {
+            user.setPassword(passwordEncoder.encode(updateRequest.getPassword()));
+        }
+
         User saved = userRepository.save(user);
         return userMapper.toProfileResponseDTO(saved);
+    }
+
+    @Override
+    public void deleteCurrentUserProfile(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        userRepository.delete(user);
     }
 
     private User findUserOrThrow(Long id) {
