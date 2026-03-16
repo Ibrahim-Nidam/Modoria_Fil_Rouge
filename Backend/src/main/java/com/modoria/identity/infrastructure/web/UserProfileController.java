@@ -29,4 +29,11 @@ public class UserProfileController {
             @Valid @RequestBody UserProfileUpdateRequestDTO updateRequest) {
         return ResponseEntity.ok(userService.updateUserProfile(userDetails.getUsername(), updateRequest));
     }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteCurrentUserProfile(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        userService.deleteCurrentUserProfile(userDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
 }
