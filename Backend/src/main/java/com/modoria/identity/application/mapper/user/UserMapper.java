@@ -31,7 +31,6 @@ public interface UserMapper {
     UserProfileResponseDTO toProfileResponseDTO(User user);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "email", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "roles", ignore = true)
