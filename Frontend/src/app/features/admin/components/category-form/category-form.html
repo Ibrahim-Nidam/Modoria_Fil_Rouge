@@ -7,13 +7,26 @@
 
 	<div class="flex flex-col gap-1.5 font-sans">
 		<label class="text-xs font-semibold tracking-widest uppercase text-foreground/70">
+			Season
+		</label>
+		<select
+			formControlName="season"
+			class="w-full rounded-none border border-muted bg-background px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none transition-colors">
+			@for (s of seasonOptions; track s) {
+				<option [value]="s">{{ s }}</option>
+			}
+		</select>
+	</div>
+
+	<div class="flex flex-col gap-1.5 font-sans">
+		<label class="text-xs font-semibold tracking-widest uppercase text-foreground/70">
 			Description
 		</label>
 		<textarea
 			formControlName="description"
 			rows="4"
 			placeholder="Describe the purpose of this category"
-			class="w-full resize-none rounded-xl border border-muted bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 focus:border-primary focus:outline-none transition-colors"
+			class="w-full resize-none rounded-none border border-muted bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground/30 focus:border-primary focus:outline-none transition-colors"
 			[class.!border-red-500]="descriptionError"></textarea>
 		@if (descriptionError) {
 			<span class="text-xs text-red-500">{{ descriptionError }}</span>
@@ -28,11 +41,11 @@
 			type="file"
 			accept="image/*"
 			(change)="onImageSelection($event)"
-			class="w-full rounded-xl border border-muted bg-background px-4 py-2.5 text-sm text-foreground file:mr-4 file:rounded-lg file:border-0 file:bg-primary/10 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-primary hover:file:bg-primary/20" />
+			class="w-full rounded-none border border-muted bg-background px-4 py-2.5 text-sm text-foreground file:mr-4 file:rounded-none file:border-0 file:bg-primary/10 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-primary hover:file:bg-primary/20" />
 
 		@if (imagePreviewUrl) {
-			<div class="mt-1 overflow-hidden rounded-xl border border-muted bg-muted/20 p-2">
-				<img [src]="imagePreviewUrl" alt="Category preview" class="h-36 w-full rounded-lg object-cover" />
+			<div class="mt-1 overflow-hidden rounded-none border border-muted bg-muted/20 p-2">
+				<img [src]="imagePreviewUrl" alt="Category preview" class="h-36 w-full rounded-none object-cover" />
 			</div>
 		}
 	</div>
