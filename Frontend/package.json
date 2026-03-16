@@ -23,6 +23,7 @@
     "@ngrx/router-store": "^21.0.1",
     "@ngrx/store": "^21.0.1",
     "@ngrx/store-devtools": "^21.0.1",
+    "@stripe/stripe-js": "^8.9.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
