@@ -6,6 +6,7 @@ import { Button } from '../../../../shared/ui/button/button';
 import { Modal } from '../../../../shared/ui/modal/modal';
 import { CategoryForm, CategoryFormValue } from '../../components/category-form/category-form';
 import { AdminCategory, AdminCategoryService } from '../../services/admin-category.service';
+import { AdminProduct, AdminProductService } from '../../services/admin-product.service';
 
 @Component({
   selector: 'app-admin-categories',
@@ -15,6 +16,7 @@ import { AdminCategory, AdminCategoryService } from '../../services/admin-catego
 })
 export class AdminCategories implements OnInit {
   private categoryService = inject(AdminCategoryService);
+  private productService = inject(AdminProductService);
   private toastService = inject(ToastService);
   private backendBaseUrl = 'http://localhost:8081';
 
@@ -25,6 +27,9 @@ export class AdminCategories implements OnInit {
   submitting = signal(false);
   deleting = signal(false);
   selectedCategory = signal<AdminCategory | null>(null);
+  expandedCategoryId = signal<number | null>(null);
+  assignedProductsByCategory = signal<Record<number, AdminProduct[]>>({});
+  assignedProductsLoading = signal<Record<number, boolean>>({});
 
   ngOnInit() {
     this.loadCategories();
@@ -142,6 +147,74 @@ export class AdminCategories implements OnInit {
             error.error?.message ?? 'Unable to delete the category.',
             'Categories'
           );
+        },
+      });
+  }
+
+  toggleAssignedProducts(category: AdminCategory) {
+    if (this.expandedCategoryId() === category.id) {
+      this.expandedCategoryId.set(null);
+      return;
+    }
+
+    this.expandedCategoryId.set(category.id);
+
+    if (category.productCount === 0) {
+      return;
+    }
+
+    const productsByCategory = this.assignedProductsByCategory();
+    if (Object.prototype.hasOwnProperty.call(productsByCategory, category.id)) {
+      return;
+    }
+
+    this.loadAssignedProducts(category.id);
+  }
+
+  isAssignedProductsExpanded(categoryId: number): boolean {
+    return this.expandedCategoryId() === categoryId;
+  }
+
+  isAssignedProductsLoading(categoryId: number): boolean {
+    return !!this.assignedProductsLoading()[categoryId];
+  }
+
+  getAssignedProducts(categoryId: number): AdminProduct[] {
+    return this.assignedProductsByCategory()[categoryId] ?? [];
+  }
+
+  private loadAssignedProducts(categoryId: number) {
+    this.assignedProductsLoading.update((current) => ({
+      ...current,
+      [categoryId]: true,
+    }));
+
+    this.productService
+      .getProductsByCategory(categoryId)
+      .pipe(
+        finalize(() => {
+          this.assignedProductsLoading.update((current) => ({
+            ...current,
+            [categoryId]: false,
+          }));
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.assignedProductsByCategory.update((current) => ({
+            ...current,
+            [categoryId]: response.content ?? [],
+          }));
+        },
+        error: (error) => {
+          this.toastService.error(
+            error.error?.message ?? 'Unable to load assigned products for this category.',
+            'Categories'
+          );
+          this.assignedProductsByCategory.update((current) => ({
+            ...current,
+            [categoryId]: [],
+          }));
         },
       });
   }

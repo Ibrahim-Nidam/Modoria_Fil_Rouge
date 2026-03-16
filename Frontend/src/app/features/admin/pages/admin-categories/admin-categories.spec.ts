@@ -3,6 +3,7 @@ import { of } from 'rxjs';
 
 import { ToastService } from '../../../../core/toast/toast.service';
 import { AdminCategoryService } from '../../services/admin-category.service';
+import { AdminProductService } from '../../services/admin-product.service';
 import { AdminCategories } from './admin-categories';
 
 describe('AdminCategories', () => {
@@ -34,6 +35,19 @@ describe('AdminCategories', () => {
     error: () => undefined,
   };
 
+  const productService = {
+    getProductsByCategory: () =>
+      of({
+        content: [],
+        totalElements: 0,
+        totalPages: 0,
+        number: 0,
+        size: 100,
+        first: true,
+        last: true,
+      }),
+  };
+
   beforeEach(async () => {
     getCategoriesCalls = 0;
 
@@ -41,6 +55,7 @@ describe('AdminCategories', () => {
       imports: [AdminCategories],
       providers: [
         { provide: AdminCategoryService, useValue: categoryService },
+        { provide: AdminProductService, useValue: productService },
         { provide: ToastService, useValue: toastService },
       ],
     }).compileComponents();
