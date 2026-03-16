@@ -48,6 +48,7 @@ public class ProductServiceImpl implements ProductService {
         Category category = getCategoryOrThrow(requestDTO.getCategoryId());
 
         Product product = productMapper.toEntity(requestDTO);
+        validateCategorySeasonCompatibility(category, product.getSeason());
         product.setCategory(category);
 
         Product savedProduct = productRepository.save(product);
@@ -79,6 +80,7 @@ public class ProductServiceImpl implements ProductService {
         Category category = getCategoryOrThrow(requestDTO.getCategoryId());
 
         productMapper.updateEntityFromDto(requestDTO, product);
+        validateCategorySeasonCompatibility(category, product.getSeason());
         product.setCategory(category);
 
         Product updatedProduct = productRepository.save(product);
@@ -325,5 +327,12 @@ public class ProductServiceImpl implements ProductService {
                 ? "unassigned"
                 : slugify(product.getSeason().name());
         return "products/" + seasonFolder + "/" + product.getImageFolder();
+    }
+
+    private void validateCategorySeasonCompatibility(Category category, Season productSeason) {
+        if (productSeason != null && category.getSeason() != null && category.getSeason() != productSeason) {
+            throw new BadRequestException(
+                    "Category season " + category.getSeason() + " does not match product season " + productSeason);
+        }
     }
 }
