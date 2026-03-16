@@ -1,0 +1,67 @@
+<app-header></app-header>
+
+<main class="min-h-screen bg-background pt-24 text-foreground">
+  <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-10">
+    <div class="mb-6 flex items-end justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Bag</p>
+        <h1 class="mt-2 text-3xl font-bold">Your Cart</h1>
+      </div>
+      <a routerLink="/wishlist" class="text-xs font-semibold uppercase tracking-[0.14em] text-primary hover:underline">Go to Wishlist</a>
+    </div>
+
+    @if (shopState.cartItems().length === 0) {
+      <div class="rounded-2xl border border-muted p-10 text-center">
+        <p class="text-sm text-foreground/60">Your cart is empty.</p>
+        <a routerLink="/catalog" class="mt-4 inline-flex rounded-full bg-primary px-6 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-background">Shop Now</a>
+      </div>
+    } @else {
+      <div class="grid gap-6 lg:grid-cols-[2fr,1fr]">
+        <div class="space-y-3">
+          @for (item of shopState.cartItems(); track item.product.id) {
+            <article class="flex gap-4 rounded-2xl border border-muted bg-background p-4">
+              <a [routerLink]="['/product', item.product.id]" class="h-24 w-20 overflow-hidden rounded-xl bg-muted">
+                @if (getImageUrl(item.product.primaryImagePath); as imageUrl) {
+                  <img [src]="imageUrl" [alt]="item.product.name" class="h-full w-full object-cover" />
+                }
+              </a>
+
+              <div class="min-w-0 flex-1">
+                <a [routerLink]="['/product', item.product.id]" class="truncate text-sm font-semibold hover:text-primary">{{ item.product.name }}</a>
+                <p class="mt-1 text-xs uppercase tracking-[0.12em] text-foreground/60">{{ item.product.category.name }}</p>
+                <p class="mt-2 text-sm font-semibold text-primary">{{ formatPrice(item.product.price) }}</p>
+
+                <div class="mt-3 flex items-center gap-2">
+                  <button type="button" class="rounded border border-muted px-2 py-1 text-xs" (click)="shopState.setQuantity(item.product.id, item.quantity - 1)">-</button>
+                  <span class="min-w-6 text-center text-sm">{{ item.quantity }}</span>
+                  <button type="button" class="rounded border border-muted px-2 py-1 text-xs" (click)="shopState.setQuantity(item.product.id, item.quantity + 1)">+</button>
+                </div>
+              </div>
+
+              <button type="button" class="text-xs font-semibold uppercase tracking-[0.12em] text-foreground/50 hover:text-red-500" (click)="shopState.removeFromCart(item.product.id)">
+                Remove
+              </button>
+            </article>
+          }
+        </div>
+
+        <aside class="h-fit rounded-2xl border border-muted bg-background p-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/60">Summary</p>
+          <div class="mt-4 flex items-center justify-between text-sm">
+            <span>Subtotal</span>
+            <strong>{{ formatPrice(shopState.cartSubtotal()) }}</strong>
+          </div>
+          <p class="mt-5 text-xs text-foreground/70">You will be redirected to Stripe to complete your payment securely.</p>
+          <button
+            type="button"
+            class="mt-5 w-full cursor-pointer rounded-full bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-background transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            [disabled]="isProcessingCheckout"
+            (click)="checkout()"
+          >
+            {{ isProcessingCheckout ? 'Redirecting...' : 'Checkout with Stripe' }}
+          </button>
+        </aside>
+      </div>
+    }
+  </section>
+</main>
