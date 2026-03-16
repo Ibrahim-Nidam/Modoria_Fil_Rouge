@@ -1,0 +1,357 @@
+<app-header></app-header>
+
+<main class="min-h-screen bg-background pt-24 text-foreground">
+  <section class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-10">
+    @if (loading()) {
+      <div class="rounded-3xl border border-muted bg-background p-8">
+        <div class="h-6 w-40 animate-pulse rounded bg-muted"></div>
+        <div class="mt-3 h-4 w-72 animate-pulse rounded bg-muted"></div>
+        <div class="mt-6 h-28 animate-pulse rounded-2xl bg-muted"></div>
+      </div>
+    } @else if (authService.currentUser(); as user) {
+      <div class="rounded-3xl border border-muted bg-background p-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Account</p>
+        <h1 class="mt-2 text-3xl font-bold">Manage Profile</h1>
+        <p class="mt-2 text-sm text-foreground/70">Signed in as {{ profile()?.email || user.email }}</p>
+
+        <div class="mt-6 flex flex-wrap gap-2 border-b border-muted pb-4">
+          <button
+            type="button"
+            (click)="setActiveTab('account')"
+            class="rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em]"
+            [class.border-primary]="activeTab() === 'account'"
+            [class.text-primary]="activeTab() === 'account'"
+            [class.border-muted]="activeTab() !== 'account'"
+            [class.text-foreground/70]="activeTab() !== 'account'">
+            Account
+          </button>
+
+          @if (canViewOrders()) {
+            <button
+              type="button"
+              (click)="setActiveTab('orders')"
+              class="rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em]"
+              [class.border-primary]="activeTab() === 'orders'"
+              [class.text-primary]="activeTab() === 'orders'"
+              [class.border-muted]="activeTab() !== 'orders'"
+              [class.text-foreground/70]="activeTab() !== 'orders'">
+              Orders
+            </button>
+          }
+
+          @if (canOpenTickets()) {
+            <button
+              type="button"
+              (click)="setActiveTab('support')"
+              class="rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em]"
+              [class.border-primary]="activeTab() === 'support'"
+              [class.text-primary]="activeTab() === 'support'"
+              [class.border-muted]="activeTab() !== 'support'"
+              [class.text-foreground/70]="activeTab() !== 'support'">
+              Support Tickets
+            </button>
+          }
+        </div>
+
+        @if (activeTab() === 'account') {
+          <form [formGroup]="form" (ngSubmit)="saveProfile()" class="mt-6 space-y-4">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label class="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/60">Full Name</label>
+                <input
+                  type="text"
+                  formControlName="fullName"
+                  class="mt-2 w-full rounded-xl border border-muted bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none" />
+              </div>
+              <div>
+                <label class="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/60">Email</label>
+                <input
+                  type="email"
+                  formControlName="email"
+                  class="mt-2 w-full rounded-xl border border-muted bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none" />
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/60">New Password</label>
+              <input
+                type="password"
+                formControlName="password"
+                placeholder="Leave blank to keep current password"
+                class="mt-2 w-full rounded-xl border border-muted bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none" />
+              <p class="mt-1 text-xs text-foreground/60">Set a new password only if you want to change it.</p>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label class="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/60">Phone</label>
+                <input
+                  type="text"
+                  formControlName="phoneNumber"
+                  class="mt-2 w-full rounded-xl border border-muted bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none" />
+              </div>
+              <div>
+                <label class="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/60">Address</label>
+                <input
+                  type="text"
+                  formControlName="address"
+                  class="mt-2 w-full rounded-xl border border-muted bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none" />
+              </div>
+            </div>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div class="rounded-2xl border border-muted p-4">
+                <p class="text-xs uppercase tracking-[0.14em] text-foreground/60">Status</p>
+                <p class="mt-1 text-sm font-semibold">{{ user.enabled ? 'Active' : 'Disabled' }}</p>
+              </div>
+              <div class="rounded-2xl border border-muted p-4">
+                <p class="text-xs uppercase tracking-[0.14em] text-foreground/60">Roles</p>
+                <p class="mt-1 text-sm font-semibold">{{ profile()?.roles?.length || user.roles?.length || 0 }} assigned</p>
+              </div>
+            </div>
+
+            @if (isAgentUser()) {
+              <div class="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800">
+                Agent account restrictions are active: order history, ticket creation, and account deletion are disabled.
+              </div>
+            }
+
+            <div class="flex flex-wrap gap-3 pt-2">
+              <button type="submit" [disabled]="submitting() || deleting()" class="inline-flex items-center rounded-full bg-primary px-6 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-background transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60">
+                {{ submitting() ? 'Saving...' : 'Save Profile' }}
+              </button>
+
+              @if (canDeleteAccount()) {
+                <button type="button" (click)="deleteAccount()" [disabled]="submitting() || deleting()" class="inline-flex items-center rounded-full border border-red-500 px-6 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-red-500 transition hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-60">
+                  {{ deleting() ? 'Deleting...' : 'Delete Account' }}
+                </button>
+              }
+
+              <button type="button" (click)="logout()" class="inline-flex items-center rounded-full border border-primary px-6 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-primary transition hover:bg-primary hover:text-background">
+                Logout
+              </button>
+            </div>
+          </form>
+        }
+
+        @if (activeTab() === 'orders' && canViewOrders()) {
+          <div class="mt-6">
+            <div class="flex items-center justify-between gap-3">
+              <h2 class="text-xl font-semibold">Order History</h2>
+              <button type="button" (click)="loadOrderHistory()" class="text-xs font-semibold uppercase tracking-[0.14em] text-primary hover:underline">
+                Refresh
+              </button>
+            </div>
+
+            @if (orderHistoryLoading()) {
+              <div class="mt-4 space-y-3">
+                <div class="h-20 animate-pulse rounded-2xl bg-muted"></div>
+                <div class="h-20 animate-pulse rounded-2xl bg-muted"></div>
+              </div>
+            } @else if (orders().length === 0) {
+              <div class="mt-4 rounded-2xl border border-muted p-4 text-sm text-foreground/70">No orders yet.</div>
+            } @else {
+              <div class="mt-4 space-y-3">
+                @for (order of orders(); track order.id) {
+                  <article class="rounded-2xl border border-muted bg-background p-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-foreground/60">Order #{{ order.id }}</p>
+                        <p class="mt-1 text-sm text-foreground/70">Placed: {{ formatDate(order.createdAt) }}</p>
+                        <p class="mt-1 text-sm font-semibold text-primary">{{ formatPrice(order.totalAmount) }}</p>
+                      </div>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{{ order.status }}</span>
+                        <button
+                          type="button"
+                          (click)="openTicketComposer(order)"
+                          class="inline-flex items-center gap-1 rounded-full border border-amber-500 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-amber-600 hover:bg-amber-500 hover:text-white">
+                          <span class="material-symbols-outlined text-sm">confirmation_number</span>
+                          {{ orderHasTicket(order.id) ? 'Open Another Ticket' : 'Open Ticket' }}
+                        </button>
+                        <button
+                          type="button"
+                          (click)="toggleOrderExpanded(order.id)"
+                          class="inline-flex items-center gap-1 rounded-full border border-muted px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-foreground/70 hover:border-primary hover:text-primary">
+                          {{ isOrderExpanded(order.id) ? 'Hide' : 'Details' }}
+                        </button>
+                      </div>
+                    </div>
+
+                    @if (isOrderExpanded(order.id)) {
+                      <div class="mt-4 overflow-hidden rounded-xl border border-muted">
+                        <table class="min-w-full text-left text-sm">
+                          <thead class="bg-muted/30 text-xs uppercase tracking-[0.14em] text-foreground/60">
+                            <tr>
+                              <th class="px-3 py-2">Item</th>
+                              <th class="px-3 py-2">Qty</th>
+                              <th class="px-3 py-2">Unit</th>
+                              <th class="px-3 py-2">Total</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @for (line of order.items; track line.id) {
+                              <tr class="border-t border-muted">
+                                <td class="px-3 py-2">{{ line.product.name || ('Product #' + line.product.id) }}</td>
+                                <td class="px-3 py-2">{{ line.quantity }}</td>
+                                <td class="px-3 py-2">{{ formatPrice(line.price) }}</td>
+                                <td class="px-3 py-2 font-semibold">{{ formatPrice(lineTotal(line.quantity, line.price)) }}</td>
+                              </tr>
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    }
+                  </article>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        @if (activeTab() === 'support' && canOpenTickets()) {
+          <div class="mt-6 grid gap-4 lg:grid-cols-[320px,1fr]">
+            <section class="rounded-2xl border border-muted bg-background p-4">
+              <div class="flex items-center justify-between gap-2">
+                <h2 class="text-lg font-semibold">My Tickets</h2>
+                <button
+                  type="button"
+                  (click)="loadTickets()"
+                  class="text-xs font-semibold uppercase tracking-[0.12em] text-primary hover:underline">
+                  Refresh
+                </button>
+              </div>
+              <p class="mt-2 text-xs text-foreground/60">Open a ticket from the Orders tab to attach it to a valid order.</p>
+
+              @if (ticketsLoading()) {
+                <div class="mt-3 space-y-2">
+                  <div class="h-14 animate-pulse rounded-xl bg-muted"></div>
+                  <div class="h-14 animate-pulse rounded-xl bg-muted"></div>
+                </div>
+              } @else if (tickets().length === 0) {
+                <div class="mt-3 rounded-xl border border-muted p-3 text-sm text-foreground/70">No tickets yet.</div>
+              } @else {
+                <div class="mt-3 max-h-[28rem] space-y-2 overflow-auto pr-1">
+                  @for (ticket of tickets(); track ticket.id) {
+                    <button
+                      type="button"
+                      (click)="selectTicket(ticket.id)"
+                      class="w-full rounded-xl border p-3 text-left"
+                      [class.border-primary]="currentTicket()?.id === ticket.id"
+                      [class.bg-primary/5]="currentTicket()?.id === ticket.id"
+                      [class.border-muted]="currentTicket()?.id !== ticket.id">
+                      <p class="text-sm font-semibold">{{ ticket.subject || 'Support ticket' }}</p>
+                      <p class="mt-1 text-xs text-foreground/60">Order #{{ ticket.orderId || '-' }} • {{ ticket.status }}</p>
+                      <p class="mt-1 text-[11px] text-foreground/50">{{ formatDate(ticket.createdAt) }}</p>
+                    </button>
+                  }
+                </div>
+              }
+            </section>
+
+            <section class="rounded-2xl border border-muted bg-background p-4">
+              @if (currentTicket(); as ticket) {
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50">Ticket #{{ ticket.id }}</p>
+                <h3 class="mt-2 text-lg font-semibold">{{ ticket.subject || 'Support ticket' }}</h3>
+                <p class="mt-1 text-sm text-foreground/60">Order #{{ ticket.orderId || '-' }} • {{ ticket.status }}</p>
+                <p class="mt-1 text-xs text-foreground/50">Opened: {{ formatDate(ticket.createdAt) }}</p>
+
+                @if (ticket.initialMessage) {
+                  <div class="mt-3 rounded-xl border border-muted bg-muted/20 p-3 text-sm text-foreground/80">
+                    {{ ticket.initialMessage }}
+                  </div>
+                }
+
+                @if (ticket.resolvedByName || ticket.closedAt) {
+                  <div class="mt-3 rounded-xl border border-emerald-300 bg-emerald-50 p-3 text-xs text-emerald-800">
+                    <p>
+                      Resolved by {{ ticket.resolvedByName || 'agent' }}
+                      @if (ticket.closedAt) {
+                        on {{ formatDate(ticket.closedAt) }}
+                      }
+                    </p>
+                    @if (ticket.resolutionMinutes != null) {
+                      <p class="mt-1">Resolution time: {{ ticket.resolutionMinutes }} minutes</p>
+                    }
+                  </div>
+                }
+
+                <div class="mt-4">
+                  <p class="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50">Conversation</p>
+                  @if (conversationLoading()) {
+                    <div class="mt-2 text-sm text-foreground/60">Loading messages...</div>
+                  } @else if (conversation().length === 0) {
+                    <div class="mt-2 text-sm text-foreground/60">No messages yet.</div>
+                  } @else {
+                    <div class="mt-3 max-h-72 space-y-2 overflow-auto rounded-xl border border-muted p-3">
+                      @for (message of conversation(); track message.id) {
+                        <div class="rounded-lg border border-muted p-2">
+                          <p class="text-xs font-semibold text-foreground/80">{{ message.senderName }}</p>
+                          <p class="mt-1 text-sm text-foreground/80">{{ message.content }}</p>
+                          <p class="mt-1 text-[11px] text-foreground/50">{{ formatDate(message.timestamp) }}</p>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <form class="mt-4 space-y-2" [formGroup]="ticketReplyForm" (ngSubmit)="sendTicketReply()">
+                  <textarea
+                    formControlName="message"
+                    rows="4"
+                    placeholder="Add a follow-up message"
+                    class="w-full rounded-xl border border-muted bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none"></textarea>
+
+                  <button
+                    type="submit"
+                    [disabled]="replyingToTicket() || ticketReplyForm.invalid"
+                    class="inline-flex items-center rounded-full bg-primary px-5 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-background disabled:cursor-not-allowed disabled:opacity-60">
+                    {{ replyingToTicket() ? 'Sending...' : 'Send Reply' }}
+                  </button>
+                </form>
+              } @else {
+                <div class="rounded-xl border border-muted p-4 text-sm text-foreground/70">Select a ticket to view conversation and reply.</div>
+              }
+            </section>
+          </div>
+        }
+
+        @if (ticketComposerOpen()) {
+          <div class="mt-6 rounded-2xl border border-amber-300 bg-amber-50 p-4">
+            <p class="text-xs font-semibold uppercase tracking-[0.14em] text-amber-700">
+              Open Support Ticket for Order #{{ ticketOrderId() }}
+            </p>
+            <div class="mt-3 space-y-3" [formGroup]="ticketForm">
+              <input
+                type="text"
+                formControlName="subject"
+                placeholder="Ticket subject"
+                class="w-full rounded-xl border border-amber-300 bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground/45 focus:border-amber-500 focus:outline-none" />
+              <textarea
+                formControlName="message"
+                rows="4"
+                placeholder="Describe your issue"
+                class="w-full rounded-xl border border-amber-300 bg-background px-4 py-3 text-sm text-foreground placeholder:text-foreground/45 focus:border-amber-500 focus:outline-none"></textarea>
+              <div class="flex flex-wrap gap-2">
+                <button type="button" (click)="submitTicket()" [disabled]="ticketSubmitting()" class="inline-flex items-center rounded-full bg-amber-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:opacity-60">
+                  {{ ticketSubmitting() ? 'Sending...' : 'Send Ticket' }}
+                </button>
+                <button type="button" (click)="closeTicketComposer()" class="inline-flex items-center rounded-full border border-amber-500 px-5 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-amber-700">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="rounded-3xl border border-muted bg-background p-8 text-center">
+        <h1 class="text-2xl font-bold">You are not signed in</h1>
+        <p class="mt-2 text-sm text-foreground/70">Login to access your profile and preferences.</p>
+        <a routerLink="/auth/login" class="mt-5 inline-flex items-center rounded-full bg-primary px-6 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-background transition hover:opacity-90">
+          Sign In
+        </a>
+      </div>
+    }
+  </section>
+</main>
