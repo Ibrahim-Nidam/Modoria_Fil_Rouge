@@ -1,37 +1,51 @@
-# 🛍️ Modoria — Intelligent & Immersive Seasonal E-commerce
 
-Modoria is a premium, masculine-editorial e-commerce platform built with a modern tech stack. This project is structured as a monorepo containing both the Spring Boot backend and the Angular standalone frontend.
+# Modoria — Fullstack E-Commerce Platform
 
-## 📁 Project Structure
+Modoria is a premium, seasonal e-commerce platform featuring a modern Angular 21 frontend and a robust Spring Boot 3 backend. It supports secure authentication, order management, and real-time support chat.
 
-- **[Backend/](./Backend)**: Spring Boot 3 + Java 21. High-performance REST API with JWT, Redis, and WebSockets.
-- **[Frontend/](./Frontend)**: Angular 21 Standalone. Immersive seasonal UI themes and state-of-the-art design.
+## Project Structure
 
-## 🚀 Quick Start (Monorepo)
+- **[Backend/](./Backend)** — Java 21, Spring Boot 3.5, PostgreSQL, WebSocket, REST APIs
+- **[Frontend/](./Frontend)** — Angular 21 standalone, minimalist luxury UI
+
+## Key Features
+
+- User authentication and role-based access (ADMIN, CLIENT, AGENT)
+- Product catalog and advanced filtering
+- Order placement, history, and admin management
+- Customer support chat (REST + WebSocket backend)
+- Branded HTML email notifications
+
+## Getting Started
 
 ### Prerequisites
-- **Java 21+**
-- **Node.js 22+**
-- **Maven**
-- **Docker & Docker Compose**
+- Java 21+
+- Node.js 22+, npm 10+
+- Maven 3.9+
+- PostgreSQL
 
-### Running the System
-1. **Infrastructure**: Start the database and Redis using Docker.
+### Setup
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Ibrahim-Nidam/Modoria_Fil_Rouge.git
+   cd Modoria_Fil_Rouge
+   ```
+2. **Configure the database:**
+   - Update `Backend/src/main/resources/application-dev.yml` with your PostgreSQL settings.
+3. **Start the backend:**
    ```bash
    cd Backend
-   docker-compose up -d
+   mvnd clean spring-boot:run
    ```
-2. **Backend**: Start the Spring Boot application.
+4. **Start the frontend:**
    ```bash
-   cd Backend
-   mvn spring-boot:run
-   ```
-3. **Frontend**: (Work in Progress)
-   ```bash
-   cd Frontend
+   cd ../Frontend
    npm install
    npm start
    ```
 
+## Documentation
+- See `Backend/README.md` and `Frontend/README.md` for detailed module and setup info.
+
 ---
-© 2026 Modoria Team. All rights reserved.
+© 2026 Modoria Project Team
