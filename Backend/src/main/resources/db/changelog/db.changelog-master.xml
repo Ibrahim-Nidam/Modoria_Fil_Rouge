@@ -17,4 +17,8 @@
     <include file="db/changelog/db.changelog-v2.0-rename-roles.xml"/>
     <include file="db/changelog/db.changelog-v2.1-product-images.xml"/>
     <include file="db/changelog/db.changelog-v2.2-category-image.xml"/>
+    <include file="db/changelog/db.changelog-v2.3-category-season.xml"/>
+    <include file="db/changelog/db.changelog-v2.4-support-ticket-fields.xml"/>
+    <include file="db/changelog/db.changelog-v2.5-support-ticket-workflow-and-cleanup.xml"/>
+    <include file="db/changelog/db.changelog-v2.6-remove-ai-workflow.xml"/>
 </databaseChangeLog>
