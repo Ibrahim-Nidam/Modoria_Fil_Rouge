@@ -8,10 +8,10 @@ import com.modoria.identity.domain.repository.UserRepository;
 import com.modoria.identity.infrastructure.security.JwtAuthenticationFilter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -20,13 +20,13 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ChatController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class ChatControllerTest {
 
     @Autowired
@@ -42,7 +42,6 @@ class ChatControllerTest {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Test
-    @WithMockUser(username = "user@test.com")
     void getChatHistory_Success() throws Exception {
         User currentUser = User.builder().id(1L).email("user@test.com").build();
         ChatMessageDTO message = ChatMessageDTO.builder()
@@ -58,7 +57,7 @@ class ChatControllerTest {
         when(chatService.getChatHistory(anyLong(), anyLong())).thenReturn(List.of(message));
 
         mockMvc.perform(get("/api/v1/chat/2")
-                .with(csrf())
+        .principal(() -> "user@test.com")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
