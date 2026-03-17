@@ -47,7 +47,7 @@ Modoria is a premium, seasonal e-commerce platform featuring a modern Angular 21
 ## Documentation
 - See `Backend/README.md` and `Frontend/README.md` for detailed module and setup info.
 
-## Project Links (Placeholders)
+## Project Links
 
 - Repository: [Modoria_Fil_Rouge](https://github.com/Ibrahim-Nidam/Modoria_Fil_Rouge.git)
 - Specification: [Project Specification (Overleaf)](https://www.overleaf.com/read/brggjhctrgtn#add734)
@@ -56,7 +56,7 @@ Modoria is a premium, seasonal e-commerce platform featuring a modern Angular 21
 - Class Diagram: [Class Diagram UML (Lucidchart)](https://lucid.app/lucidchart/bd1d5b85-4864-4102-92cc-056d1c8d9d66/edit?viewport_loc=-144%2C476%2C2011%2C1008%2Ckb8yzNXKq2YA2&invitationId=inv_ed4b618f-3ee5-47a7-b3d0-5b489e191d02)
 - Slide Presentation: [Project Presentation (Canva)](https://www.canva.com/design/DAG3oRK0Olc/CH4ZSWbg_fIlHTYe5kn6QA/view?utm_content=DAG3oRK0Olc&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hb8891cc6fd)
 
-## App Screenshots (Placeholders)
+## App Screenshots
 
 > Screenshots are stored in the `docs/` folder.
 
