@@ -60,7 +60,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteAdminUser(Long id) {
         User user = findUserOrThrow(id);
-        userRepository.delete(user);
+        if (Boolean.TRUE.equals(user.getDeleted())) {
+            return;
+        }
+
+        user.setDeleted(true);
+        user.setEnabled(false);
+        userRepository.save(user);
     }
 
     @Override
@@ -77,20 +83,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserById(Long id) {
-        User user = findUserOrThrow(id);
+        User user = userRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + id));
         return userMapper.toDTO(user);
     }
 
     @Override
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
+            .filter(user -> !Boolean.TRUE.equals(user.getDeleted()))
                 .map(userMapper::toDTO)
                 .toList();
     }
 
     @Override
     public UserProfileResponseDTO getCurrentUserProfile(String email) {
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndDeletedFalse(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
         return userMapper.toProfileResponseDTO(user);
     }
@@ -117,7 +125,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileResponseDTO updateUserProfile(String email, UserProfileUpdateRequestDTO updateRequest) {
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndDeletedFalse(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
 
         if (userRepository.existsByEmailAndIdNot(updateRequest.getEmail(), user.getId())) {
@@ -136,9 +144,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteCurrentUserProfile(String email) {
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndDeletedFalse(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
-        userRepository.delete(user);
+        if (Boolean.TRUE.equals(user.getDeleted())) {
+            return;
+        }
+
+        user.setDeleted(true);
+        user.setEnabled(false);
+        userRepository.save(user);
     }
 
     private User findUserOrThrow(Long id) {
