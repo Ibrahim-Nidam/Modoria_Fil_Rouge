@@ -129,7 +129,7 @@ export class AdminUsers implements OnInit {
       .pipe(finalize(() => this.deleting.set(false)))
       .subscribe({
         next: () => {
-          this.toastService.success('User deleted successfully.', 'Users');
+          this.toastService.success('User soft-deleted successfully.', 'Users');
           this.closeDeleteModal();
           this.loadUsers();
         },
@@ -143,6 +143,11 @@ export class AdminUsers implements OnInit {
   }
 
   toggleEnabled(user: AdminUser) {
+    if (user.deleted) {
+      this.toastService.warning('Soft-deleted users cannot be re-enabled from this action.', 'Users');
+      return;
+    }
+
     const payload: AdminUserPayload = {
       fullName: user.fullName,
       email: user.email,
