@@ -18,7 +18,8 @@ export class AdminProducts implements OnInit {
   private productService = inject(AdminProductService);
   private categoryService = inject(AdminCategoryService);
   private toastService = inject(ToastService);
-  private readonly backendBaseUrl = 'http://localhost:8081';
+  private readonly backendBaseUrl = '';
+  readonly seasonOptions = ['SPRING', 'SUMMER', 'AUTUMN', 'WINTER'] as const;
 
   products = signal<AdminProduct[]>([]);
   categories = signal<AdminCategory[]>([]);
@@ -28,6 +29,46 @@ export class AdminProducts implements OnInit {
   submitting = signal(false);
   deleting = signal(false);
   selectedProduct = signal<AdminProduct | null>(null);
+  searchQuery = signal('');
+  selectedSeason = signal<'ALL' | (typeof this.seasonOptions)[number]>('ALL');
+  selectedCategoryId = signal<number | 'ALL'>('ALL');
+  selectedStatus = signal<'ALL' | 'ACTIVE' | 'DELETED'>('ALL');
+
+  filteredCategoryOptions = computed(() => {
+    const season = this.selectedSeason();
+    if (season === 'ALL') {
+      return this.categories();
+    }
+
+    return this.categories().filter((category) => category.season === season);
+  });
+
+  filteredProducts = computed(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    const season = this.selectedSeason();
+    const categoryId = this.selectedCategoryId();
+    const status = this.selectedStatus();
+
+    return this.products().filter((product) => {
+      const matchesQuery =
+        query.length === 0
+        || product.name.toLowerCase().includes(query)
+        || product.description?.toLowerCase().includes(query)
+        || product.category.name.toLowerCase().includes(query);
+
+      const matchesSeason = season === 'ALL' || product.season === season;
+      const matchesCategory = categoryId === 'ALL' || product.category.id === categoryId;
+      const matchesStatus = status === 'ALL'
+        || (status === 'ACTIVE' && !product.deleted)
+        || (status === 'DELETED' && product.deleted);
+
+      return matchesQuery && matchesSeason && matchesCategory && matchesStatus;
+    });
+  });
+
+  filteredLowStockCount = computed(
+    () => this.filteredProducts().filter((product) => !product.deleted && product.stock < 20).length
+  );
 
   selectedProductAsFormValue = computed((): ProductFormInitialValue | null => {
     const product = this.selectedProduct();
@@ -64,7 +105,7 @@ export class AdminProducts implements OnInit {
   }
 
   openEditModal(product: AdminProduct) {
-    this.productService.getProductById(product.id).subscribe({
+    this.productService.getProductById(product.id, true).subscribe({
       next: (fullProduct) => {
         this.selectedProduct.set(fullProduct);
         this.formOpen.set(true);
@@ -81,6 +122,42 @@ export class AdminProducts implements OnInit {
   openDeleteModal(product: AdminProduct) {
     this.selectedProduct.set(product);
     this.deleteOpen.set(true);
+  }
+
+  updateSearchQuery(value: string) {
+    this.searchQuery.set(value);
+  }
+
+  updateSeasonFilter(value: string) {
+    if (value === 'ALL' || this.seasonOptions.includes(value as (typeof this.seasonOptions)[number])) {
+      this.selectedSeason.set(value as 'ALL' | (typeof this.seasonOptions)[number]);
+      this.ensureCategoryFilterMatchesSeason();
+    }
+  }
+
+  updateCategoryFilter(value: string) {
+    if (value === 'ALL') {
+      this.selectedCategoryId.set('ALL');
+      return;
+    }
+
+    const parsed = Number(value);
+    if (!Number.isNaN(parsed)) {
+      this.selectedCategoryId.set(parsed);
+    }
+  }
+
+  updateStatusFilter(value: string) {
+    if (value === 'ALL' || value === 'ACTIVE' || value === 'DELETED') {
+      this.selectedStatus.set(value);
+    }
+  }
+
+  clearFilters() {
+    this.searchQuery.set('');
+    this.selectedSeason.set('ALL');
+    this.selectedCategoryId.set('ALL');
+    this.selectedStatus.set('ALL');
   }
 
   closeFormModal() {
@@ -173,7 +250,7 @@ export class AdminProducts implements OnInit {
       .pipe(finalize(() => this.deleting.set(false)))
       .subscribe({
         next: () => {
-          this.toastService.success('Product deleted successfully.', 'Products');
+          this.toastService.success('Product soft-deleted successfully.', 'Products');
           this.closeDeleteModal();
           this.loadProducts();
         },
@@ -186,15 +263,35 @@ export class AdminProducts implements OnInit {
       });
   }
 
+  restoreProduct(product: AdminProduct) {
+    if (!product.deleted) {
+      return;
+    }
+
+    this.productService.restoreProduct(product.id).subscribe({
+      next: () => {
+        this.toastService.success('Product restored successfully.', 'Products');
+        this.loadProducts();
+      },
+      error: (error) => {
+        this.toastService.error(
+          error.error?.message ?? 'Unable to restore the product.',
+          'Products'
+        );
+      },
+    });
+  }
+
   private loadProducts() {
     this.loading.set(true);
 
     this.productService
-      .getProducts()
+      .getProducts(0, 200, true)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (response) => {
           this.products.set(response.content);
+          this.ensureCategoryFilterMatchesSeason();
         },
         error: (error) => {
           this.toastService.error(
@@ -207,10 +304,11 @@ export class AdminProducts implements OnInit {
 
   private loadCategories() {
     this.categoryService
-      .getCategories(0, 200)
+      .getCategories(0, 200, null, false)
       .subscribe({
         next: (response) => {
           this.categories.set(response.content);
+          this.ensureCategoryFilterMatchesSeason();
         },
         error: (error) => {
           this.toastService.error(
@@ -255,4 +353,17 @@ export class AdminProducts implements OnInit {
 
     return flow$.pipe(map(() => productId));
   }
+
+  private ensureCategoryFilterMatchesSeason() {
+    const selectedCategoryId = this.selectedCategoryId();
+    if (selectedCategoryId === 'ALL') {
+      return;
+    }
+
+    const isValid = this.filteredCategoryOptions().some((category) => category.id === selectedCategoryId);
+    if (!isValid) {
+      this.selectedCategoryId.set('ALL');
+    }
+  }
 }
+
