@@ -27,7 +27,7 @@ export interface CategoryFormValue {
 })
 export class CategoryForm implements OnDestroy {
   private fb = inject(FormBuilder);
-  private backendBaseUrl = 'http://localhost:8081';
+  private backendBaseUrl = '';
   readonly seasonOptions: CategorySeason[] = ['SPRING', 'SUMMER', 'AUTUMN', 'WINTER'];
 
   initialValue = input<CategoryFormInitialValue | null>(null);
@@ -151,3 +151,4 @@ export class CategoryForm implements OnDestroy {
     return `${this.backendBaseUrl}${imagePath.startsWith('/') ? imagePath : `/${imagePath}`}`;
   }
 }
+
