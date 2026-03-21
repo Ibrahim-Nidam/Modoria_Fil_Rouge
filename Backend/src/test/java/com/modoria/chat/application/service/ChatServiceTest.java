@@ -5,6 +5,7 @@ import com.modoria.chat.application.dto.ChatMessageRequest;
 import com.modoria.chat.domain.enums.MessageStatus;
 import com.modoria.chat.domain.model.ChatMessage;
 import com.modoria.chat.domain.repository.ChatMessageRepository;
+import com.modoria.chat.domain.repository.SupportSessionRepository;
 import com.modoria.identity.domain.model.User;
 import com.modoria.identity.domain.repository.UserRepository;
 import com.modoria.shared.exception.ResourceNotFoundException;
@@ -32,6 +33,9 @@ class ChatServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private SupportSessionRepository supportSessionRepository;
 
     @InjectMocks
     private ChatService chatService;
@@ -96,7 +100,7 @@ class ChatServiceTest {
                 .receiver(receiver)
                 .content("Old message")
                 .timestamp(LocalDateTime.now())
-                .status(MessageStatus.READ)
+                .status(MessageStatus.SENT)
                 .build();
 
         when(chatMessageRepository.findChatHistory(1L, 2L)).thenReturn(List.of(message));
