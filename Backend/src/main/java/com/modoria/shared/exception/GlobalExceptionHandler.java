@@ -1,6 +1,7 @@
 package com.modoria.shared.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -25,6 +26,30 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
+            DataIntegrityViolationException ex,
+            HttpServletRequest request) {
+        String message = "Operation failed because related data still exists";
+        String rootMessage = ex.getMostSpecificCause() != null
+                ? ex.getMostSpecificCause().getMessage()
+                : ex.getMessage();
+
+        if (rootMessage != null) {
+            if (rootMessage.contains("fk_order_user")) {
+                message = "Cannot delete this user because they have existing orders";
+            } else if (rootMessage.contains("violates foreign key constraint")) {
+                message = "Cannot delete this record because it is referenced by other data";
+            }
+        }
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+                HttpStatus.CONFLICT,
+                message,
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
