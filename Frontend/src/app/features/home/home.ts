@@ -26,7 +26,7 @@ export class HomeComponent {
   categories = signal<HomeCategory[]>([]);
   loading = signal(true);
 
-  readonly backendBaseUrl = 'http://localhost:8081';
+  readonly backendBaseUrl = '';
 
   heroProduct = computed(() => this.products()[0] ?? null);
   heroStack = computed(() => this.products().slice(1, 4));
@@ -91,4 +91,5 @@ export class HomeComponent {
     return this.shopState.isInWishlist(productId);
   }
 }
+
 
