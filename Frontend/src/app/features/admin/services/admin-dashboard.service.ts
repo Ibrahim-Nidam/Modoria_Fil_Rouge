@@ -21,9 +21,10 @@ export interface AdminDashboardStats {
 @Injectable({ providedIn: 'root' })
 export class AdminDashboardService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8081/api/v1/admin/dashboard';
+  private readonly baseUrl = '/api/v1/admin/dashboard';
 
   getStats(): Observable<AdminDashboardStats> {
     return this.http.get<AdminDashboardStats>(`${this.baseUrl}/stats`);
   }
 }
+
