@@ -7,5 +7,6 @@ public record AdminUserResponseDTO(
         String fullName,
         String email,
         Boolean enabled,
+        Boolean deleted,
         Set<String> roles) {
 }
