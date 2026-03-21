@@ -9,6 +9,7 @@ export interface AdminUser {
     fullName: string;
     email: string;
     enabled: boolean;
+    deleted: boolean;
     roles: AdminRole[];
 }
 
@@ -25,7 +26,7 @@ export interface AdminUserPayload {
 })
 export class AdminUserService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8081/api/v1/admin/users';
+    private apiUrl = '/api/v1/admin/users';
 
     getUsers(): Observable<AdminUser[]> {
         return this.http.get<AdminUser[]>(this.apiUrl);
@@ -43,3 +44,4 @@ export class AdminUserService {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
 }
+
