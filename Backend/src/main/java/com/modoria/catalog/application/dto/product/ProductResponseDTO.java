@@ -16,6 +16,7 @@ public class ProductResponseDTO {
     private BigDecimal price;
     private Integer stock;
     private String season;
+    private Boolean deleted;
     private CategoryResponseDTO category;
     private String primaryImagePath;
     private List<ProductImageResponseDTO> images;
