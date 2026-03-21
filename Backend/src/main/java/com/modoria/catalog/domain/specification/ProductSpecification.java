@@ -52,4 +52,17 @@ public class ProductSpecification {
             return criteriaBuilder.equal(root.get("season"), season);
         };
     }
+
+    public static Specification<Product> withDeletedFilter(boolean includeDeleted) {
+        return (root, query, criteriaBuilder) -> {
+            if (includeDeleted) {
+                return criteriaBuilder.conjunction();
+            }
+
+            return criteriaBuilder.and(
+                    criteriaBuilder.isFalse(root.get("deleted")),
+                    criteriaBuilder.isFalse(root.get("category").get("deleted"))
+            );
+        };
+    }
 }
