@@ -61,8 +61,8 @@ export interface AdminOrderDetails {
 })
 export class AdminTicketService {
   private http = inject(HttpClient);
-  private readonly supportBaseUrl = 'http://localhost:8081/api/v1/support/sessions';
-  private readonly adminOrdersBaseUrl = 'http://localhost:8081/api/v1/admin/orders';
+  private readonly supportBaseUrl = '/api/v1/support/sessions';
+  private readonly adminOrdersBaseUrl = '/api/v1/admin/orders';
 
   getTickets(): Observable<AdminSupportTicket[]> {
     return this.http.get<AdminSupportTicket[]>(`${this.supportBaseUrl}/tickets`);
@@ -92,3 +92,4 @@ export class AdminTicketService {
     return this.http.get<AdminOrderDetails>(`${this.adminOrdersBaseUrl}/${orderId}`);
   }
 }
+
