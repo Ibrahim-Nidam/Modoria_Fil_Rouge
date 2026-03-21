@@ -50,24 +50,37 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public CategoryResponseDTO getCategoryById(Long id) {
-        Category category = findCategoryOrThrow(id);
-        return toResponseDTO(category, productRepository.countByCategoryId(id));
+    public CategoryResponseDTO getCategoryById(Long id, boolean includeDeleted) {
+        Category category = findCategoryOrThrow(id, includeDeleted);
+        long productCount = includeDeleted
+                ? productRepository.countByCategoryId(id)
+                : productRepository.countByCategoryIdAndDeletedFalse(id);
+        return toResponseDTO(category, productCount);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CategoryResponseDTO> getAllCategories(Pageable pageable, Season season) {
-        Page<Category> categories = season == null
-                ? categoryRepository.findAll(pageable)
-                : categoryRepository.findBySeason(season, pageable);
+    public Page<CategoryResponseDTO> getAllCategories(Pageable pageable, Season season, boolean includeDeleted) {
+        Page<Category> categories;
+        if (includeDeleted) {
+            categories = season == null
+                    ? categoryRepository.findAll(pageable)
+                    : categoryRepository.findBySeason(season, pageable);
+        } else {
+            categories = season == null
+                    ? categoryRepository.findByDeletedFalse(pageable)
+                    : categoryRepository.findByDeletedFalseAndSeason(season, pageable);
+        }
+
         List<Long> categoryIds = categories.getContent().stream()
             .map(Category::getId)
             .toList();
 
         Map<Long, Long> productCounts = categoryIds.isEmpty()
             ? Map.of()
-            : productRepository.countProductsByCategoryIds(categoryIds).stream()
+            : (includeDeleted
+                ? productRepository.countProductsByCategoryIds(categoryIds)
+                : productRepository.countActiveProductsByCategoryIds(categoryIds)).stream()
                 .collect(Collectors.toMap(
                     projection -> projection.getCategoryId(),
                     projection -> projection.getProductCount()));
@@ -78,7 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO requestDTO) {
-        Category category = findCategoryOrThrow(id);
+        Category category = findCategoryOrThrow(id, false);
 
         if (categoryRepository.existsByNameAndSeasonAndIdNot(requestDTO.getName(), requestDTO.getSeason(), id)) {
             throw new DuplicateResourceException(
@@ -95,7 +108,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryResponseDTO uploadCategoryImage(Long id, MultipartFile file) {
-        Category category = findCategoryOrThrow(id);
+        Category category = findCategoryOrThrow(id, false);
 
         fileStorageService.deleteFile(category.getImagePath());
         String imagePath = fileStorageService.storeFile(
@@ -113,14 +126,35 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void deleteCategory(Long id) {
-        Category category = findCategoryOrThrow(id);
-        fileStorageService.deleteFile(category.getImagePath());
-        categoryRepository.delete(category);
-        log.info("Deleted category with ID: {}", id);
+        Category category = findCategoryOrThrow(id, true);
+        if (Boolean.TRUE.equals(category.getDeleted())) {
+            return;
+        }
+
+        category.setDeleted(true);
+        categoryRepository.save(category);
+        int affectedProducts = productRepository.softDeleteByCategoryId(id);
+        log.info("Soft-deleted category with ID: {} and {} related products", id, affectedProducts);
     }
 
-    private Category findCategoryOrThrow(Long id) {
-        return categoryRepository.findById(id)
+    @Override
+    @Transactional
+    public CategoryResponseDTO restoreCategory(Long id) {
+        Category category = findCategoryOrThrow(id, true);
+        if (!Boolean.TRUE.equals(category.getDeleted())) {
+            return toResponseDTO(category, productRepository.countByCategoryId(id));
+        }
+
+        category.setDeleted(false);
+        Category restoredCategory = categoryRepository.save(category);
+        log.info("Restored soft-deleted category with ID: {}", id);
+        return toResponseDTO(restoredCategory, productRepository.countByCategoryId(id));
+    }
+
+    private Category findCategoryOrThrow(Long id, boolean includeDeleted) {
+        return (includeDeleted
+                ? categoryRepository.findById(id)
+                : categoryRepository.findByIdAndDeletedFalse(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + id));
     }
 
