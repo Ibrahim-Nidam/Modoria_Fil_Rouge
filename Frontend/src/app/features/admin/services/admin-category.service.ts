@@ -9,6 +9,7 @@ export interface AdminCategory {
     name: string;
     season: CategorySeason;
     description: string;
+    deleted: boolean;
     imagePath?: string | null;
     productCount: number;
 }
@@ -34,16 +35,18 @@ export interface PageResponse<T> {
 })
 export class AdminCategoryService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8081/api/v1/categories';
+    private apiUrl = '/api/v1/categories';
 
     getCategories(
         page: number = 0,
         size: number = 50,
-        season?: CategorySeason | null
+        season?: CategorySeason | null,
+        includeDeleted: boolean = false
     ): Observable<PageResponse<AdminCategory>> {
         const seasonQuery = season ? `&season=${season}` : '';
+        const includeDeletedQuery = `&includeDeleted=${includeDeleted}`;
         return this.http.get<PageResponse<AdminCategory>>(
-            `${this.apiUrl}?page=${page}&size=${size}&sort=name,asc${seasonQuery}`
+            `${this.apiUrl}?page=${page}&size=${size}&sort=name,asc${seasonQuery}${includeDeletedQuery}`
         );
     }
 
@@ -64,4 +67,9 @@ export class AdminCategoryService {
     deleteCategory(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
+
+    restoreCategory(id: number): Observable<AdminCategory> {
+        return this.http.patch<AdminCategory>(`${this.apiUrl}/${id}/restore`, {});
+    }
 }
+
