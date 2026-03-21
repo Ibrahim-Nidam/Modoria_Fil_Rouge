@@ -43,6 +43,10 @@ public class Product {
     @Column(length = 255)
     private String imageFolder;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean deleted = false;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private java.util.List<ProductImage> images = new java.util.ArrayList<>();
