@@ -18,6 +18,7 @@ export interface AdminProduct {
   price: number;
   stock: number;
   season: ProductSeason | null;
+  deleted: boolean;
   category: AdminProductCategory;
   primaryImagePath: string | null;
   images: AdminProductImage[];
@@ -53,21 +54,26 @@ export interface PageResponse<T> {
 })
 export class AdminProductService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8081/api/v1/products';
+  private apiUrl = '/api/v1/products';
 
-  getProducts(page: number = 0, size: number = 50): Observable<PageResponse<AdminProduct>> {
+  getProducts(
+    page: number = 0,
+    size: number = 50,
+    includeDeleted: boolean = false
+  ): Observable<PageResponse<AdminProduct>> {
     return this.http.get<PageResponse<AdminProduct>>(
-      `${this.apiUrl}?page=${page}&size=${size}&sort=name,asc`
+      `${this.apiUrl}?page=${page}&size=${size}&sort=name,asc&includeDeleted=${includeDeleted}`
     );
   }
 
   getProductsByCategory(
     categoryId: number,
     page: number = 0,
-    size: number = 100
+    size: number = 100,
+    includeDeleted: boolean = false
   ): Observable<PageResponse<AdminProduct>> {
     return this.http.get<PageResponse<AdminProduct>>(
-      `${this.apiUrl}/search?categoryId=${categoryId}&page=${page}&size=${size}&sort=name,asc`
+      `${this.apiUrl}/search?categoryId=${categoryId}&page=${page}&size=${size}&sort=name,asc&includeDeleted=${includeDeleted}`
     );
   }
 
@@ -75,8 +81,8 @@ export class AdminProductService {
     return this.http.post<AdminProduct>(this.apiUrl, payload);
   }
 
-  getProductById(id: number): Observable<AdminProduct> {
-    return this.http.get<AdminProduct>(`${this.apiUrl}/${id}`);
+  getProductById(id: number, includeDeleted: boolean = false): Observable<AdminProduct> {
+    return this.http.get<AdminProduct>(`${this.apiUrl}/${id}?includeDeleted=${includeDeleted}`);
   }
 
   updateProduct(id: number, payload: ProductPayload): Observable<AdminProduct> {
@@ -85,6 +91,10 @@ export class AdminProductService {
 
   deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  restoreProduct(id: number): Observable<AdminProduct> {
+    return this.http.patch<AdminProduct>(`${this.apiUrl}/${id}/restore`, {});
   }
 
   uploadProductImages(
