@@ -61,22 +61,25 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductResponseDTO getProductById(Long id) {
-        Product product = getProductOrThrow(id);
+    public ProductResponseDTO getProductById(Long id, boolean includeDeleted) {
+        Product product = getProductOrThrow(id, includeDeleted);
         return mapToProductResponse(product);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ProductResponseDTO> getAllProducts(Pageable pageable) {
-        return productRepository.findAll(pageable)
+    public Page<ProductResponseDTO> getAllProducts(Pageable pageable, boolean includeDeleted) {
+        Page<Product> products = includeDeleted
+                ? productRepository.findAll(pageable)
+                : productRepository.findByDeletedFalseAndCategoryDeletedFalse(pageable);
+        return products
                 .map(this::mapToProductResponse);
     }
 
     @Override
     @Transactional
     public ProductResponseDTO updateProduct(Long id, ProductRequestDTO requestDTO) {
-        Product product = getProductOrThrow(id);
+        Product product = getProductOrThrow(id, false);
         Category category = getCategoryOrThrow(requestDTO.getCategoryId());
 
         productMapper.updateEntityFromDto(requestDTO, product);
@@ -92,22 +95,39 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void deleteProduct(Long id) {
-        Product product = getProductOrThrow(id);
-
-        for (ProductImage image : productImageRepository.findByProductIdOrderByIdAsc(product.getId())) {
-            fileStorageService.deleteFile(image.getImagePath());
+        Product product = getProductOrThrow(id, true);
+        if (Boolean.TRUE.equals(product.getDeleted())) {
+            return;
         }
 
-        fileStorageService.deleteFile(product.getImagePath());
-        productRepository.delete(product);
-        log.info("Deleted product with ID: {}", id);
+        product.setDeleted(true);
+        productRepository.save(product);
+        log.info("Soft-deleted product with ID: {}", id);
+    }
+
+    @Override
+    @Transactional
+    public ProductResponseDTO restoreProduct(Long id) {
+        Product product = getProductOrThrow(id, true);
+        if (!Boolean.TRUE.equals(product.getDeleted())) {
+            return mapToProductResponse(product);
+        }
+
+        if (Boolean.TRUE.equals(product.getCategory().getDeleted())) {
+            throw new BadRequestException("Cannot restore product while its category is soft-deleted");
+        }
+
+        product.setDeleted(false);
+        Product restoredProduct = productRepository.save(product);
+        log.info("Restored soft-deleted product with ID: {}", id);
+        return mapToProductResponse(restoredProduct);
     }
 
     @Override
     @Transactional
     public ProductResponseDTO uploadProductImage(Long productId, MultipartFile file) {
         uploadProductImages(productId, List.of(file), null);
-        return getProductById(productId);
+        return getProductById(productId, false);
     }
 
     @Override
@@ -117,7 +137,7 @@ public class ProductServiceImpl implements ProductService {
             throw new BadRequestException("At least one image file is required");
         }
 
-        Product product = getProductOrThrow(productId);
+        Product product = getProductOrThrow(productId, false);
         ensureImageFolder(product);
 
         List<MultipartFile> validFiles = files.stream()
@@ -168,7 +188,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void deleteProductImage(Long productId, Long imageId) {
-        Product product = getProductOrThrow(productId);
+        Product product = getProductOrThrow(productId, false);
         ProductImage image = productImageRepository.findByIdAndProductId(imageId, productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Image not found with ID: " + imageId));
 
@@ -192,7 +212,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductResponseDTO setPrimaryProductImage(Long productId, Long imageId) {
-        Product product = getProductOrThrow(productId);
+        Product product = getProductOrThrow(productId, false);
         productImageRepository.findByIdAndProductId(imageId, productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Image not found with ID: " + imageId));
 
@@ -203,7 +223,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ProductResponseDTO> getProductsBySeason(String seasonStr, Pageable pageable) {
+    public Page<ProductResponseDTO> getProductsBySeason(String seasonStr, Pageable pageable, boolean includeDeleted) {
         Season season;
         if ("current".equalsIgnoreCase(seasonStr)) {
             season = seasonService.getCurrentSeason();
@@ -215,15 +235,19 @@ public class ProductServiceImpl implements ProductService {
             }
         }
 
-        return productRepository.findBySeason(season, pageable)
+        Page<Product> products = includeDeleted
+            ? productRepository.findBySeason(season, pageable)
+            : productRepository.findByDeletedFalseAndCategoryDeletedFalseAndSeason(season, pageable);
+        return products
             .map(this::mapToProductResponse);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<ProductResponseDTO> searchProducts(String keyword, BigDecimal minPrice, BigDecimal maxPrice,
-            Long categoryId, Season season, Pageable pageable) {
+            Long categoryId, Season season, Pageable pageable, boolean includeDeleted) {
         Specification<Product> spec = Specification.allOf(
+            ProductSpecification.withDeletedFilter(includeDeleted),
                 ProductSpecification.withKeyword(keyword),
                 ProductSpecification.withPriceRange(minPrice, maxPrice),
                 ProductSpecification.withCategoryId(categoryId),
@@ -233,20 +257,22 @@ public class ProductServiceImpl implements ProductService {
             .map(this::mapToProductResponse);
     }
 
-    private Product getProductOrThrow(Long id) {
-        return productRepository.findWithCategoryAndImagesById(id)
+    private Product getProductOrThrow(Long id, boolean includeDeleted) {
+        return (includeDeleted
+                ? productRepository.findWithCategoryAndImagesById(id)
+                : productRepository.findWithCategoryAndImagesByIdAndDeletedFalseAndCategoryDeletedFalse(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
     }
 
     private Category getCategoryOrThrow(Long categoryId) {
-        return categoryRepository.findById(categoryId)
+        return categoryRepository.findByIdAndDeletedFalse(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + categoryId));
     }
 
     @Override
     @Transactional(readOnly = true)
     public String getCatalogSummary() {
-        return productRepository.findAll().stream()
+        return productRepository.findByDeletedFalseAndCategoryDeletedFalse(org.springframework.data.domain.Pageable.unpaged()).stream()
                 .map(p -> String.format("ID: %d, Name: %s, Category: %s, Price: %.2f, Description: %s",
                         p.getId(), p.getName(), p.getCategory().getName(), p.getPrice(), p.getDescription()))
                 .collect(java.util.stream.Collectors.joining("\n"));
