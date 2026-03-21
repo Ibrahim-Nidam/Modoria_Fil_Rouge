@@ -39,7 +39,7 @@ export class ThemeService {
             }
         });
 
-        const apiUrl = 'http://localhost:8081/api/v1';
+        const apiUrl = '/api/v1';
         this.http.get<{ season: Season }>(`${apiUrl}/seasons/current`).subscribe({
             next: (res) => {
                 if (res && res.season) {
@@ -96,3 +96,4 @@ export class ThemeService {
         }
     }
 }
+
