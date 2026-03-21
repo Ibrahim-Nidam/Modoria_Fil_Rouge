@@ -35,3 +35,11 @@ jwt:
   expiration-ms: 3600000
   refresh-secret: dGVzdC1yZWZyZXNoLXNlY3JldC1rZXktZm9yLW1vZG9yaWEtdGVzdHM=
   refresh-expiration-ms: 604800000
+
+app:
+  frontend-url: http://localhost:4200
+  upload:
+    dir: storage/test
+
+stripe:
+  api-key: sk_test_mock
