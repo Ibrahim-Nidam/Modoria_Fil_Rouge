@@ -32,7 +32,7 @@ public interface ProductService {
 
     ProductResponseDTO setPrimaryProductImage(Long productId, Long imageId);
 
-        Page<ProductResponseDTO> getProductsBySeason(String season, Pageable pageable, boolean includeDeleted);
+    Page<ProductResponseDTO> getProductsBySeason(String season, Pageable pageable, boolean includeDeleted);
 
     Page<ProductResponseDTO> searchProducts(String keyword, BigDecimal minPrice, BigDecimal maxPrice, Long categoryId,
             Season season, Pageable pageable, boolean includeDeleted);
