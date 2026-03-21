@@ -29,6 +29,7 @@
               <th class="px-5 py-4 font-semibold">User</th>
               <th class="px-5 py-4 font-semibold">Roles</th>
               <th class="px-5 py-4 font-semibold">Status</th>
+              <th class="px-5 py-4 font-semibold">Soft</th>
               <th class="px-5 py-4 text-right font-semibold">Actions</th>
             </tr>
           </thead>
@@ -59,6 +60,13 @@
                   </button>
                 </td>
                 <td class="px-5 py-4 align-top">
+                  <span
+                    class="inline-flex rounded-none px-3 py-1 text-xs font-semibold"
+                    [class]="user.deleted ? 'bg-red-500/20 text-red-700' : 'bg-foreground/10 text-foreground/60'">
+                    {{ user.deleted ? 'LIT' : 'OFF' }}
+                  </span>
+                </td>
+                <td class="px-5 py-4 align-top">
                   <div class="flex justify-end gap-2">
                     <app-button variant="ghost" size="sm" (click)="openEditModal(user)">
                       Edit
@@ -86,13 +94,13 @@
     (cancelled)="closeFormModal()" />
 </app-modal>
 
-<app-modal title="Delete User" [isOpen]="deleteOpen()" (isOpenChange)="onDeleteModalChange($event)">
+<app-modal title="Soft Delete User" [isOpen]="deleteOpen()" (isOpenChange)="onDeleteModalChange($event)">
   <div class="space-y-2">
     <p class="text-sm text-foreground/80">
       Delete <span class="font-semibold text-foreground">{{ selectedUser()?.fullName }}</span>?
     </p>
     <p class="text-sm text-foreground/50">
-      This will remove the user account permanently.
+      This marks the user as soft-deleted and disables sign-in.
     </p>
   </div>
 
@@ -101,7 +109,7 @@
       Cancel
     </app-button>
     <app-button [loading]="deleting()" (click)="deleteUser()">
-      Delete User
+      Soft Delete User
     </app-button>
   </div>
 </app-modal>
