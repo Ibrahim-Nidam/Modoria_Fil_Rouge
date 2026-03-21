@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,13 +35,16 @@ public class CategoryController {
     @GetMapping
     public ResponseEntity<Page<CategoryResponseDTO>> getAllCategories(
             @PageableDefault(size = 20) Pageable pageable,
-            @RequestParam(required = false) Season season) {
-        return ResponseEntity.ok(categoryService.getAllCategories(pageable, season));
+            @RequestParam(required = false) Season season,
+            @RequestParam(defaultValue = "false") boolean includeDeleted) {
+        return ResponseEntity.ok(categoryService.getAllCategories(pageable, season, allowIncludeDeleted(includeDeleted)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.getCategoryById(id));
+    public ResponseEntity<CategoryResponseDTO> getCategoryById(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "false") boolean includeDeleted) {
+        return ResponseEntity.ok(categoryService.getCategoryById(id, allowIncludeDeleted(includeDeleted)));
     }
 
     @PutMapping("/{id}")
@@ -63,5 +68,25 @@ public class CategoryController {
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/restore")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CategoryResponseDTO> restoreCategory(@PathVariable Long id) {
+        return ResponseEntity.ok(categoryService.restoreCategory(id));
+    }
+
+    private boolean allowIncludeDeleted(boolean includeDeletedRequested) {
+        if (!includeDeletedRequested) {
+            return false;
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return false;
+        }
+
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
     }
 }
