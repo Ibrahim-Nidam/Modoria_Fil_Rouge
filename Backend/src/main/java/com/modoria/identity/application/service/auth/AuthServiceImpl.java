@@ -84,7 +84,7 @@ public class AuthServiceImpl implements AuthService {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            User user = userRepository.findByEmail(requestDTO.email())
+                User user = userRepository.findByEmailAndDeletedFalse(requestDTO.email())
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
             return new AuthResponseDTO(
@@ -113,7 +113,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String email = refreshTokenProvider.getEmail(token);
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndDeletedFalse(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         return new AuthResponseDTO(
@@ -126,7 +126,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void initiatePasswordReset(String email) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
+        Optional<User> userOptional = userRepository.findByEmailAndDeletedFalse(email);
         
         if (userOptional.isEmpty()) {
             log.warn("Password reset requested for non-existent email: {}", email);
