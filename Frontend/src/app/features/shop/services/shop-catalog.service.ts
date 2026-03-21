@@ -36,7 +36,7 @@ export interface PageResponse<T> {
 @Injectable({ providedIn: 'root' })
 export class ShopCatalogService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8081/api/v1';
+  private readonly baseUrl = '/api/v1';
 
   getSeasonProducts(season: string, page = 0, size = 60): Observable<PageResponse<ShopProduct>> {
     const seasonUpper = season.toUpperCase();
@@ -56,3 +56,4 @@ export class ShopCatalogService {
     return this.http.get<ShopProduct>(`${this.baseUrl}/products/${id}`);
   }
 }
+
