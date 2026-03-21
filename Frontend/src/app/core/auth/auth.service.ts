@@ -25,7 +25,7 @@ export class AuthService {
     private _router?: Router;
 
     public currentUser = signal<any>(null);
-    private apiUrl = 'http://localhost:8081/api/auth';
+    private apiUrl = '/api/auth';
 
     private normalizeRoleName(roleName: string): string {
         const normalized = roleName.trim().toUpperCase();
@@ -139,3 +139,4 @@ export class AuthService {
         return this.hasRole(user?.roles, 'CLIENT');
     }
 }
+
