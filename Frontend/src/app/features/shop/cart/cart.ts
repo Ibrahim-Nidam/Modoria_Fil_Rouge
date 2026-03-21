@@ -21,7 +21,7 @@ export class CartComponent {
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
 
-  readonly backendBaseUrl = 'http://localhost:8081';
+  readonly backendBaseUrl = '';
   isProcessingCheckout = false;
 
   getImageUrl(imagePath: string | null | undefined): string {
@@ -70,3 +70,4 @@ export class CartComponent {
     }
   }
 }
+
