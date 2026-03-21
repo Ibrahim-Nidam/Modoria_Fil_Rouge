@@ -31,4 +31,8 @@ public class Category {
 
     @Column(length = 1000)
     private String imagePath;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean deleted = false;
 }

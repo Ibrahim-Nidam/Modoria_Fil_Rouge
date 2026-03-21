@@ -71,7 +71,7 @@ public class StripeCheckoutController {
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (CheckoutLineItemDTO item : request.getItems()) {
-            Product product = productRepository.findById(item.getProductId())
+            Product product = productRepository.findActiveByIdWithCategory(item.getProductId())
                     .orElseThrow(() -> new ResourceNotFoundException("Product not found: " + item.getProductId()));
 
             int quantity = item.getQuantity();

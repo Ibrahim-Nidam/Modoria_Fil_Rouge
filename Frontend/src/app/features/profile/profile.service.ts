@@ -82,9 +82,9 @@ export interface SupportTicketMessage {
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
   private http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8081/api/v1/users/me';
-  private readonly ordersUrl = 'http://localhost:8081/api/v1/orders';
-  private readonly supportUrl = 'http://localhost:8081/api/v1/support/sessions';
+  private readonly apiUrl = '/api/v1/users/me';
+  private readonly ordersUrl = '/api/v1/orders';
+  private readonly supportUrl = '/api/v1/support/sessions';
 
   getProfile(): Observable<UserProfile> {
     return this.http.get<UserProfile>(this.apiUrl);
@@ -122,3 +122,4 @@ export class ProfileService {
     return this.http.post<SupportTicketMessage>(`${this.supportUrl}/${sessionId}/reply`, { message });
   }
 }
+

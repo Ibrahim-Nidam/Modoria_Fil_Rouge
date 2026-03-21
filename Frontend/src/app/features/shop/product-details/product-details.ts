@@ -18,7 +18,7 @@ export class ProductDetailsComponent {
   private shopState = inject(ShopStateService);
   private toastService = inject(ToastService);
 
-  readonly backendBaseUrl = 'http://localhost:8081';
+  readonly backendBaseUrl = '';
 
   product = signal<ShopProduct | null>(null);
   loading = signal(true);
@@ -103,3 +103,4 @@ export class ProductDetailsComponent {
     return !!product && this.shopState.isInWishlist(product.id);
   }
 }
+

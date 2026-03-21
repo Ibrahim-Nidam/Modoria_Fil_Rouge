@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { finalize, of, switchMap } from 'rxjs';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { Button } from '../../../../shared/ui/button/button';
@@ -18,7 +18,8 @@ export class AdminCategories implements OnInit {
   private categoryService = inject(AdminCategoryService);
   private productService = inject(AdminProductService);
   private toastService = inject(ToastService);
-  private backendBaseUrl = 'http://localhost:8081';
+  private backendBaseUrl = '';
+  readonly seasonOptions = ['SPRING', 'SUMMER', 'AUTUMN', 'WINTER'] as const;
 
   categories = signal<AdminCategory[]>([]);
   loading = signal(true);
@@ -30,6 +31,28 @@ export class AdminCategories implements OnInit {
   expandedCategoryId = signal<number | null>(null);
   assignedProductsByCategory = signal<Record<number, AdminProduct[]>>({});
   assignedProductsLoading = signal<Record<number, boolean>>({});
+  searchQuery = signal('');
+  selectedSeason = signal<'ALL' | (typeof this.seasonOptions)[number]>('ALL');
+  selectedStatus = signal<'ALL' | 'ACTIVE' | 'DELETED'>('ALL');
+
+  filteredCategories = computed(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    const season = this.selectedSeason();
+    const status = this.selectedStatus();
+
+    return this.categories().filter((category) => {
+      const matchesQuery =
+        query.length === 0
+        || category.name.toLowerCase().includes(query)
+        || category.description?.toLowerCase().includes(query);
+      const matchesSeason = season === 'ALL' || category.season === season;
+      const matchesStatus = status === 'ALL'
+        || (status === 'ACTIVE' && !category.deleted)
+        || (status === 'DELETED' && category.deleted);
+
+      return matchesQuery && matchesSeason && matchesStatus;
+    });
+  });
 
   ngOnInit() {
     this.loadCategories();
@@ -52,6 +75,28 @@ export class AdminCategories implements OnInit {
   openDeleteModal(category: AdminCategory) {
     this.selectedCategory.set(category);
     this.deleteOpen.set(true);
+  }
+
+  updateSearchQuery(value: string) {
+    this.searchQuery.set(value);
+  }
+
+  updateSeasonFilter(value: string) {
+    if (value === 'ALL' || this.seasonOptions.includes(value as (typeof this.seasonOptions)[number])) {
+      this.selectedSeason.set(value as 'ALL' | (typeof this.seasonOptions)[number]);
+    }
+  }
+
+  updateStatusFilter(value: string) {
+    if (value === 'ALL' || value === 'ACTIVE' || value === 'DELETED') {
+      this.selectedStatus.set(value);
+    }
+  }
+
+  clearFilters() {
+    this.searchQuery.set('');
+    this.selectedSeason.set('ALL');
+    this.selectedStatus.set('ALL');
   }
 
   closeFormModal() {
@@ -138,7 +183,7 @@ export class AdminCategories implements OnInit {
       .pipe(finalize(() => this.deleting.set(false)))
       .subscribe({
         next: () => {
-          this.toastService.success('Category deleted successfully.', 'Categories');
+          this.toastService.success('Category soft-deleted successfully.', 'Categories');
           this.closeDeleteModal();
           this.loadCategories();
         },
@@ -149,6 +194,25 @@ export class AdminCategories implements OnInit {
           );
         },
       });
+  }
+
+  restoreCategory(category: AdminCategory) {
+    if (!category.deleted) {
+      return;
+    }
+
+    this.categoryService.restoreCategory(category.id).subscribe({
+      next: () => {
+        this.toastService.success('Category restored successfully.', 'Categories');
+        this.loadCategories();
+      },
+      error: (error) => {
+        this.toastService.error(
+          error.error?.message ?? 'Unable to restore the category.',
+          'Categories'
+        );
+      },
+    });
   }
 
   toggleAssignedProducts(category: AdminCategory) {
@@ -190,7 +254,7 @@ export class AdminCategories implements OnInit {
     }));
 
     this.productService
-      .getProductsByCategory(categoryId)
+      .getProductsByCategory(categoryId, 0, 100, true)
       .pipe(
         finalize(() => {
           this.assignedProductsLoading.update((current) => ({
@@ -223,7 +287,7 @@ export class AdminCategories implements OnInit {
     this.loading.set(true);
 
     this.categoryService
-      .getCategories()
+      .getCategories(0, 50, null, true)
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (response) => {
@@ -238,3 +302,4 @@ export class AdminCategories implements OnInit {
       });
   }
 }
+

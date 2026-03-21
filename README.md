@@ -22,7 +22,7 @@ Modoria is a premium, seasonal e-commerce platform featuring a modern Angular 21
 - Java 21+
 - Node.js 22+, npm 10+
 - Maven 3.9+
-- PostgreSQL
+- PostgreSQL 17
 
 ### Setup
 1. **Clone the repository:**
@@ -44,8 +44,46 @@ Modoria is a premium, seasonal e-commerce platform featuring a modern Angular 21
    npm start
    ```
 
+## Docker (Frontend + Backend + Postgres + pgAdmin)
+
+1. Create an env file from the template:
+   ```bash
+   cp .env.example .env
+   ```
+2. Start the full stack locally:
+   ```bash
+   docker compose up -d --build
+   ```
+3. Access services:
+   - Frontend: `http://localhost:4200`
+   - Backend API: `http://localhost:8081`
+   - pgAdmin (database UI): `http://localhost:5050`
+
+Notes:
+- This Docker setup is development-only for now.
+- Database image is `postgres:17-alpine`.
+- Backend runs with `SPRING_PROFILES_ACTIVE=dev`.
+
+### pgAdmin first connection
+- Login with `PGADMIN_EMAIL` and `PGADMIN_PASSWORD` from `.env`.
+- Add server with:
+  - Host: `postgres`
+  - Port: `5432`
+  - Username: `postgres`
+  - Password: value of `DB_PASSWORD`
+
 ## Documentation
 - See `Backend/README.md` and `Frontend/README.md` for detailed module and setup info.
+
+## GitHub Actions CI
+
+Workflow file: `.github/workflows/ci.yml`
+
+What it does:
+1. Runs backend tests (`mvn test`) on PRs and pushes to `main`.
+2. Runs frontend build (`npm run build`) on PRs and pushes to `main`.
+
+No deployment step is included.
 
 ## Project Links
 

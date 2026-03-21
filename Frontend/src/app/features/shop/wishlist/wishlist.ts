@@ -15,7 +15,7 @@ import { ToastService } from '../../../core/toast/toast.service';
 export class WishlistComponent {
   readonly shopState = inject(ShopStateService);
   private toastService = inject(ToastService);
-  readonly backendBaseUrl = 'http://localhost:8081';
+  readonly backendBaseUrl = '';
 
   getImageUrl(imagePath: string | null | undefined): string {
     if (!imagePath) {
@@ -46,3 +46,4 @@ export class WishlistComponent {
     }
   }
 }
+

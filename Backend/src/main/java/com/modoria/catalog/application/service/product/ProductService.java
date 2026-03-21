@@ -14,13 +14,15 @@ import java.util.List;
 public interface ProductService {
     ProductResponseDTO createProduct(ProductRequestDTO requestDTO);
 
-    ProductResponseDTO getProductById(Long id);
+    ProductResponseDTO getProductById(Long id, boolean includeDeleted);
 
-    Page<ProductResponseDTO> getAllProducts(Pageable pageable);
+    Page<ProductResponseDTO> getAllProducts(Pageable pageable, boolean includeDeleted);
 
     ProductResponseDTO updateProduct(Long id, ProductRequestDTO requestDTO);
 
     void deleteProduct(Long id);
+
+    ProductResponseDTO restoreProduct(Long id);
 
     ProductResponseDTO uploadProductImage(Long productId, MultipartFile file);
 
@@ -30,10 +32,10 @@ public interface ProductService {
 
     ProductResponseDTO setPrimaryProductImage(Long productId, Long imageId);
 
-    Page<ProductResponseDTO> getProductsBySeason(String season, Pageable pageable);
+    Page<ProductResponseDTO> getProductsBySeason(String season, Pageable pageable, boolean includeDeleted);
 
     Page<ProductResponseDTO> searchProducts(String keyword, BigDecimal minPrice, BigDecimal maxPrice, Long categoryId,
-            Season season, Pageable pageable);
+            Season season, Pageable pageable, boolean includeDeleted);
 
     String getCatalogSummary();
 }

@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,13 +37,17 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductResponseDTO>> getAllProducts(@PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(productService.getAllProducts(pageable));
+    public ResponseEntity<Page<ProductResponseDTO>> getAllProducts(
+            @PageableDefault(size = 20) Pageable pageable,
+            @RequestParam(defaultValue = "false") boolean includeDeleted) {
+        return ResponseEntity.ok(productService.getAllProducts(pageable, allowIncludeDeleted(includeDeleted)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProductById(id));
+    public ResponseEntity<ProductResponseDTO> getProductById(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "false") boolean includeDeleted) {
+        return ResponseEntity.ok(productService.getProductById(id, allowIncludeDeleted(includeDeleted)));
     }
 
     @PutMapping("/{id}")
@@ -57,6 +63,12 @@ public class ProductController {
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/restore")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductResponseDTO> restoreProduct(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.restoreProduct(id));
     }
 
     @PostMapping(value = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -96,8 +108,9 @@ public class ProductController {
     @GetMapping("/season/{season}")
     public ResponseEntity<Page<ProductResponseDTO>> getProductsBySeason(
             @PathVariable String season,
+            @RequestParam(defaultValue = "false") boolean includeDeleted,
             @PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(productService.getProductsBySeason(season, pageable));
+        return ResponseEntity.ok(productService.getProductsBySeason(season, pageable, allowIncludeDeleted(includeDeleted)));
     }
 
     @GetMapping("/search")
@@ -107,8 +120,30 @@ public class ProductController {
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Season season,
+            @RequestParam(defaultValue = "false") boolean includeDeleted,
             @PageableDefault(size = 20) Pageable pageable) {
         return ResponseEntity
-                .ok(productService.searchProducts(keyword, minPrice, maxPrice, categoryId, season, pageable));
+                .ok(productService.searchProducts(
+                        keyword,
+                        minPrice,
+                        maxPrice,
+                        categoryId,
+                        season,
+                        pageable,
+                        allowIncludeDeleted(includeDeleted)));
+    }
+
+    private boolean allowIncludeDeleted(boolean includeDeletedRequested) {
+        if (!includeDeletedRequested) {
+            return false;
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return false;
+        }
+
+        return authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
     }
 }

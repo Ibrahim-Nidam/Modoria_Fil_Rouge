@@ -17,7 +17,7 @@ export class CatalogComponent {
   private shopService = inject(ShopCatalogService);
 
   readonly activeSeason = this.themeService.activeSeason;
-  readonly backendBaseUrl = 'http://localhost:8081';
+  readonly backendBaseUrl = '';
 
   products = signal<ShopProduct[]>([]);
   categories = signal<ShopCategory[]>([]);
@@ -121,3 +121,4 @@ export class CatalogComponent {
     return new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD' }).format(price);
   }
 }
+

@@ -58,7 +58,7 @@ export class ProductForm implements OnDestroy {
   cancelled = output<void>();
 
   readonly seasonOptions: ProductSeason[] = ['SPRING', 'SUMMER', 'AUTUMN', 'WINTER'];
-  private readonly backendBaseUrl = 'http://localhost:8081';
+  private readonly backendBaseUrl = '';
 
   existingImages: ExistingImageItem[] = [];
   newImages: NewImageItem[] = [];

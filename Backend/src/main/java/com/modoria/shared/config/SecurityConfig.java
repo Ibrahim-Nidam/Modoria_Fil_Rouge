@@ -2,6 +2,7 @@ package com.modoria.shared.config;
 
 import com.modoria.identity.infrastructure.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,6 +23,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
@@ -29,6 +31,9 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Value("${app.frontend-url:http://localhost:4200}")
+    private String frontendUrl;
 
     @Bean
     public RoleHierarchy roleHierarchy() {
@@ -48,6 +53,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/health", "/api/profile", "/favicon.ico", "/api/v1/seasons/**").permitAll()
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/storage/**").permitAll()
                         .requestMatchers("/h2-console", "/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -76,10 +82,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of(
-                "http://localhost:4200",
-                "https://localhost:4200",
-                "http://127.0.0.1:4200"));
+        List<String> configuredOrigins = Stream.concat(
+            Arrays.stream(frontendUrl.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isBlank()),
+            Stream.of("http://localhost:4200", "https://localhost:4200", "http://127.0.0.1:4200"))
+            .distinct()
+            .toList();
+
+        config.setAllowedOriginPatterns(configuredOrigins);
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization"));

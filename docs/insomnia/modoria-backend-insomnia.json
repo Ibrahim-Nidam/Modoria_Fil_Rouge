@@ -1,0 +1,985 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-03-18T14:10:00.000Z",
+  "__export_source": "modoria-assistant",
+  "resources": [
+    {
+      "_id": "wrk_modoria_backend",
+      "_type": "workspace",
+      "name": "Modoria Backend (Auto)",
+      "description": "Run Setup requests first. Tokens and IDs are chained automatically from previous responses.",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_modoria_backend",
+      "_type": "environment",
+      "parentId": "wrk_modoria_backend",
+      "name": "Base Environment",
+      "data": {}
+    },
+
+    {
+      "_id": "grp_00_setup",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "00 - Setup (Register + Login)"
+    },
+    {
+      "_id": "req_register_admin",
+      "_type": "request",
+      "parentId": "grp_00_setup",
+      "name": "Register Admin",
+      "method": "POST",
+      "url": "http://localhost:8081/api/auth/register",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"fullName\": \"Insomnia Admin\",\n  \"email\": \"insomnia.admin@modoria.local\",\n  \"password\": \"Password123!\",\n  \"role\": \"ADMIN\"\n}"
+      }
+    },
+    {
+      "_id": "req_login_admin",
+      "_type": "request",
+      "parentId": "grp_00_setup",
+      "name": "Login Admin",
+      "method": "POST",
+      "url": "http://localhost:8081/api/auth/login",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"insomnia.admin@modoria.local\",\n  \"password\": \"Password123!\"\n}"
+      }
+    },
+    {
+      "_id": "req_register_client",
+      "_type": "request",
+      "parentId": "grp_00_setup",
+      "name": "Register Client",
+      "method": "POST",
+      "url": "http://localhost:8081/api/auth/register",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"fullName\": \"Insomnia Client\",\n  \"email\": \"insomnia.client@modoria.local\",\n  \"password\": \"Password123!\",\n  \"role\": \"CLIENT\"\n}"
+      }
+    },
+    {
+      "_id": "req_login_client",
+      "_type": "request",
+      "parentId": "grp_00_setup",
+      "name": "Login Client",
+      "method": "POST",
+      "url": "http://localhost:8081/api/auth/login",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"insomnia.client@modoria.local\",\n  \"password\": \"Password123!\"\n}"
+      }
+    },
+    {
+      "_id": "req_register_agent",
+      "_type": "request",
+      "parentId": "grp_00_setup",
+      "name": "Register Agent",
+      "method": "POST",
+      "url": "http://localhost:8081/api/auth/register",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"fullName\": \"Insomnia Agent\",\n  \"email\": \"insomnia.agent@modoria.local\",\n  \"password\": \"Password123!\",\n  \"role\": \"AGENT\"\n}"
+      }
+    },
+    {
+      "_id": "req_login_agent",
+      "_type": "request",
+      "parentId": "grp_00_setup",
+      "name": "Login Agent",
+      "method": "POST",
+      "url": "http://localhost:8081/api/auth/login",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"insomnia.agent@modoria.local\",\n  \"password\": \"Password123!\"\n}"
+      }
+    },
+
+    {
+      "_id": "grp_01_public",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "01 - Public"
+    },
+    {
+      "_id": "req_season_current",
+      "_type": "request",
+      "parentId": "grp_01_public",
+      "name": "Get Current Season",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/seasons/current"
+    },
+    {
+      "_id": "req_categories_list_public",
+      "_type": "request",
+      "parentId": "grp_01_public",
+      "name": "List Categories",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/categories?page=0&size=20"
+    },
+    {
+      "_id": "req_products_list_public",
+      "_type": "request",
+      "parentId": "grp_01_public",
+      "name": "List Products",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/products?page=0&size=20"
+    },
+    {
+      "_id": "req_products_search_public",
+      "_type": "request",
+      "parentId": "grp_01_public",
+      "name": "Search Products",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/products/search?keyword=shirt&page=0&size=20"
+    },
+    {
+      "_id": "req_products_season_public",
+      "_type": "request",
+      "parentId": "grp_01_public",
+      "name": "Products by Season",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/products/season/SPRING?page=0&size=20"
+    },
+    {
+      "_id": "req_openapi_docs_public",
+      "_type": "request",
+      "parentId": "grp_01_public",
+      "name": "OpenAPI Docs JSON",
+      "method": "GET",
+      "url": "http://localhost:8081/v3/api-docs"
+    },
+    {
+      "_id": "req_swagger_ui_public",
+      "_type": "request",
+      "parentId": "grp_01_public",
+      "name": "Swagger UI HTML",
+      "method": "GET",
+      "url": "http://localhost:8081/swagger-ui.html"
+    },
+
+    {
+      "_id": "grp_02_auth_misc",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "02 - Auth Misc"
+    },
+    {
+      "_id": "req_auth_refresh_admin",
+      "_type": "request",
+      "parentId": "grp_02_auth_misc",
+      "name": "Refresh Admin Token",
+      "method": "POST",
+      "url": "http://localhost:8081/api/auth/refresh",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"refreshToken\": \"{% response 'body', 'req_login_admin', '$.refreshToken', 'never', 60 %}\"\n}"
+      }
+    },
+    {
+      "_id": "req_auth_logout_admin",
+      "_type": "request",
+      "parentId": "grp_02_auth_misc",
+      "name": "Logout Admin",
+      "method": "POST",
+      "url": "http://localhost:8081/api/auth/logout",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_auth_forgot_password",
+      "_type": "request",
+      "parentId": "grp_02_auth_misc",
+      "name": "Forgot Password (Client)",
+      "method": "POST",
+      "url": "http://localhost:8081/api/auth/forgot-password",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"insomnia.client@modoria.local\"\n}"
+      }
+    },
+    {
+      "_id": "req_auth_reset_password",
+      "_type": "request",
+      "parentId": "grp_02_auth_misc",
+      "name": "Reset Password (paste token from email)",
+      "method": "POST",
+      "url": "http://localhost:8081/api/auth/reset-password",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"token\": \"PASTE_EMAIL_TOKEN_HERE\",\n  \"newPassword\": \"Password123!\"\n}"
+      }
+    },
+
+    {
+      "_id": "grp_03_admin_categories",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "03 - Admin Categories"
+    },
+    {
+      "_id": "req_category_create",
+      "_type": "request",
+      "parentId": "grp_03_admin_categories",
+      "name": "Create Category",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/categories",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Insomnia Category\",\n  \"season\": \"SPRING\",\n  \"description\": \"Created by Insomnia collection\"\n}"
+      }
+    },
+    {
+      "_id": "req_category_get_by_id",
+      "_type": "request",
+      "parentId": "grp_03_admin_categories",
+      "name": "Get Category By ID",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/categories/{% response 'body', 'req_category_create', '$.id', 'never', 60 %}"
+    },
+    {
+      "_id": "req_category_update",
+      "_type": "request",
+      "parentId": "grp_03_admin_categories",
+      "name": "Update Category",
+      "method": "PUT",
+      "url": "http://localhost:8081/api/v1/categories/{% response 'body', 'req_category_create', '$.id', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Insomnia Category Updated\",\n  \"season\": \"SPRING\",\n  \"description\": \"Updated by Insomnia\"\n}"
+      }
+    },
+    {
+      "_id": "req_category_upload_image",
+      "_type": "request",
+      "parentId": "grp_03_admin_categories",
+      "name": "Upload Category Image (choose file)",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/categories/{% response 'body', 'req_category_create', '$.id', 'never', 60 %}/image",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          { "name": "file", "type": "file", "fileName": "", "value": "" }
+        ]
+      }
+    },
+    {
+      "_id": "req_category_delete",
+      "_type": "request",
+      "parentId": "grp_03_admin_categories",
+      "name": "Delete Category",
+      "method": "DELETE",
+      "url": "http://localhost:8081/api/v1/categories/{% response 'body', 'req_category_create', '$.id', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+
+    {
+      "_id": "grp_04_admin_products",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "04 - Admin Products"
+    },
+    {
+      "_id": "req_product_create",
+      "_type": "request",
+      "parentId": "grp_04_admin_products",
+      "name": "Create Product",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/products",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Insomnia Product\",\n  \"description\": \"Created by Insomnia\",\n  \"price\": 299.99,\n  \"stock\": 50,\n  \"season\": \"SPRING\",\n  \"categoryId\": \"{% response 'body', 'req_category_create', '$.id', 'never', 60 %}\"\n}"
+      }
+    },
+    {
+      "_id": "req_product_get_by_id",
+      "_type": "request",
+      "parentId": "grp_04_admin_products",
+      "name": "Get Product By ID",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/products/{% response 'body', 'req_product_create', '$.id', 'never', 60 %}"
+    },
+    {
+      "_id": "req_product_update",
+      "_type": "request",
+      "parentId": "grp_04_admin_products",
+      "name": "Update Product",
+      "method": "PUT",
+      "url": "http://localhost:8081/api/v1/products/{% response 'body', 'req_product_create', '$.id', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Insomnia Product Updated\",\n  \"description\": \"Updated by Insomnia\",\n  \"price\": 349.99,\n  \"stock\": 45,\n  \"season\": \"SPRING\",\n  \"categoryId\": \"{% response 'body', 'req_category_create', '$.id', 'never', 60 %}\"\n}"
+      }
+    },
+    {
+      "_id": "req_product_upload_single",
+      "_type": "request",
+      "parentId": "grp_04_admin_products",
+      "name": "Upload Product Image (single, choose file)",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/products/{% response 'body', 'req_product_create', '$.id', 'never', 60 %}/upload",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          { "name": "file", "type": "file", "fileName": "", "value": "" }
+        ]
+      }
+    },
+    {
+      "_id": "req_product_upload_gallery",
+      "_type": "request",
+      "parentId": "grp_04_admin_products",
+      "name": "Upload Product Images (gallery, choose pic)",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/products/{% response 'body', 'req_product_create', '$.id', 'never', 60 %}/images/upload",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          { "name": "files", "type": "file", "fileName": "", "value": "" },
+          { "name": "primaryIndex", "value": "0" }
+        ]
+      }
+    },
+    {
+      "_id": "req_product_set_primary",
+      "_type": "request",
+      "parentId": "grp_04_admin_products",
+      "name": "Set Primary Product Image",
+      "method": "PUT",
+      "url": "http://localhost:8081/api/v1/products/{% response 'body', 'req_product_create', '$.id', 'never', 60 %}/images/{% response 'body', 'req_product_upload_gallery', '$[0].id', 'never', 60 %}/primary",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_product_delete_image",
+      "_type": "request",
+      "parentId": "grp_04_admin_products",
+      "name": "Delete Product Image",
+      "method": "DELETE",
+      "url": "http://localhost:8081/api/v1/products/{% response 'body', 'req_product_create', '$.id', 'never', 60 %}/images/{% response 'body', 'req_product_upload_gallery', '$[0].id', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_product_delete",
+      "_type": "request",
+      "parentId": "grp_04_admin_products",
+      "name": "Delete Product",
+      "method": "DELETE",
+      "url": "http://localhost:8081/api/v1/products/{% response 'body', 'req_product_create', '$.id', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+
+    {
+      "_id": "grp_05_client_profile",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "05 - Client Profile"
+    },
+    {
+      "_id": "req_profile_get_me",
+      "_type": "request",
+      "parentId": "grp_05_client_profile",
+      "name": "Get My Profile",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/users/me",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_profile_update_me",
+      "_type": "request",
+      "parentId": "grp_05_client_profile",
+      "name": "Update My Profile",
+      "method": "PUT",
+      "url": "http://localhost:8081/api/v1/users/me",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"fullName\": \"Insomnia Client Updated\",\n  \"email\": \"insomnia.client@modoria.local\",\n  \"phoneNumber\": \"+212600000000\",\n  \"address\": \"Casablanca\",\n  \"password\": \"Password123!\"\n}"
+      }
+    },
+
+    {
+      "_id": "grp_06_client_orders_payments",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "06 - Client Orders + Payments"
+    },
+    {
+      "_id": "req_checkout_create_session",
+      "_type": "request",
+      "parentId": "grp_06_client_orders_payments",
+      "name": "Create Checkout Session",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/payments/checkout-session",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"items\": [\n    {\n      \"productId\": \"{% response 'body', 'req_product_create', '$.id', 'never', 60 %}\",\n      \"quantity\": 1\n    }\n  ]\n}"
+      }
+    },
+    {
+      "_id": "req_checkout_confirm_session",
+      "_type": "request",
+      "parentId": "grp_06_client_orders_payments",
+      "name": "Confirm Checkout Session",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/payments/confirm-session?sid={% response 'body', 'req_checkout_create_session', '$.sessionId', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_orders_get_mine",
+      "_type": "request",
+      "parentId": "grp_06_client_orders_payments",
+      "name": "Get My Orders",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/orders",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_orders_get_by_id",
+      "_type": "request",
+      "parentId": "grp_06_client_orders_payments",
+      "name": "Get My Order By ID",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/orders/{% response 'body', 'req_checkout_create_session', '$.orderId', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+
+    {
+      "_id": "grp_07_support_client",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "07 - Support (Client)"
+    },
+    {
+      "_id": "req_support_open_ticket",
+      "_type": "request",
+      "parentId": "grp_07_support_client",
+      "name": "Open Support Ticket",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/support/sessions/tickets/open",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"orderId\": \"{% response 'body', 'req_checkout_create_session', '$.orderId', 'never', 60 %}\",\n  \"subject\": \"Need help with my order\",\n  \"message\": \"I need an update about shipping status.\"\n}"
+      }
+    },
+    {
+      "_id": "req_support_my_latest",
+      "_type": "request",
+      "parentId": "grp_07_support_client",
+      "name": "Get My Latest Ticket",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/support/sessions/tickets/mine",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_support_my_all",
+      "_type": "request",
+      "parentId": "grp_07_support_client",
+      "name": "Get My Tickets (All)",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/support/sessions/tickets/mine/all",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_support_get_by_id",
+      "_type": "request",
+      "parentId": "grp_07_support_client",
+      "name": "Get Ticket By ID",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/support/sessions/tickets/{% response 'body', 'req_support_open_ticket', '$.id', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_support_get_conversation",
+      "_type": "request",
+      "parentId": "grp_07_support_client",
+      "name": "Get Ticket Conversation",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/support/sessions/tickets/{% response 'body', 'req_support_open_ticket', '$.id', 'never', 60 %}/conversation",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_support_client_reply",
+      "_type": "request",
+      "parentId": "grp_07_support_client",
+      "name": "Reply To Ticket (Client)",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/support/sessions/{% response 'body', 'req_support_open_ticket', '$.id', 'never', 60 %}/reply",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"message\": \"Any update from support?\"\n}"
+      }
+    },
+
+    {
+      "_id": "grp_08_support_admin_agent",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "08 - Support (Admin + Agent)"
+    },
+    {
+      "_id": "req_support_all_tickets_admin",
+      "_type": "request",
+      "parentId": "grp_08_support_admin_agent",
+      "name": "Admin - Get All Tickets",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/support/sessions/tickets",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_support_active_admin",
+      "_type": "request",
+      "parentId": "grp_08_support_admin_agent",
+      "name": "Admin - Get Active Sessions",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/support/sessions/active",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_support_assign_agent_admin",
+      "_type": "request",
+      "parentId": "grp_08_support_admin_agent",
+      "name": "Admin - Assign Agent",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/support/sessions/{% response 'body', 'req_support_open_ticket', '$.id', 'never', 60 %}/assign/{% response 'body', 'req_register_agent', '$.user.id', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_support_assigned_agent",
+      "_type": "request",
+      "parentId": "grp_08_support_admin_agent",
+      "name": "Agent - Get Assigned Tickets",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/support/sessions/tickets/assigned",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_agent', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_support_status_agent",
+      "_type": "request",
+      "parentId": "grp_08_support_admin_agent",
+      "name": "Agent - Update Ticket Status",
+      "method": "PATCH",
+      "url": "http://localhost:8081/api/v1/support/sessions/{% response 'body', 'req_support_open_ticket', '$.id', 'never', 60 %}/status",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_agent', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"status\": \"IN_PROGRESS\"\n}"
+      }
+    },
+    {
+      "_id": "req_support_reply_agent",
+      "_type": "request",
+      "parentId": "grp_08_support_admin_agent",
+      "name": "Agent - Reply To Ticket",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/support/sessions/{% response 'body', 'req_support_open_ticket', '$.id', 'never', 60 %}/reply",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_agent', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"message\": \"Hello, I am handling your ticket now.\"\n}"
+      }
+    },
+    {
+      "_id": "req_support_close_customer_admin",
+      "_type": "request",
+      "parentId": "grp_08_support_admin_agent",
+      "name": "Admin - Close Customer Session",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/support/sessions/customer/{% response 'body', 'req_register_client', '$.user.id', 'never', 60 %}/close",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+
+    {
+      "_id": "grp_09_admin_users_orders_dashboard",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "09 - Admin Users + Orders + Dashboard"
+    },
+    {
+      "_id": "req_admin_dashboard_stats",
+      "_type": "request",
+      "parentId": "grp_09_admin_users_orders_dashboard",
+      "name": "Admin - Dashboard Stats",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/admin/dashboard/stats",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_admin_users_list",
+      "_type": "request",
+      "parentId": "grp_09_admin_users_orders_dashboard",
+      "name": "Admin - List Users",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/admin/users",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_admin_user_create",
+      "_type": "request",
+      "parentId": "grp_09_admin_users_orders_dashboard",
+      "name": "Admin - Create User",
+      "method": "POST",
+      "url": "http://localhost:8081/api/v1/admin/users",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"fullName\": \"Temp User From Admin\",\n  \"email\": \"temp.user@modoria.local\",\n  \"password\": \"Password123!\",\n  \"enabled\": true,\n  \"roles\": [\"CLIENT\"]\n}"
+      }
+    },
+    {
+      "_id": "req_admin_user_get_by_id",
+      "_type": "request",
+      "parentId": "grp_09_admin_users_orders_dashboard",
+      "name": "Admin - Get User By ID",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/admin/users/{% response 'body', 'req_admin_user_create', '$.id', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_admin_user_update",
+      "_type": "request",
+      "parentId": "grp_09_admin_users_orders_dashboard",
+      "name": "Admin - Update User",
+      "method": "PUT",
+      "url": "http://localhost:8081/api/v1/admin/users/{% response 'body', 'req_admin_user_create', '$.id', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"fullName\": \"Temp User Updated\",\n  \"email\": \"temp.user@modoria.local\",\n  \"password\": \"Password123!\",\n  \"enabled\": true,\n  \"roles\": [\"CLIENT\"]\n}"
+      }
+    },
+    {
+      "_id": "req_admin_user_delete",
+      "_type": "request",
+      "parentId": "grp_09_admin_users_orders_dashboard",
+      "name": "Admin - Delete User",
+      "method": "DELETE",
+      "url": "http://localhost:8081/api/v1/admin/users/{% response 'body', 'req_admin_user_create', '$.id', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_admin_orders_list",
+      "_type": "request",
+      "parentId": "grp_09_admin_users_orders_dashboard",
+      "name": "Admin - List Orders",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/admin/orders",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_admin_order_get_by_id",
+      "_type": "request",
+      "parentId": "grp_09_admin_users_orders_dashboard",
+      "name": "Admin - Get Order By ID",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/admin/orders/{% response 'body', 'req_checkout_create_session', '$.orderId', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+    {
+      "_id": "req_admin_order_update_status",
+      "_type": "request",
+      "parentId": "grp_09_admin_users_orders_dashboard",
+      "name": "Admin - Update Order Status",
+      "method": "PATCH",
+      "url": "http://localhost:8081/api/v1/admin/orders/{% response 'body', 'req_checkout_create_session', '$.orderId', 'never', 60 %}/status",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_admin', '$.accessToken', 'never', 60 %}"
+        },
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"status\": \"COMPLETED\"\n}"
+      }
+    },
+
+    {
+      "_id": "grp_10_chat",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "10 - Chat"
+    },
+    {
+      "_id": "req_chat_history",
+      "_type": "request",
+      "parentId": "grp_10_chat",
+      "name": "Get Chat History (Client -> Agent)",
+      "method": "GET",
+      "url": "http://localhost:8081/api/v1/chat/{% response 'body', 'req_register_agent', '$.user.id', 'never', 60 %}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    },
+
+    {
+      "_id": "grp_11_cleanup_optional",
+      "_type": "request_group",
+      "parentId": "wrk_modoria_backend",
+      "name": "11 - Cleanup (Optional)"
+    },
+    {
+      "_id": "req_profile_delete_me",
+      "_type": "request",
+      "parentId": "grp_11_cleanup_optional",
+      "name": "Client - Delete My Profile",
+      "method": "DELETE",
+      "url": "http://localhost:8081/api/v1/users/me",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {% response 'body', 'req_login_client', '$.accessToken', 'never', 60 %}"
+        }
+      ]
+    }
+  ]
+}

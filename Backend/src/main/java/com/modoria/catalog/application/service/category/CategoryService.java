@@ -10,13 +10,15 @@ import org.springframework.web.multipart.MultipartFile;
 public interface CategoryService {
     CategoryResponseDTO createCategory(CategoryRequestDTO requestDTO);
 
-    CategoryResponseDTO getCategoryById(Long id);
+    CategoryResponseDTO getCategoryById(Long id, boolean includeDeleted);
 
-    Page<CategoryResponseDTO> getAllCategories(Pageable pageable, Season season);
+    Page<CategoryResponseDTO> getAllCategories(Pageable pageable, Season season, boolean includeDeleted);
 
     CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO requestDTO);
 
     CategoryResponseDTO uploadCategoryImage(Long id, MultipartFile file);
 
     void deleteCategory(Long id);
+
+    CategoryResponseDTO restoreCategory(Long id);
 }

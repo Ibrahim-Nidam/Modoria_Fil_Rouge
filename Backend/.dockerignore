@@ -1,0 +1,6 @@
+target
+logs
+storage
+.git
+.gitignore
+*.iml

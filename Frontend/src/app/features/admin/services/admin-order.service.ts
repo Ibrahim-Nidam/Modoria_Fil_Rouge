@@ -33,7 +33,7 @@ export interface AdminOrder {
 })
 export class AdminOrderService {
   private http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8081/api/v1/admin/orders';
+  private readonly apiUrl = '/api/v1/admin/orders';
 
   getOrders(): Observable<AdminOrder[]> {
     return this.http.get<AdminOrder[]>(this.apiUrl);

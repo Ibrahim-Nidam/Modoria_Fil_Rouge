@@ -33,5 +33,7 @@ npm install
 npm start
 ```
 
+`npm start` runs Angular dev server with `proxy.conf.json`, so relative calls like `/api` and `/storage` are proxied to `http://localhost:8081`.
+
 ---
 © 2026 Modoria Frontend Team

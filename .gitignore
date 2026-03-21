@@ -21,3 +21,4 @@ dist/
 .env.local
 Backend/.env
 Frontend/.env
+logs
