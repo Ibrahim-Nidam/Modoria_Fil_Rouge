@@ -11,5 +11,6 @@ public class CategoryResponseDTO {
     private String season;
     private String description;
     private String imagePath;
+    private Boolean deleted;
     private Long productCount;
 }
