@@ -12,7 +12,7 @@ export interface CheckoutSessionResponse {
 @Injectable({ providedIn: 'root' })
 export class ShopCheckoutService {
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8081/api/v1';
+  private readonly baseUrl = '/api/v1';
 
   createCheckoutSession(items: CartItem[]): Observable<CheckoutSessionResponse> {
     return this.http.post<CheckoutSessionResponse>(`${this.baseUrl}/payments/checkout-session`, {
@@ -27,3 +27,4 @@ export class ShopCheckoutService {
     return this.http.post(`${this.baseUrl}/payments/confirm-session?sid=${encodeURIComponent(sessionId)}`, {});
   }
 }
+
